@@ -17,7 +17,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     KatalogScreen(),
-    Container(), // Placeholder, jika perlu
+   // Placeholder, jika perlu
     ListBooksScreen(),
     TeamScreen(),
   ];
@@ -44,10 +44,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
             icon: Icon(Icons.add_box),
             label: 'Add',
           ),
-          BottomNavigationBarItem(
-            icon: SizedBox.shrink(),
-            label: '',
-          ),
+        
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: 'list', // Sesuaikan label ini dengan _widgetOptions
@@ -62,23 +59,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle scan icon press
-        },
-        backgroundColor: Color(0xFF005CBE),
-        child: Icon(
-          Icons.center_focus_weak_sharp,
-          color: Colors.white,
-          size: 30.0,
-        ),
-        elevation: 8.0,
-        highlightElevation: 12.0,
-        shape: RoundedRectangleBorder(
-          side: BorderSide(color: Colors.white, width: 2.0),
-          borderRadius: BorderRadius.circular(28.0),
-        ),
-      ),
+      
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

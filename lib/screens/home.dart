@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Otobook/screens/start.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:Otobook/screens/ocr_scanner.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
@@ -19,7 +20,7 @@ class App extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -67,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Greeting and logo section
             Container(
               decoration: BoxDecoration(
-                color: Colors.white24, // Background color for this section
+                color: Colors.white, // Background color for this section
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(20.0), // Rounded corners at the bottom
                 ),
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 178, 166, 182), // Background color for the left side
+                        color: Color(0xFF95A2FF), // Background color for the left side
                         borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(20.0), // Rounded corner at the bottom-right
                         ),
@@ -90,12 +91,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               'Hi!, $_userName',
                               style: TextStyle(
+                                color: Colors.white,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             SizedBox(height: 1.0), // Space between texts
-                          
                           ],
                         ),
                       ),
@@ -124,36 +125,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             // Space between greeting and carousel
             SizedBox(height: 5.0), // Adjust the height as needed
-           // Carousel section
-SizedBox(
-  height: MediaQuery.of(context).size.height * 0.18, // Adjusted height for the carousel
-  child: PageView(
-    controller: _pageController,
-    onPageChanged: _onPageChanged,
-    children: [
-      _buildPage(
-        color: Colors.blue,
-        iconPath: 'assets/icon/ocr-icon.svg',
-        text1: 'OCR Technology',
-        text2: 'Untuk Scan Meta Data Bibliografis/Buku',
-      ),
-      _buildPage(
-        color: Colors.orange,
-        iconPath: 'assets/icon/ai-icon.svg',
-        text1: 'AI Technology',
-        text2: 'Untuk Mengklasifikasikan Keywords dari Sinopsis yang di Scan OR',
-      ),
-      _buildPage(
-        color: const Color.fromARGB(255, 111, 0, 255),
-        iconPath: 'assets/icon/ai-icon.svg',
-        text1: 'RPA Technology',
-        text2: 'Robotic Process Automation yang Terintegrasi dengan Perpustakaan',
-      ),
-    ],
-  ),
-),
-_buildPageIndicator(),
-SizedBox(height: 20.0), // Space between carousel and images
+
+            // Carousel section
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.18, // Adjusted height for the carousel
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: _onPageChanged,
+                children: [
+                  _buildPage(
+                    color: Colors.blue,
+                    iconPath: 'assets/icon/ocr-icon.svg',
+                    text1: 'OCR Technology',
+                    text2: 'Untuk Scan Meta Data Bibliografis/Buku',
+                  ),
+                  _buildPage(
+                    color: Colors.orange,
+                    iconPath: 'assets/icon/ai-icon.svg',
+                    text1: 'AI Technology',
+                    text2: 'Untuk Mengklasifikasikan Keywords dari Sinopsis yang di Scan OR',
+                  ),
+                  _buildPage(
+                    color: const Color.fromARGB(255, 111, 0, 255),
+                    iconPath: 'assets/icon/ai-icon.svg',
+                    text1: 'RPA Technology',
+                    text2: 'Robotic Process Automation yang Terintegrasi dengan Perpustakaan',
+                  ),
+                ],
+              ),
+            ),
+            _buildPageIndicator(),
+            SizedBox(height: 20.0), // Space between carousel and images
 
             // Images with text inside
             Container(
@@ -162,15 +164,27 @@ SizedBox(height: 20.0), // Space between carousel and images
                 children: [
                   _buildImageWithText(
                     'assets/m.png', // Path to the PNG image
-                    ''// Text inside the first image
+                    '', // Text inside the first image
                   ),
                   SizedBox(height: 20.0), // Space between the images
                   _buildImageWithText(
                     'assets/p.png',
-                    ''// Path to the PNG image
+                    '', // Path to the PNG image
                   ),
-                
                 ],
+              ),
+            ),
+            // OCR Scanner button
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => OCRScannerScreen()),
+                  );
+                },
+                child: Text('Start OCR Scanner'),
               ),
             ),
           ],
@@ -265,10 +279,7 @@ SizedBox(height: 20.0), // Space between carousel and images
     );
   }
 
-  Widget _buildImageWithText(
-    String imagePath, 
-    String text
-  ) {
+  Widget _buildImageWithText(String imagePath, String text) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.0), // Space between images
       width: MediaQuery.of(context).size.width * 0.8, // Reduced width of the image
