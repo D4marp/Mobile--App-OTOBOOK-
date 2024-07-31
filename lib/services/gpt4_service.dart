@@ -6,7 +6,7 @@ class GPT4Service {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/completions'),
       headers: {
-        'Authorization': 'Bearer sk-proj-fEw8eDsSI3HDEHXQjZXlT3BlbkFJIrutHzHNUdwkb91cHRE4',
+        'Authorization': 'Bearer ',
         'Content-Type': 'application/json',
       },
       body: json.encode({
