@@ -4,11 +4,7 @@ import 'package:http/http.dart' as http;
 class GPT4Service {
   static Future<Map<String, dynamic>> extractBookDetails(String text) async {
     final response = await http.post(
-      Uri.parse('https://api.openai.com/v1/completions'),
-      headers: {
-        'Authorization': 'Bearer ',
-        'Content-Type': 'application/json',
-      },
+      
       body: json.encode({
         'model': 'gpt-4',
         'prompt': 'Extract book details including title, author, publisher, publication year, ISBN, synopsis, and keywords from the following text: $text',
