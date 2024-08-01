@@ -30,8 +30,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
     _penerbitController = TextEditingController(text: widget.book.publisher);
     _tahunTerbitController = TextEditingController(text: widget.book.publicationYear.toString());
     _isbnController = TextEditingController(text: widget.book.ISBN);
-    _sinopsisController = TextEditingController(text: widget.book.synopsis);
-    _keywordController = TextEditingController(text: widget.book.keywords.join(', '));
+  
   }
 
   @override
@@ -41,8 +40,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
     _penerbitController.dispose();
     _tahunTerbitController.dispose();
     _isbnController.dispose();
-    _sinopsisController.dispose();
-    _keywordController.dispose();
+ 
     super.dispose();
   }
 
@@ -55,8 +53,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
         publisher: _penerbitController.text,
         publicationYear: int.parse(_tahunTerbitController.text),
         ISBN: _isbnController.text,
-        synopsis: _sinopsisController.text,
-        keywords: _keywordController.text.split(',').map((e) => e.trim()).toList(),
+      
       );
 
       FirestoreService().updateBook(updatedBook).then((_) {
@@ -99,10 +96,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
               SizedBox(height: 16.0),
               _buildTextField(_isbnController, 'ISBN', 'Please enter the ISBN'),
               SizedBox(height: 16.0),
-              _buildTextField(_sinopsisController, 'Sinopsis', 'Please enter the synopsis'),
-              SizedBox(height: 16.0),
-              _buildTextField(_keywordController, 'Keywords', 'Please enter keywords (comma-separated)'),
-              SizedBox(height: 32.0),
+             
               ElevatedButton(
                 onPressed: _updateBook,
                 child: Text('Save Changes'),

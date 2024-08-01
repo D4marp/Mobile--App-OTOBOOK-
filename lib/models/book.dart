@@ -5,8 +5,8 @@ class Book {
   final String publisher;
   final int publicationYear;
   final String ISBN;
-  final String synopsis;
-  final List<String> keywords;
+  String synopsis;
+  List<String> keywords;
 
   Book({
     required this.id,
@@ -15,8 +15,8 @@ class Book {
     required this.publisher,
     required this.publicationYear,
     required this.ISBN,
-    required this.synopsis,
-    required this.keywords,
+    this.synopsis = '',
+    this.keywords = const [],
   });
 
   Map<String, dynamic> toMap() {

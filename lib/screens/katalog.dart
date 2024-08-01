@@ -19,8 +19,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
   final TextEditingController _penerbitController = TextEditingController();
   final TextEditingController _tahunTerbitController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
-  final TextEditingController _sinopsisController = TextEditingController();
-  final TextEditingController _keywordController = TextEditingController();
+ 
 
   @override
   void dispose() {
@@ -30,8 +29,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
     _penerbitController.dispose();
     _tahunTerbitController.dispose();
     _isbnController.dispose();
-    _sinopsisController.dispose();
-    _keywordController.dispose();
+   
     super.dispose();
   }
 
@@ -102,10 +100,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
                     SizedBox(height: 16.0),
                     _buildTextField(_isbnController, 'ISBN', 'Please enter the ISBN'),
                     SizedBox(height: 16.0),
-                    _buildTextField(_sinopsisController, 'Sinopsis', 'Please enter the synopsis'),
-                    SizedBox(height: 16.0),
-                    _buildTextField(_keywordController, 'Keyword', 'Please enter keywords'),
-                    SizedBox(height: 32.0),
+              
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
@@ -148,8 +143,7 @@ class _KatalogScreenState extends State<KatalogScreen> {
         publisher: _penerbitController.text,
         publicationYear: int.tryParse(_tahunTerbitController.text) ?? 0,
         ISBN: _isbnController.text,
-        synopsis: _sinopsisController.text,
-        keywords: _keywordController.text.split(',').map((e) => e.trim()).toList(),
+    
       );
 
       FirestoreService().addBook(book);

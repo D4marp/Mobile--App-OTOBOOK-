@@ -37,21 +37,8 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
           throw Exception('Failed to extract book details');
         }
 
-        // Buat objek buku baru
-        Book newBook = Book(
-          id: bookData['id'] ?? '', // Berikan nilai default atau tangani data yang hilang
-          title: bookData['title'] ?? 'Unknown Title',
-          author: bookData['author'] ?? 'Unknown Author',
-          publisher: bookData['publisher'] ?? 'Unknown Publisher',
-          publicationYear: bookData['publicationYear'] ?? 'Unknown Year',
-          ISBN: bookData['ISBN'] ?? 'Unknown ISBN',
-          synopsis: bookData['synopsis'] ?? '',
-          keywords: bookData['keywords'] ?? [],
-        );
-
-        // Tambahkan buku baru ke Firestore
-        await FirestoreService().addBook(newBook);
-        Navigator.pop(context);
+        // Validasi dan penyimpanan buku
+        _validateAndSaveBook(bookData);
       } else {
         // Tangani kasus di mana tidak ada gambar yang dipilih
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,12 +58,45 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     }
   }
 
+  void _validateAndSaveBook(Map<String, dynamic> bookData) async {
+    try {
+      // Buat objek buku baru
+      Book newBook = Book(
+        id: bookData['id'] ?? '', // Berikan nilai default atau tangani data yang hilang
+        title: bookData['title'] ?? 'Unknown Title',
+        author: bookData['author'] ?? 'Unknown Author',
+        publisher: bookData['publisher'] ?? 'Unknown Publisher',
+        publicationYear: bookData['publicationYear'] ?? 0,
+        ISBN: bookData['ISBN'] ?? 'Unknown ISBN',
+      );
+
+      // Validasi data buku sebelum disimpan
+      if (newBook.title.isEmpty || newBook.author.isEmpty || newBook.ISBN.isEmpty) {
+        throw Exception('Incomplete book data. Please provide all necessary details.');
+      }
+
+      // Tambahkan buku baru ke Firestore
+      await FirestoreService().addBook(newBook);
+
+      // Berikan umpan balik kepada pengguna
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Book added successfully.')),
+      );
+
+      // Kembali ke layar sebelumnya atau tindakan lain
+      Navigator.pop(context);
+    } catch (e) {
+      // Tangani kesalahan
+      print('Error saving book: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save book. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Scan Book'),
-      ),
       body: Center(
         child: _isLoading
           ? CircularProgressIndicator() // Tampilkan indikator pemuatan saat memproses

@@ -1,8 +1,10 @@
+import 'package:Otobook/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Otobook/screens/start.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:Otobook/screens/ocr_scanner.dart';
+import 'package:Otobook/screens/sinopsis_scan.dart'; // Import the synopsis scanner screen
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
@@ -174,17 +176,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            // OCR Scanner button
+            // OCR Scanner button and Additional button
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => OCRScannerScreen()),
-                  );
-                },
-                child: Text('Start OCR Scanner'),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OCRScannerScreen()),
+                      );
+                    },
+                    child: Text('Start OCR Scanner'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OCRSynopsisScannerScreen()), // Assuming a default or empty book object
+                      );
+                    },
+                    child: Text('Scan Synopsis'),
+                  ),
+                ],
               ),
             ),
           ],
