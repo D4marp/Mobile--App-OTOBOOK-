@@ -19,8 +19,6 @@ class _EditBookScreenState extends State<EditBookScreen> {
   late TextEditingController _penerbitController;
   late TextEditingController _tahunTerbitController;
   late TextEditingController _isbnController;
-  late TextEditingController _sinopsisController;
-  late TextEditingController _keywordController;
 
   @override
   void initState() {
@@ -30,7 +28,6 @@ class _EditBookScreenState extends State<EditBookScreen> {
     _penerbitController = TextEditingController(text: widget.book.publisher);
     _tahunTerbitController = TextEditingController(text: widget.book.publicationYear.toString());
     _isbnController = TextEditingController(text: widget.book.ISBN);
-  
   }
 
   @override
@@ -40,7 +37,6 @@ class _EditBookScreenState extends State<EditBookScreen> {
     _penerbitController.dispose();
     _tahunTerbitController.dispose();
     _isbnController.dispose();
- 
     super.dispose();
   }
 
@@ -53,19 +49,49 @@ class _EditBookScreenState extends State<EditBookScreen> {
         publisher: _penerbitController.text,
         publicationYear: int.parse(_tahunTerbitController.text),
         ISBN: _isbnController.text,
-      
       );
 
       FirestoreService().updateBook(updatedBook).then((_) {
         Navigator.pop(context); // Go back to the previous screen
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update book: $error')),
+        );
       });
     }
   }
 
   void _deleteBook() {
-    FirestoreService().deleteBook(widget.book.id).then((_) {
-      Navigator.pop(context); // Go back to the previous screen
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this book?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                FirestoreService().deleteBook(widget.book.id).then((_) {
+                  Navigator.pop(context); // Go back to the previous screen
+                }).catchError((error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to delete book: $error')),
+                  );
+                });
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -96,10 +122,12 @@ class _EditBookScreenState extends State<EditBookScreen> {
               SizedBox(height: 16.0),
               _buildTextField(_isbnController, 'ISBN', 'Please enter the ISBN'),
               SizedBox(height: 16.0),
-             
               ElevatedButton(
                 onPressed: _updateBook,
                 child: Text('Save Changes'),
+                style: ElevatedButton.styleFrom(
+                 
+                ),
               ),
             ],
           ),

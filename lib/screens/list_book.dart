@@ -14,14 +14,27 @@ class _ListBooksScreenState extends State<ListBooksScreen> {
   @override
   void initState() {
     super.initState();
-    _books = FirestoreService().getAllBooks();
+    _loadBooks();
   }
 
-  void _deleteBook(String bookId) async {
-    await FirestoreService().deleteBook(bookId);
+  void _loadBooks() {
     setState(() {
       _books = FirestoreService().getAllBooks();
     });
+  }
+
+  void _deleteBook(String bookId) async {
+    try {
+      await FirestoreService().deleteBook(bookId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Book deleted successfully')),
+      );
+      _loadBooks(); // Refresh the list of books
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete book: $e')),
+      );
+    }
   }
 
   @override
@@ -62,9 +75,7 @@ class _ListBooksScreenState extends State<ListBooksScreen> {
                           ),
                         ).then((_) {
                           // Refresh the list when coming back from the edit screen
-                          setState(() {
-                            _books = FirestoreService().getAllBooks();
-                          });
+                          _loadBooks();
                         });
                       },
                     ),

@@ -5,7 +5,6 @@ import 'package:Otobook/models/book.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-
   // Add a new user
   Future<void> addUser(User user) async {
     try {

@@ -63,7 +63,11 @@ android {
 flutter {
     source '../..'
 }
-dependencies {
+dependencies { 
+    
+    //Firebase
+  implementation platform('com.google.firebase:firebase-bom:32.3.1')
+   
   // To recognize Latin script
   implementation 'com.google.mlkit:text-recognition:16.0.0'
 

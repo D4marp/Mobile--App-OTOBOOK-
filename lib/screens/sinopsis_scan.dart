@@ -1,9 +1,9 @@
-import 'package:Otobook/models/book.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/gpt4_service.dart';
 import 'package:Otobook/services/firestore_service.dart';
 import 'package:Otobook/services/ocr_service.dart';
+import 'package:Otobook/models/book.dart';
 
 class OCRSynopsisScannerScreen extends StatefulWidget {
   @override
@@ -20,7 +20,7 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
     });
 
     try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      final pickedFile = await _showImageSourceSelector();
       if (pickedFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No image selected.')),
@@ -34,35 +34,26 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
         throw Exception('OCR extraction returned empty text');
       }
 
+      // Hanya melakukan klasifikasi kata kunci, tanpa ekstraksi detail buku dari GPT-4
       List<String> keywords = await GPT4Service.classifyKeywords(extractedText);
-      Map<String, dynamic> bookData = await GPT4Service.extractBookDetails(extractedText);
 
-      if (bookData == null || bookData.isEmpty) {
-        throw Exception('Failed to extract book details');
-      }
-
+      // Anda perlu menambahkan cara lain untuk mendapatkan detail buku seperti title, author, dsb.
       Book newBook = Book(
-        id: bookData['id'] ?? '',
-        title: bookData['title'] ?? 'Unknown Title',
-        author: bookData['author'] ?? 'Unknown Author',
-        publisher: bookData['publisher'] ?? 'Unknown Publisher',
-        publicationYear: bookData['publicationYear'] ?? 0,
-        ISBN: bookData['ISBN'] ?? 'Unknown ISBN',
+        id: '', // ID harus diatur atau ditentukan jika diperlukan
+        title: 'Unknown Title', // Mengatur default atau mengizinkan input pengguna
+        author: 'Unknown Author',
+        publisher: 'Unknown Publisher',
+        publicationYear: 0,
+        ISBN: 'Unknown ISBN',
         synopsis: extractedText,
         keywords: keywords,
       );
 
-      if (newBook.id.isNotEmpty) {
-        await FirestoreService().updateBook(newBook);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Synopsis scanned and updated successfully.')),
-        );
-      } else {
-        await FirestoreService().addBook(newBook);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Book added successfully.')),
-        );
-      }
+      await FirestoreService().addBook(newBook);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Synopsis scanned and book added successfully.')),
+      );
 
       Navigator.pop(context); // Kembali ke layar sebelumnya
     } catch (e) {
@@ -75,6 +66,35 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<XFile?> _showImageSourceSelector() async {
+    return showModalBottomSheet<XFile?>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 150,
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Camera'),
+                onTap: () async {
+                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Gallery'),
+                onTap: () async {
+                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override

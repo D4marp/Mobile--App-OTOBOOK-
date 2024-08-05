@@ -39,103 +39,105 @@ class _SignUpState extends State<SignUp> {
         centerTitle: true,
         toolbarHeight: 79,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: Opacity(
-                opacity: 0.50,
-                child: Text(
-                  'Sign up now and enjoy OTOBOOK privileges never existed before.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF111827),
-                    fontSize: 14,
-                    fontFamily: 'Montserrat',
-                    height: 1.5,
-                    letterSpacing: 0.07,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Opacity(
+                  opacity: 0.50,
+                  child: Text(
+                    'Sign up now and enjoy OTOBOOK privileges never existed before.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFF111827),
+                      fontSize: 14,
+                      fontFamily: 'Montserrat',
+                      height: 1.5,
+                      letterSpacing: 0.07,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            if (_errorMessage != null)
-              Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red),
-              ),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  _buildTextFormField(
-                    controller: nameController,
-                    label: 'Name',
-                    validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
-                  ),
-                  SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: usernameController,
-                    label: 'Username',
-                    validator: (value) => value == null || value.isEmpty ? 'Please enter a username' : null,
-                  ),
-                  SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: emailController,
-                    label: 'Email',
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) => value == null || value.isEmpty ? 'Please enter your email' : null,
-                  ),
-                  SizedBox(height: 16.0),
-                  _buildTextFormField(
-                    controller: passwordController,
-                    label: 'Password',
-                    obscureText: _obscureText,
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+              SizedBox(height: 20),
+              if (_errorMessage != null)
+                Text(
+                  _errorMessage!,
+                  style: TextStyle(color: Colors.red),
+                ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _buildTextFormField(
+                      controller: nameController,
+                      label: 'Name',
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
+                    ),
+                    SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: usernameController,
+                      label: 'Username',
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter a username' : null,
+                    ),
+                    SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: emailController,
+                      label: 'Email',
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter your email' : null,
+                    ),
+                    SizedBox(height: 16.0),
+                    _buildTextFormField(
+                      controller: passwordController,
+                      label: 'Password',
+                      obscureText: _obscureText,
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter a password' : null,
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
+                        if (_formKey.currentState?.validate() ?? false) {
+                          signUp();
+                        }
                       },
-                    ),
-                    validator: (value) => value == null || value.isEmpty ? 'Please enter a password' : null,
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        signUp();
-                      }
-                    },
-                    child: Text('Sign Up'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF3C83F5),
-                      minimumSize: Size(double.infinity, 50),
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Already have an account? Sign In',
-                      style: TextStyle(
-                        color: Color(0xFF3C83F5),
-                        fontSize: 12,
-                        fontFamily: 'Montserrat',
-                        letterSpacing: 0.07,
+                      child: Text('Sign Up'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF3C83F5),
+                        minimumSize: Size(double.infinity, 50),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 8.0),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Already have an account? Sign In',
+                        style: TextStyle(
+                          color: Color(0xFF3C83F5),
+                          fontSize: 12,
+                          fontFamily: 'Montserrat',
+                          letterSpacing: 0.07,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
