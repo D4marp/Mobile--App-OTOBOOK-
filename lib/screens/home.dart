@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:Otobook/screens/start.dart';
@@ -68,62 +67,68 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             // Greeting and logo section
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white, // Background color for this section
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(20.0), // Rounded corners at the bottom
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF95A2FF), // Background color for the left side
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20.0), // Rounded corner at the bottom-right
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Hi!, $_userName',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white, // Background color for this section
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(20.0), // Rounded corners at the bottom
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF95A2FF), // Background color for the left side
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(20.0), // Rounded corner at the bottom-right
                             ),
-                            SizedBox(height: 1.0), // Space between texts
-                          ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Hi!, $_userName',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: constraints.maxWidth > 600 ? 24 : 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 1.0), // Space between texts
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => StartScreen()),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(50.0),
-                        child: Image.asset(
-                          'assets/logo_oto.PNG', // Path to the PNG image in assets
-                          height: 40,
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => StartScreen()),
+                            );
+                          },
+                          child: Padding(
+                            padding: constraints.maxWidth > 600
+                                ? const EdgeInsets.all(50.0)
+                                : const EdgeInsets.all(16.0),
+                            child: Image.asset(
+                              'assets/logo_oto.PNG', // Path to the PNG image in assets
+                              height: 40,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
             // Space between greeting and carousel
             SizedBox(height: 5.0), // Adjust the height as needed
@@ -145,13 +150,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.orange,
                     iconPath: 'assets/icon/ai-icon.svg',
                     text1: 'AI Technology',
-                    text2: 'Untuk Mengklasifikasikan Keywords dari Sinopsis yang di Scan OR',
+                    text2: 'Untuk Klasifikasi Keywords dari Sinopsis yang di Scan OCR',
                   ),
                   _buildPage(
                     color: const Color.fromARGB(255, 111, 0, 255),
                     iconPath: 'assets/icon/ai-icon.svg',
                     text1: 'RPA Technology',
-                    text2: 'Robotic Process Automation yang Terintegrasi dengan Perpustakaan',
+                    text2: 'Robot Process Automation yang diintegrasi dengan Perpustakaan',
                   ),
                 ],
               ),

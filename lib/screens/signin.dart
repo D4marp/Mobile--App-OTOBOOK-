@@ -62,9 +62,13 @@ class _SignInState extends State<SignIn> {
             ),
             SizedBox(height: 20),
             if (_errorMessage != null) // Display error message
-              Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  _errorMessage!,
+                  style: TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
               ),
             Form(
               key: _formKey,
@@ -77,6 +81,9 @@ class _SignInState extends State<SignIn> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Please enter a valid email';
                       }
                       return null;
                     },
@@ -136,6 +143,10 @@ class _SignInState extends State<SignIn> {
                         } on FirebaseAuthException catch (e) {
                           setState(() {
                             _errorMessage = e.message;
+                          });
+                        } catch (e) {
+                          setState(() {
+                            _errorMessage = 'An unknown error occurred';
                           });
                         }
                       }
