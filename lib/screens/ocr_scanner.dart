@@ -11,13 +11,14 @@ class OCRScannerScreen extends StatefulWidget {
 
 class _OCRScannerScreenState extends State<OCRScannerScreen> {
   final ImagePicker _picker = ImagePicker();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _authorController = TextEditingController();
+  final TextEditingController _publisherController = TextEditingController();
+  final TextEditingController _publicationYearController = TextEditingController();
+  final TextEditingController _isbnController = TextEditingController();
+
   bool _isLoading = false;
   String _extractedText = '';
-  String _title = '';
-  String _author = '';
-  String _publisher = '';
-  String _publicationYear = '';
-  String _isbn = '';
 
   Future<void> _scanAndExtract() async {
     setState(() {
@@ -106,45 +107,35 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    _title = selectedText;
-                  });
+                  _titleController.text = selectedText;
                   Navigator.pop(context);
                 },
                 child: Text('Set as Title'),
               ),
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    _author = selectedText;
-                  });
+                  _authorController.text = selectedText;
                   Navigator.pop(context);
                 },
                 child: Text('Set as Author'),
               ),
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    _publisher = selectedText;
-                  });
+                  _publisherController.text = selectedText;
                   Navigator.pop(context);
                 },
                 child: Text('Set as Publisher'),
               ),
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    _publicationYear = selectedText;
-                  });
+                  _publicationYearController.text = selectedText;
                   Navigator.pop(context);
                 },
                 child: Text('Set as Publication Year'),
               ),
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    _isbn = selectedText;
-                  });
+                  _isbnController.text = selectedText;
                   Navigator.pop(context);
                 },
                 child: Text('Set as ISBN'),
@@ -159,11 +150,11 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
   void _navigateToEditBook() {
     final book = Book(
       id: '',
-      title: _title,
-      author: _author,
-      publisher: _publisher,
-      publicationYear: int.tryParse(_publicationYear) ?? 0,
-      ISBN: _isbn,
+      title: _titleController.text,
+      author: _authorController.text,
+      publisher: _publisherController.text,
+      publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
+      ISBN: _isbnController.text,
     );
 
     Navigator.push(
@@ -214,23 +205,24 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildField('Title', _title),
-        _buildField('Author', _author),
-        _buildField('Publisher', _publisher),
-        _buildField('Publication Year', _publicationYear),
-        _buildField('ISBN', _isbn),
+        _buildField('Title', _titleController),
+        _buildField('Author', _authorController),
+        _buildField('Publisher', _publisherController),
+        _buildField('Publication Year', _publicationYearController),
+        _buildField('ISBN', _isbnController),
       ],
     );
   }
 
-  Widget _buildField(String label, String value) {
+  Widget _buildField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
-        ],
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
+        ),
       ),
     );
   }
