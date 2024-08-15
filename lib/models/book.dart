@@ -7,6 +7,7 @@ class Book {
   final String ISBN;
   String synopsis;
   List<String> keywords;
+  String coverImagePath;
 
   Book({
     required this.id,
@@ -17,6 +18,7 @@ class Book {
     required this.ISBN,
     this.synopsis = '',
     this.keywords = const [],
+    this.coverImagePath = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class Book {
       'ISBN': ISBN,
       'synopsis': synopsis,
       'keywords': keywords,
+      'coverImagePath': coverImagePath,
     };
   }
 
@@ -42,6 +45,7 @@ class Book {
       ISBN: map['ISBN'] ?? '',
       synopsis: map['synopsis'] ?? '',
       keywords: List<String>.from(map['keywords'] ?? []),
+      coverImagePath: map['coverImagePath'] ?? '',
     );
   }
 }

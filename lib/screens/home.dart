@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:Otobook/screens/start.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:Otobook/screens/ocr_scanner.dart';
-import 'package:Otobook/screens/sinopsis_scan.dart'; // Import the synopsis scanner screen
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:Otobook/screens/start.dart';
+import 'package:Otobook/widgets/buttom.dart';
+
 
 void main() {
   runApp(App());
@@ -41,7 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadUserName() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       setState(() {
         _userName = userDoc['name'] ?? 'User';
       });
@@ -71,19 +74,19 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context, constraints) {
                 return Container(
                   decoration: BoxDecoration(
-                    color: Colors.white, // Background color for this section
+                    color: Colors.white,
                     borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(20.0), // Rounded corners at the bottom
+                      bottom: Radius.circular(20.0),
                     ),
                   ),
                   child: Row(
                     children: [
-                      Flexible(
+                      Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFF95A2FF), // Background color for the left side
+                            color: Color(0xFF95A2FF),
                             borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(20.0), // Rounded corner at the bottom-right
+                              bottomRight: Radius.circular(20.0),
                             ),
                           ),
                           child: Padding(
@@ -92,36 +95,35 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Hi!, $_userName',
+                                  'Hi, $_userName',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: constraints.maxWidth > 600 ? 24 : 18,
+                                    fontSize:
+                                        constraints.maxWidth > 600 ? 24 : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                SizedBox(height: 1.0), // Space between texts
+                                SizedBox(height: 8.0),
                               ],
                             ),
                           ),
                         ),
                       ),
-                      MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => StartScreen()),
-                            );
-                          },
-                          child: Padding(
-                            padding: constraints.maxWidth > 600
-                                ? const EdgeInsets.all(50.0)
-                                : const EdgeInsets.all(16.0),
-                            child: Image.asset(
-                              'assets/logo_oto.PNG', // Path to the PNG image in assets
-                              height: 40,
-                            ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StartScreen()),
+                          );
+                        },
+                        child: Padding(
+                          padding: constraints.maxWidth > 600
+                              ? const EdgeInsets.all(50.0)
+                              : const EdgeInsets.all(16.0),
+                          child: Image.asset(
+                            'assets/logo_oto.PNG',
+                            height: 40,
                           ),
                         ),
                       ),
@@ -130,12 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            // Space between greeting and carousel
-            SizedBox(height: 5.0), // Adjust the height as needed
+            SizedBox(height: 10.0),
 
             // Carousel section
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.18, // Adjusted height for the carousel
+              height: MediaQuery.of(context).size.height * 0.16,
               child: PageView(
                 controller: _pageController,
                 onPageChanged: _onPageChanged,
@@ -150,64 +151,151 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.orange,
                     iconPath: 'assets/icon/ai-icon.svg',
                     text1: 'AI Technology',
-                    text2: 'Untuk Klasifikasi Keywords dari Sinopsis yang di Scan OCR',
+                    text2:
+                        'Untuk Klasifikasi Keywords dari Sinopsis yang di Scan OCR',
                   ),
                   _buildPage(
-                    color: const Color.fromARGB(255, 111, 0, 255),
+                    color: Color.fromARGB(255, 111, 0, 255),
                     iconPath: 'assets/icon/ai-icon.svg',
                     text1: 'RPA Technology',
-                    text2: 'Robot Process Automation yang diintegrasi dengan Perpustakaan',
+                    text2:
+                        'Robot Process Automation yang diintegrasi dengan Perpustakaan',
                   ),
                 ],
               ),
             ),
             _buildPageIndicator(),
-            SizedBox(height: 20.0), // Space between carousel and images
+
+            SizedBox(height: 20.0),
+
+           IconRowWidget(),
+
+            SizedBox(height: 20.0),
+            
+            
 
             // Images with text inside
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              width:
+                  MediaQuery.of(context).size.width * 0.9, // Responsive width
+              height: 176,
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+              decoration: ShapeDecoration(
+                color: Color(0xFFF9AD34),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Color(0x0C000000), // Light shadow
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: Color(0x1F000000), // Medium shadow
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x33000000), // Dark shadow
+                    blurRadius: 30,
+                    offset: Offset(0, 12),
+                    spreadRadius: -5,
+                  ),
+                ],
+              ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildImageWithText(
-                    'assets/m.png', // Path to the PNG image
-                    '', // Text inside the first image
+                  Text(
+                    'Cara Cepat dan Mudah',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 23,
+                      fontFamily: 'Overpass',
+                      height: 1.2, // Improved line height
+                    ),
                   ),
-                  SizedBox(height: 20.0), // Space between the images
-                  _buildImageWithText(
-                    'assets/p.png',
-                    '', // Path to the PNG image
+                  const SizedBox(height: 15),
+                  Text(
+                    'Solusi Mudah cepat untuk Pengkatalogan data Bibliografis, untuk digitalisasi Perpustakaan menggunakan teknologi Optical Character Recognition (OCR) dipadukan dengan Artificial Intelligence (AI).',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.96),
+                      fontSize: 12,
+                      fontFamily: 'Overpass',
+                      height: 1.4, // Improved line height
+                    ),
                   ),
                 ],
               ),
             ),
-            // OCR Scanner button and Additional button
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OCRScannerScreen()),
-                      );
-                    },
-                    child: Text('Start OCR Scanner'),
+
+            SizedBox(height: 25.0),
+
+            Container(
+              width:
+                  MediaQuery.of(context).size.width * 0.9, // Responsive width
+              height: 176,
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+              decoration: ShapeDecoration(
+                color: Color(0xFF4894FE), // Changed color for variety
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                 shadows: [
+                  BoxShadow(
+                    color: Color(0x0C000000), // Light shadow
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                    spreadRadius: 1,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OCRSynopsisScannerScreen()), // Assuming a default or empty book object
-                      );
-                    },
-                    child: Text('Scan Synopsis'),
+                  BoxShadow(
+                    color: Color(0x1F000000), // Medium shadow
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x33000000), // Dark shadow
+                    blurRadius: 30,
+                    offset: Offset(0, 12),
+                    spreadRadius: -5,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Fitur Canggih dan Terbaru',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 23,
+                      fontFamily: 'Overpass',
+                      height: 1.2, // Improved line height
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    'Menawarkan teknologi terbaru untuk mengoptimalkan proses digitalisasi dan pengelolaan data perpustakaan. Dengan teknologi terkini, proses katalogisasi menjadi lebih cepat dan akurat.',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.96),
+                      fontSize: 12,
+                      fontFamily: 'Overpass',
+                      height: 1.4, // Improved line height
+                    ),
                   ),
                 ],
               ),
             ),
+
+            SizedBox(height: 20.0),
+
+        
           ],
         ),
       ),
@@ -222,11 +310,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return Center(
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.8, // Adjust width as needed
-        height: MediaQuery.of(context).size.height * 0.3, // Adjust height as needed
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: MediaQuery.of(context).size.height * 0.3,
         decoration: BoxDecoration(
-          color: color, // Inner rectangle color
-          borderRadius: BorderRadius.circular(20.0), // Rounded corners
+          color: color,
+          borderRadius: BorderRadius.circular(20.0),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -237,36 +325,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
-                    iconPath, // Path to the SVG icon
-                    width: 40, // Adjust width as needed
-                    height: 40, // Adjust height as needed
+                    iconPath,
+                    width: 40,
+                    height: 40,
                     placeholderBuilder: (context) => SizedBox(
                       width: 40,
                       height: 40,
                       child: CircularProgressIndicator(),
                     ),
                   ),
-                  SizedBox(width: 16.0), // Space between icon and text
+                  SizedBox(width: 16.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          text1, // The bold text to display
+                          text1,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18, // Adjust font size as needed
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 4.0), // Space between texts
+                        SizedBox(height: 4.0),
                         Text(
-                          text2, // The non-bold text to display
+                          text2,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16, // Adjust font size as needed
+                            fontSize: 16,
                           ),
-                          overflow: TextOverflow.visible, // Ensure text can wrap and be visible
+                          overflow: TextOverflow.visible,
                         ),
                       ],
                     ),
@@ -296,41 +384,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         }),
-      ),
-    );
-  }
-
-  Widget _buildImageWithText(String imagePath, String text) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 20.0), // Space between images
-      width: MediaQuery.of(context).size.width * 0.8, // Reduced width of the image
-      height: 120, // Adjust height to make image smaller
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.0), // Rounded corners
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              imagePath, // Path to the PNG image
-              fit: BoxFit.cover,
-            ),
-            Positioned(
-              bottom: 8, // Position text inside the image
-              left: 8,
-              right: 8,
-              child: Text(
-                text, // Text inside the image
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14, // Adjust font size as needed
-                  fontWeight: FontWeight.bold,
-                  backgroundColor: Colors.black54, // Optional background for better readability
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

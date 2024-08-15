@@ -106,6 +106,8 @@ flutter:
     - assets/icon/ocr-icon.svg
     - assets/m.png
     - assets/p.png
+    - assets/in.svg
+    - assets/Car.svg
     - assets/icon/icon.png
     - .env
 

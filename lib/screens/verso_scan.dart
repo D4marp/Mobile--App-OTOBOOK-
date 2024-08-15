@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
 import 'package:Otobook/models/book.dart';
 import 'package:Otobook/screens/edit_book.dart';
+import 'package:Otobook/services/firestore_service.dart';
 
 class OCRScannerScreen extends StatefulWidget {
   @override
@@ -85,11 +86,23 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _extractedText.split('\n').map((line) {
-        return GestureDetector(
-          onTap: () => _showFieldSelectionDialog(line),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Text(line),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: GestureDetector(
+            child: SelectableText(
+              line,
+              onSelectionChanged: (selection, cause) {
+                if (selection.baseOffset != -1 && selection.extentOffset != -1) {
+                  final selectedText = line.substring(
+                    selection.baseOffset,
+                    selection.extentOffset,
+                  );
+                  if (cause == SelectionChangedCause.tap) {
+                    _showFieldSelectionDialog(selectedText);
+                  }
+                }
+              },
+            ),
           ),
         );
       }).toList(),
@@ -147,9 +160,9 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     );
   }
 
-  void _navigateToEditBook() {
+  Future<void> _navigateToEditBook() async {
     final book = Book(
-      id: '',
+      id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
       title: _titleController.text,
       author: _authorController.text,
       publisher: _publisherController.text,
@@ -157,12 +170,23 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
       ISBN: _isbnController.text,
     );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditBookScreen(book: book),
-      ),
-    );
+    try {
+      // Save the book to Firestore
+      await FirestoreService().addBook(book);
+
+      // Navigate to EditBookScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditBookScreen(book: book),
+        ),
+      );
+    } catch (e) {
+      print('Error saving book: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save book. Please try again.')),
+      );
+    }
   }
 
   @override

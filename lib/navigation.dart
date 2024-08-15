@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:Otobook/screens/katalog.dart';
+import 'package:Otobook/screens/add_book.dart';
 import 'package:Otobook/screens/team.dart';
 import 'package:Otobook/screens/list_book.dart';
 import 'screens/home.dart';
@@ -16,7 +16,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    KatalogScreen(),
+   AddBookScreen(),
    // Placeholder, jika perlu
     ListBooksScreen(),
     TeamScreen(),

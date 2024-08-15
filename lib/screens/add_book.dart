@@ -3,14 +3,14 @@ import 'package:Otobook/models/book.dart';
 import 'package:Otobook/services/firestore_service.dart';
 import 'package:Otobook/screens/start.dart';
 
-class KatalogScreen extends StatefulWidget {
-  const KatalogScreen({super.key});
+class AddBookScreen extends StatefulWidget {
+  const AddBookScreen({super.key});
 
   @override
-  State<KatalogScreen> createState() => _KatalogScreenState();
+  State<AddBookScreen> createState() => _AddBookScreenState();
 }
 
-class _KatalogScreenState extends State<KatalogScreen> {
+class _AddBookScreenState extends State<AddBookScreen> {
   final _formKey = GlobalKey<FormState>(); // Key to manage form state
 
   // Controllers for form fields

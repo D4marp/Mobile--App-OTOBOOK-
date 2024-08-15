@@ -4,6 +4,7 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -46,7 +47,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 23  // Set sesuai kebutuhan proyek Anda
-        targetSdkVersion 30  // Set sesuai target SDK yang diinginkan
+        targetSdkVersion 34  // Set sesuai target SDK yang diinginkan
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -54,7 +55,7 @@ android {
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Signing with the debug keys for now, so flutter run --release works.
             signingConfig signingConfigs.debug
         }
     }
@@ -70,7 +71,10 @@ dependencies {
 //     // Declare the dependency for the Cloud Firestore library
 //     // When using the BoM, you don't specify versions in Firebase library dependencies
 //     implementation("com.google.firebase:firebase-firestore")
-   
+   implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.squareup.okio:okio:2.10.0'
+    implementation 'com.google.firebase:firebase-firestore:25.0.0'
+
   // To recognize Latin script
   implementation 'com.google.mlkit:text-recognition:16.0.0'
 
