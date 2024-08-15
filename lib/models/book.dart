@@ -8,6 +8,7 @@ class Book {
   String synopsis;
   List<String> keywords;
   String coverImagePath;
+  String daftarIsiImagePath; // New field for table of contents image path
 
   Book({
     required this.id,
@@ -19,6 +20,7 @@ class Book {
     this.synopsis = '',
     this.keywords = const [],
     this.coverImagePath = '',
+    this.daftarIsiImagePath = '', // Initialize the new field
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +34,7 @@ class Book {
       'synopsis': synopsis,
       'keywords': keywords,
       'coverImagePath': coverImagePath,
+      'daftarIsiImagePath': daftarIsiImagePath, // Include the new field
     };
   }
 
@@ -46,6 +49,7 @@ class Book {
       synopsis: map['synopsis'] ?? '',
       keywords: List<String>.from(map['keywords'] ?? []),
       coverImagePath: map['coverImagePath'] ?? '',
+      daftarIsiImagePath: map['daftarIsiImagePath'] ?? '', // Read the new field
     );
   }
 }

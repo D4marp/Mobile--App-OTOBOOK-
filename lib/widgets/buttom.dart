@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+// Import your actual page files
+import 'package:Otobook/screens/cover_scan.dart'; // Adjust the import path as needed
+import 'package:Otobook/screens/verso_scan.dart'; // Adjust the import path as needed
+import 'package:Otobook/screens/kdt_scan.dart'; // Adjust the import path as needed
+import 'package:Otobook/screens/daftar_isi_scan.dart'; // Adjust the import path as needed
 
 class IconRowWidget extends StatelessWidget {
   @override
@@ -12,54 +17,62 @@ class IconRowWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween, // Evenly spaces items
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildIconColumn('Cover', Icons.book, Color(0xFF4894FE)), // Using the color
-          buildIconColumn('Verso', Icons.library_books, Color(0xFF4894FE)), // Using the color
-          buildIconColumn('KDT', Icons.description, Color(0xFF4894FE)), // Using the color
-          buildIconColumn('Daftar Isi', Icons.list, Color(0xFF4894FE)), // Using the color
+          buildIconColumn(context, 'Cover', Icons.book, Color(0xFF4894FE), CoverScannerScreen()),
+          buildIconColumn(context, 'Verso', Icons.library_books, Color(0xFF4894FE), OCRScannerScreen()),
+          buildIconColumn(context, 'KDT', Icons.description, Color(0xFF4894FE), KDTScannerScreen()),
+          buildIconColumn(context, 'Daftar Isi', Icons.list, Color(0xFF4894FE), DaftarIsiScanScreen()),
         ],
       ),
     );
   }
 
-  Widget buildIconColumn(String text, IconData icon, Color color) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: ShapeDecoration(
-            color: Color(0xFFFAFAFA),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-            ),
-            shadows: [
-              BoxShadow(
-                color: Color(0x3F000000),
-                blurRadius: 4,
-                offset: Offset(0, 4),
-                spreadRadius: 0,
+  Widget buildIconColumn(BuildContext context, String text, IconData icon, Color color, Widget page) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: ShapeDecoration(
+              color: Color(0xFFFAFAFA),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
               ),
-            ],
+              shadows: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  blurRadius: 4,
+                  offset: Offset(0, 4),
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              size: 24,
+              color: color, // Applying the color
+            ),
           ),
-          child: Icon(
-            icon,
-            size: 24,
-            color: color, // Applying the color
+          const SizedBox(height: 8),
+          Text(
+            text,
+            style: TextStyle(
+              color: Color(0xFF8696BB),
+              fontSize: 15,
+              fontFamily: 'Poppins',
+              height: 1.2,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          text,
-          style: TextStyle(
-            color: Color(0xFF8696BB),
-            fontSize: 15,
-            fontFamily: 'Poppins',
-            height: 1.2,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

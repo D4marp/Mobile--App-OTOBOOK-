@@ -193,7 +193,7 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan Book'),
+        title: Text('Scan Verso'),
         backgroundColor: Color(0xFF95A2FF),
       ),
       body: _isLoading
