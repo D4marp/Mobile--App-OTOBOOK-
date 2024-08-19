@@ -89,19 +89,15 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: GestureDetector(
-            child: SelectableText(
+            onTap: () {
+              _showFieldSelectionDialog(line);
+            },
+            child: Text(
               line,
-              onSelectionChanged: (selection, cause) {
-                if (selection.baseOffset != -1 && selection.extentOffset != -1) {
-                  final selectedText = line.substring(
-                    selection.baseOffset,
-                    selection.extentOffset,
-                  );
-                  if (cause == SelectionChangedCause.tap) {
-                    _showFieldSelectionDialog(selectedText);
-                  }
-                }
-              },
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
         );
@@ -114,7 +110,7 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select Field'),
+          title: Text('Select Field for "$selectedText"'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

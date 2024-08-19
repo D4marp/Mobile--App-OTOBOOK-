@@ -61,6 +61,70 @@ class _EditBookScreenState extends State<EditBookScreen> {
     }
   }
 
+  void _addNewBook() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final _newTitleController = TextEditingController();
+        final _newAuthorController = TextEditingController();
+        final _newPublisherController = TextEditingController();
+        final _newYearController = TextEditingController();
+        final _newIsbnController = TextEditingController();
+
+        return AlertDialog(
+          title: Text('Add New Book'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildTextField(_newTitleController, 'Title', 'Please enter the title'),
+                SizedBox(height: 16.0),
+                _buildTextField(_newAuthorController, 'Author', 'Please enter the author'),
+                SizedBox(height: 16.0),
+                _buildTextField(_newPublisherController, 'Publisher', 'Please enter the publisher'),
+                SizedBox(height: 16.0),
+                _buildTextField(_newYearController, 'Publication Year', 'Please enter the year of publication', keyboardType: TextInputType.number),
+                SizedBox(height: 16.0),
+                _buildTextField(_newIsbnController, 'ISBN', 'Please enter the ISBN'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final newBook = Book(
+                  id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
+                  title: _newTitleController.text,
+                  author: _newAuthorController.text,
+                  publisher: _newPublisherController.text,
+                  publicationYear: int.parse(_newYearController.text),
+                  ISBN: _newIsbnController.text,
+                );
+
+                FirestoreService().addBook(newBook).then((_) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('New book added successfully')),
+                  );
+                }).catchError((error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to add book: $error')),
+                  );
+                });
+              },
+              child: Text('Add Book'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _deleteBook() {
     showDialog(
       context: context,
@@ -125,6 +189,14 @@ class _EditBookScreenState extends State<EditBookScreen> {
               ElevatedButton(
                 onPressed: _updateBook,
                 child: Text('Save Changes'),
+                style: ElevatedButton.styleFrom(
+                 
+                ),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _addNewBook,
+                child: Text('Add New Book'),
                 style: ElevatedButton.styleFrom(
                  
                 ),

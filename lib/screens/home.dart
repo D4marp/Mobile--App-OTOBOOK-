@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Otobook/screens/start.dart';
 import 'package:Otobook/widgets/buttom.dart';
+import 'package:Otobook/widgets/cara_widget.dart';
+import 'package:Otobook/widgets/input_widget.dart';
 
 
 void main() {
@@ -172,126 +174,131 @@ class _HomeScreenState extends State<HomeScreen> {
 
             SizedBox(height: 20.0),
             
-            
+           CaraWidget(),
 
-            // Images with text inside
-            Container(
-              width:
-                  MediaQuery.of(context).size.width * 0.9, // Responsive width
-              height: 176,
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
-              decoration: ShapeDecoration(
-                color: Color(0xFFF9AD34),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                shadows: [
-                  BoxShadow(
-                    color: Color(0x0C000000), // Light shadow
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                    spreadRadius: 1,
-                  ),
-                  BoxShadow(
-                    color: Color(0x1F000000), // Medium shadow
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                    spreadRadius: 0,
-                  ),
-                  BoxShadow(
-                    color: Color(0x33000000), // Dark shadow
-                    blurRadius: 30,
-                    offset: Offset(0, 12),
-                    spreadRadius: -5,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Cara Cepat dan Mudah',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 23,
-                      fontFamily: 'Overpass',
-                      height: 1.2, // Improved line height
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    'Solusi Mudah cepat untuk Pengkatalogan data Bibliografis, untuk digitalisasi Perpustakaan menggunakan teknologi Optical Character Recognition (OCR) dipadukan dengan Artificial Intelligence (AI).',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.96),
-                      fontSize: 12,
-                      fontFamily: 'Overpass',
-                      height: 1.4, // Improved line height
-                    ),
-                  ),
-                ],
-              ),
-            ),
+    
+
+
+            // // Images with text inside
+            // Container(
+            //   width:
+            //       MediaQuery.of(context).size.width * 0.9, // Responsive width
+            //   height: 176,
+            //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+            //   decoration: ShapeDecoration(
+            //     color: Color(0xFFF9AD34),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //     shadows: [
+            //       BoxShadow(
+            //         color: Color(0x0C000000), // Light shadow
+            //         blurRadius: 10,
+            //         offset: Offset(0, 4),
+            //         spreadRadius: 1,
+            //       ),
+            //       BoxShadow(
+            //         color: Color(0x1F000000), // Medium shadow
+            //         blurRadius: 20,
+            //         offset: Offset(0, 8),
+            //         spreadRadius: 0,
+            //       ),
+            //       BoxShadow(
+            //         color: Color(0x33000000), // Dark shadow
+            //         blurRadius: 30,
+            //         offset: Offset(0, 12),
+            //         spreadRadius: -5,
+            //       ),
+            //     ],
+            //   ),
+            //   child: Column(
+            //     mainAxisSize: MainAxisSize.min,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         'Cara Cepat dan Mudah',
+            //         style: TextStyle(
+            //           color: Colors.white,
+            //           fontSize: 23,
+            //           fontFamily: 'Overpass',
+            //           height: 1.2, // Improved line height
+            //         ),
+            //       ),
+            //       const SizedBox(height: 15),
+            //       Text(
+            //         'Solusi Mudah cepat untuk Pengkatalogan data Bibliografis, untuk digitalisasi Perpustakaan menggunakan teknologi Optical Character Recognition (OCR) dipadukan dengan Artificial Intelligence (AI).',
+            //         style: TextStyle(
+            //           color: Colors.white.withOpacity(0.96),
+            //           fontSize: 12,
+            //           fontFamily: 'Overpass',
+            //           height: 1.4, // Improved line height
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             SizedBox(height: 25.0),
 
-            Container(
-              width:
-                  MediaQuery.of(context).size.width * 0.9, // Responsive width
-              height: 176,
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
-              decoration: ShapeDecoration(
-                color: Color(0xFF4894FE), // Changed color for variety
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                 shadows: [
-                  BoxShadow(
-                    color: Color(0x0C000000), // Light shadow
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                    spreadRadius: 1,
-                  ),
-                  BoxShadow(
-                    color: Color(0x1F000000), // Medium shadow
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                    spreadRadius: 0,
-                  ),
-                  BoxShadow(
-                    color: Color(0x33000000), // Dark shadow
-                    blurRadius: 30,
-                    offset: Offset(0, 12),
-                    spreadRadius: -5,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Fitur Canggih dan Terbaru',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 23,
-                      fontFamily: 'Overpass',
-                      height: 1.2, // Improved line height
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    'Menawarkan teknologi terbaru untuk mengoptimalkan proses digitalisasi dan pengelolaan data perpustakaan. Dengan teknologi terkini, proses katalogisasi menjadi lebih cepat dan akurat.',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.96),
-                      fontSize: 12,
-                      fontFamily: 'Overpass',
-                      height: 1.4, // Improved line height
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            InputWidget(),
+
+            // Container(
+            //   width:
+            //       MediaQuery.of(context).size.width * 0.9, // Responsive width
+            //   height: 176,
+            //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+            //   decoration: ShapeDecoration(
+            //     color: Color(0xFF4894FE), // Changed color for variety
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //      shadows: [
+            //       BoxShadow(
+            //         color: Color(0x0C000000), // Light shadow
+            //         blurRadius: 10,
+            //         offset: Offset(0, 4),
+            //         spreadRadius: 1,
+            //       ),
+            //       BoxShadow(
+            //         color: Color(0x1F000000), // Medium shadow
+            //         blurRadius: 20,
+            //         offset: Offset(0, 8),
+            //         spreadRadius: 0,
+            //       ),
+            //       BoxShadow(
+            //         color: Color(0x33000000), // Dark shadow
+            //         blurRadius: 30,
+            //         offset: Offset(0, 12),
+            //         spreadRadius: -5,
+            //       ),
+            //     ],
+            //   ),
+            //   child: Column(
+            //     mainAxisSize: MainAxisSize.min,
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         'Fitur Canggih dan Terbaru',
+            //         style: TextStyle(
+            //           color: Colors.white,
+            //           fontSize: 23,
+            //           fontFamily: 'Overpass',
+            //           height: 1.2, // Improved line height
+            //         ),
+            //       ),
+            //       const SizedBox(height: 15),
+            //       Text(
+            //         'Menawarkan teknologi terbaru untuk mengoptimalkan proses digitalisasi dan pengelolaan data perpustakaan. Dengan teknologi terkini, proses katalogisasi menjadi lebih cepat dan akurat.',
+            //         style: TextStyle(
+            //           color: Colors.white.withOpacity(0.96),
+            //           fontSize: 12,
+            //           fontFamily: 'Overpass',
+            //           height: 1.4, // Improved line height
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             SizedBox(height: 20.0),
 

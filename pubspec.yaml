@@ -109,6 +109,8 @@ flutter:
     - assets/in.svg
     - assets/Car.svg
     - assets/icon/icon.png
+    - assets/icon/Biru.svg
+    - assets/icon/Kuning.svg
     - .env
 
   #   - images/a_dot_ham.jpeg
