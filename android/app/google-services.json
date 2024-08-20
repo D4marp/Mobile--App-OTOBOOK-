@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "856313868737",
+    "project_id": "loginotobook-20859",
+    "storage_bucket": "loginotobook-20859.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856313868737:android:0e8d471db34347409eff40",
+        "android_client_info": {
+          "package_name": "com.example.otobook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoqXQg9AqiU4FVWBS-2XCYE0loJaJFUNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
