@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:otobook/models/api.dart';
+import 'package:otobook/navigation.dart';
 import 'package:otobook/services/auth_service.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   final void Function()? ontap;
@@ -16,19 +22,77 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   String? _errorMessage;
 
-  void login() async {
-    final _authService = AuthService();
-    try {
-      await _authService.singInWithEmailPassword(
-          emailController.text, passwordController.text);
-    } catch (e) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(e.toString()),
+  // void login() async {
+  //   // final _authService = AuthService();
+  //   // try {
+  //   //   await _authService.singInWithEmailPassword(
+  //   //       emailController.text, passwordController.text);
+  //   // } catch (e) {
+  //   //   if (!mounted) return;
+  //   //   showDialog(
+  //   //     context: context,
+  //   //     builder: (context) => AlertDialog(
+  //   //       title: Text(e.toString()),
+  //   //     ),
+  //   //   );
+  //   // }
+  //   final data = {
+  //     'email': emailController.text,
+  //     'password': passwordController.text,
+  //   };
+  //   final result = await API().postRequest(route: "/api/login", data: data);
+  //   final response = jsonDecode(result.body);
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     String token = data['access_token'];
+
+  //     // Simpan token menggunakan SharedPreferences
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     await prefs.setString('token', token);
+
+  //     // Arahkan ke halaman home atau yang sesuai
+  //     Navigator.of(context).pushReplacement(
+  //       MaterialPageRoute(
+  //         builder: (context) => const NavigationMenu(),
+  //       ),
+  //     );
+  //   } else {
+  //     setState(() {
+  //       _errorMessage = response['message'];
+  //     });
+  //   }
+  // }
+
+  Future<void> login() async {
+    final response = await http.post(
+      Uri.parse('http://192.168.9.63:5000/api/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      String token = data['access_token'];
+
+      // Simpan token menggunakan SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      // Arahkan ke halaman home atau yang sesuai
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const NavigationMenu(),
         ),
       );
+    } else {
+      // Tangani error, misalnya tampilkan pesan error
+      print('Login gagal: ${response.body}');
+      setState(() {
+        _errorMessage = json.decode(response.body)['message'];
+      });
     }
   }
 

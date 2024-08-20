@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:otobook/navigation.dart';
 import 'package:otobook/services/auth_service.dart';
+import 'package:otobook/services/login_or_register.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? ontap;
@@ -10,36 +15,63 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  // final TextEditingController confirmPasswordController =
+  //     TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
   String? _errorMessage;
 
-  void register() async {
-    final _authService = AuthService();
+  // void register() async {
+  //   final _authService = AuthService();
 
-    if (passwordController.text == confirmPasswordController.text) {
-      try {
-        await _authService.singUpWithEmailPassword(
-            emailController.text, passwordController.text);
-      } catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(e.toString()),
-          ),
-        );
-      }
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => const AlertDialog(
-          title: Text("Passwords do not match"),
+  //   if (passwordController.text == confirmPasswordController.text) {
+  //     try {
+  //       await _authService.singUpWithEmailPassword(
+  //           emailController.text, passwordController.text);
+  //     } catch (e) {
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) => AlertDialog(
+  //           title: Text(e.toString()),
+  //         ),
+  //       );
+  //     }
+  //   } else {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => const AlertDialog(
+  //         title: Text("Passwords do not match"),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  Future<void> register() async {
+    final response = await http.post(
+      Uri.parse('http://192.168.9.63:5000/api/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'username': usernameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const LoginOrRegister(),
         ),
       );
+    } else {
+      // Tangani error, misalnya tampilkan pesan error
+      print('Login gagal: ${response.body}');
+      setState(() {
+        _errorMessage = json.decode(response.body)['message'];
+      });
     }
   }
 
@@ -137,6 +169,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   children: [
                     _buildTextFormField(
+                      controller: usernameController,
+                      label: 'Username',
+                      keyboardType: TextInputType.text,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Please enter your username'
+                          : null,
+                    ),
+                    const SizedBox(height: 16.0),
+                    _buildTextFormField(
                       controller: emailController,
                       label: 'Email',
                       keyboardType: TextInputType.emailAddress,
@@ -164,30 +205,31 @@ class _RegisterPageState extends State<RegisterPage> {
                           : null,
                     ),
                     const SizedBox(height: 16.0),
-                    _buildTextFormField(
-                      controller: confirmPasswordController,
-                      label: 'Confirm Password',
-                      obscureText: _obscureText,
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscureText
-                            ? Icons.visibility_off
-                            : Icons.visibility),
-                        onPressed: () {
-                          setState(() {
-                            _obscureText = !_obscureText;
-                          });
-                        },
-                      ),
-                      validator: (value) => value == null || value.isEmpty
-                          ? 'Please confirm your password'
-                          : null,
-                    ),
+                    // _buildTextFormField(
+                    //   controller: confirmPasswordController,
+                    //   label: 'Confirm Password',
+                    //   obscureText: _obscureText,
+                    //   suffixIcon: IconButton(
+                    //     icon: Icon(_obscureText
+                    //         ? Icons.visibility_off
+                    //         : Icons.visibility),
+                    //     onPressed: () {
+                    //       setState(() {
+                    //         _obscureText = !_obscureText;
+                    //       });
+                    //     },
+                    //   ),
+                    //   validator: (value) => value == null || value.isEmpty
+                    //       ? 'Please confirm your password'
+                    //       : null,
+                    // ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          register();
-                        }
+                        // if (_formKey.currentState?.validate() ?? false) {
+                        //   register();
+                        // }
+                        register();
                       },
                       child: Text('Sign Up'),
                       style: ElevatedButton.styleFrom(
