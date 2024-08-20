@@ -91,16 +91,17 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
       line = line.trim();
       if (line.isEmpty) continue;
 
+      // Parsing each line based on KDT format
       if (line.startsWith('ISBN')) {
         isbn = line.replaceAll(RegExp(r'[^0-9\-]'), ''); // Extract ISBN number
-      } else if (line.contains('--')) {
-        final parts = line.split('--');
-        if (parts.length >= 2) {
+      } else if (line.startsWith('—')) {
+        final parts = line.split('—');
+        if (parts.length >= 3) {
           author = parts[0].trim();
-          publisher = parts[1].split(',').first.trim();
-          title = parts[1].split(',').last.trim();
+          publisher = parts[1].trim();
+          title = parts[2].trim();
         }
-      } else if (line.contains(RegExp(r'\d{4}'))) {
+      } else if (RegExp(r'\d{4}').hasMatch(line)) {
         publicationYear = int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
       }
     }

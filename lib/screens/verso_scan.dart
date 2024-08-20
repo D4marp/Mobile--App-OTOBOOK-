@@ -99,7 +99,6 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
             child: Text(
               line,
               style: TextStyle(
-                color: Colors.blue,
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -118,45 +117,28 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  _titleController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Title'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _authorController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Author'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _publisherController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Publisher'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _publicationYearController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Publication Year'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _isbnController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as ISBN'),
-              ),
+              _buildFieldOption('Set as Title', _titleController, selectedText),
+              _buildFieldOption('Set as Author', _authorController, selectedText),
+              _buildFieldOption('Set as Publisher', _publisherController, selectedText),
+              _buildFieldOption('Set as Publication Year', _publicationYearController, selectedText),
+              _buildFieldOption('Set as ISBN', _isbnController, selectedText),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFieldOption(String label, TextEditingController controller, String selectedText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: ElevatedButton(
+        onPressed: () {
+          controller.text = selectedText;
+          Navigator.pop(context);
+        },
+        child: Text(label),
+      ),
     );
   }
 

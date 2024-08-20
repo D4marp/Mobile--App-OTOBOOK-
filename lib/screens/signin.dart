@@ -137,10 +137,6 @@ class _SignInState extends State<SignIn> {
                             context,
                             MaterialPageRoute(builder: (context) => NavigationMenu()),
                           );
-                        } else {
-                          setState(() {
-                            _errorMessage = 'Invalid email or password'; // Example error
-                          });
                         }
                       }
                     },
