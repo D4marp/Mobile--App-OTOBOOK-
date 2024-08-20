@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:Otobook/models/book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 
 class EditBookScreen extends StatefulWidget {
   final Book book;
@@ -51,13 +50,9 @@ class _EditBookScreenState extends State<EditBookScreen> {
         ISBN: _isbnController.text,
       );
 
-      FirestoreService().updateBook(updatedBook).then((_) {
-        Navigator.pop(context); // Go back to the previous screen
-      }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update book: $error')),
-        );
-      });
+      // Replace Firestore operation with local state update or any other operation
+      // For now, just pop the screen
+      Navigator.pop(context, updatedBook);
     }
   }
 
@@ -98,7 +93,7 @@ class _EditBookScreenState extends State<EditBookScreen> {
             ElevatedButton(
               onPressed: () {
                 final newBook = Book(
-                  id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
+                  id: '', // You can handle ID creation locally or leave it for other purposes
                   title: _newTitleController.text,
                   author: _newAuthorController.text,
                   publisher: _newPublisherController.text,
@@ -106,16 +101,12 @@ class _EditBookScreenState extends State<EditBookScreen> {
                   ISBN: _newIsbnController.text,
                 );
 
-                FirestoreService().addBook(newBook).then((_) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('New book added successfully')),
-                  );
-                }).catchError((error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to add book: $error')),
-                  );
-                });
+                // Replace Firestore operation with local state update or any other operation
+                // For now, just close the dialog
+                Navigator.pop(context, newBook);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('New book added successfully')),
+                );
               },
               child: Text('Add Book'),
             ),
@@ -142,13 +133,9 @@ class _EditBookScreenState extends State<EditBookScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                FirestoreService().deleteBook(widget.book.id).then((_) {
-                  Navigator.pop(context); // Go back to the previous screen
-                }).catchError((error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete book: $error')),
-                  );
-                });
+                // Replace Firestore operation with local state update or any other operation
+                // For now, just pop the screen
+                Navigator.pop(context);
               },
               child: Text('Delete'),
             ),
@@ -189,17 +176,13 @@ class _EditBookScreenState extends State<EditBookScreen> {
               ElevatedButton(
                 onPressed: _updateBook,
                 child: Text('Save Changes'),
-                style: ElevatedButton.styleFrom(
-                 
-                ),
+                style: ElevatedButton.styleFrom(),
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _addNewBook,
                 child: Text('Add New Book'),
-                style: ElevatedButton.styleFrom(
-                 
-                ),
+                style: ElevatedButton.styleFrom(),
               ),
             ],
           ),

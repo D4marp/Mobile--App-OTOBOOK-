@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/models/book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 
 class CoverScannerScreen extends StatefulWidget {
   @override
@@ -75,18 +74,19 @@ class _CoverScannerScreenState extends State<CoverScannerScreen> {
   Future<void> _saveCoverImage() async {
     if (_coverImage != null) {
       try {
-        // You can save the cover image path to the Book model or upload it to storage.
+        // Anda dapat menyimpan path gambar sampul ke model Book atau menyimpannya di penyimpanan lokal
         final book = Book(
           id: '',
-          coverImagePath: _coverImage!.path, // Save the cover image path
-          title: '', // Other fields can be filled as needed
+          coverImagePath: _coverImage!.path, // Simpan path gambar sampul
+          title: '', // Field lain bisa diisi sesuai kebutuhan
           author: '',
           publisher: '',
           publicationYear: 0,
           ISBN: '',
         );
 
-        await FirestoreService().addBook(book);
+        // Lakukan sesuatu dengan objek 'book', misalnya simpan di list atau database lokal
+        print('Cover image path saved: ${book.coverImagePath}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Cover image saved successfully.')),

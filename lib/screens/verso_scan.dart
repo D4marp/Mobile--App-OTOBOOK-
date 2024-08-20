@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
 import 'package:Otobook/models/book.dart';
 import 'package:Otobook/screens/edit_book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 
 class OCRScannerScreen extends StatefulWidget {
   @override
@@ -29,12 +28,17 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
+        // Replace with improved OCR extraction logic
         String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
 
         if (extractedText.isNotEmpty) {
           setState(() {
             _extractedText = extractedText;
           });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('No text found in the image.')),
+          );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -158,7 +162,7 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
 
   Future<void> _navigateToEditBook() async {
     final book = Book(
-      id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
+      id: '', // Generate an ID if needed
       title: _titleController.text,
       author: _authorController.text,
       publisher: _publisherController.text,
@@ -166,23 +170,12 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
       ISBN: _isbnController.text,
     );
 
-    try {
-      // Save the book to Firestore
-      await FirestoreService().addBook(book);
-
-      // Navigate to EditBookScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditBookScreen(book: book),
-        ),
-      );
-    } catch (e) {
-      print('Error saving book: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save book. Please try again.')),
-      );
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditBookScreen(book: book),
+      ),
+    );
   }
 
   @override

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'package:Otobook/screens/start.dart';
 
 class TeamScreen extends StatefulWidget {
@@ -11,29 +9,27 @@ class TeamScreen extends StatefulWidget {
 }
 
 class _TeamScreenState extends State<TeamScreen> {
-  String _userName = '';
+  String _userName = 'Guest'; // Default username
 
   @override
   void initState() {
     super.initState();
-    _loadUserName();
+    _loadUserName(); // Simulate loading user data
   }
 
-  Future<void> _loadUserName() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+  // Simulate loading username; replace with actual logic if needed
+  void _loadUserName() {
+    // Simulate delay for loading user data
+    Future.delayed(Duration(seconds: 1), () {
       setState(() {
-        _userName = userDoc['username'] ?? 'Guest';
+        _userName = 'John Doe'; // Simulated user data
       });
-    }
+    });
   }
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
+  // Simulate sign out action
+  void _signOut() {
+    // Simulate sign out action
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => StartScreen()),
@@ -108,7 +104,9 @@ class _TeamScreenState extends State<TeamScreen> {
                     onPressed: _signOut,
                     child: Text('Log Out'),
                     style: ElevatedButton.styleFrom(
-                    
+                      backgroundColor: Colors.blue, // Button color
+                      padding: EdgeInsets.symmetric(horizontal: 16.0), // Padding
+                      textStyle: TextStyle(fontSize: 16), // Text style
                     ),
                   ),
                 ],

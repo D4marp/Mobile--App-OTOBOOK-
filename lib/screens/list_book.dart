@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Otobook/models/book.dart';
 import 'package:Otobook/screens/edit_book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 
 class ListBooksScreen extends StatefulWidget {
   @override
@@ -19,13 +18,21 @@ class _ListBooksScreenState extends State<ListBooksScreen> {
 
   void _loadBooks() {
     setState(() {
-      _books = FirestoreService().getAllBooks();
+      // Load books from local storage or another data source
+      _books = _fetchBooks();
     });
+  }
+
+  Future<List<Book>> _fetchBooks() async {
+    // Replace this method with actual implementation to fetch books from local storage or another data source
+    return []; // Example placeholder; return a list of books
   }
 
   void _deleteBook(String bookId) async {
     try {
-      await FirestoreService().deleteBook(bookId);
+      // Implement your book deletion logic here
+      // For example, delete the book from local storage or another data source
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Book deleted successfully')),
       );

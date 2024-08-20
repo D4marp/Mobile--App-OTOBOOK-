@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:Otobook/models/book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 import 'package:Otobook/screens/start.dart';
 
 class AddBookScreen extends StatefulWidget {
@@ -19,7 +18,6 @@ class _AddBookScreenState extends State<AddBookScreen> {
   final TextEditingController _penerbitController = TextEditingController();
   final TextEditingController _tahunTerbitController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
- 
 
   @override
   void dispose() {
@@ -29,7 +27,6 @@ class _AddBookScreenState extends State<AddBookScreen> {
     _penerbitController.dispose();
     _tahunTerbitController.dispose();
     _isbnController.dispose();
-   
     super.dispose();
   }
 
@@ -100,7 +97,6 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     SizedBox(height: 16.0),
                     _buildTextField(_isbnController, 'ISBN', 'Please enter the ISBN'),
                     SizedBox(height: 16.0),
-              
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
@@ -143,10 +139,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
         publisher: _penerbitController.text,
         publicationYear: int.tryParse(_tahunTerbitController.text) ?? 0,
         ISBN: _isbnController.text,
-    
       );
 
-      FirestoreService().addBook(book);
+      // Lakukan sesuatu dengan objek 'book', misalnya simpan di penyimpanan lokal atau list
+      print('Book added: ${book.title}');
 
       // Clear form
       _formKey.currentState?.reset();

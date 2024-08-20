@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth package
 import 'package:Otobook/screens/signup.dart';
 import 'package:Otobook/navigation.dart';
 
@@ -13,7 +12,6 @@ class _SignInState extends State<SignIn> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Instance of FirebaseAuth
   String? _errorMessage; // To hold error messages
 
   @override
@@ -131,22 +129,17 @@ class _SignInState extends State<SignIn> {
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState?.validate() ?? false) {
-                        try {
-                          UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text,
-                          );
+                        // Replace with actual sign-in logic or mock
+                        bool signInSuccess = true; // Simulate sign-in success
+
+                        if (signInSuccess) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => NavigationMenu()),
                           );
-                        } on FirebaseAuthException catch (e) {
+                        } else {
                           setState(() {
-                            _errorMessage = e.message;
-                          });
-                        } catch (e) {
-                          setState(() {
-                            _errorMessage = 'An unknown error occurred';
+                            _errorMessage = 'Invalid email or password'; // Example error
                           });
                         }
                       }

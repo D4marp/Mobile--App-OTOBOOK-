@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/gpt4_service.dart';
-import 'package:Otobook/services/firestore_service.dart';
 import 'package:Otobook/services/ocr_service.dart';
 import 'package:Otobook/models/book.dart';
 
@@ -34,13 +33,13 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
         throw Exception('OCR extraction returned empty text');
       }
 
-      // Hanya melakukan klasifikasi kata kunci, tanpa ekstraksi detail buku dari GPT-4
+      // Only perform keyword classification, without extracting book details from GPT-4
       List<String> keywords = await GPT4Service.classifyKeywords(extractedText);
 
-      // Anda perlu menambahkan cara lain untuk mendapatkan detail buku seperti title, author, dsb.
+      // You need to implement a way to get other book details like title, author, etc.
       Book newBook = Book(
-        id: '', // ID harus diatur atau ditentukan jika diperlukan
-        title: 'Unknown Title', // Mengatur default atau mengizinkan input pengguna
+        id: '', // ID should be set or determined if needed
+        title: 'Unknown Title', // Set default or allow user input
         author: 'Unknown Author',
         publisher: 'Unknown Publisher',
         publicationYear: 0,
@@ -49,13 +48,14 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
         keywords: keywords,
       );
 
-      await FirestoreService().addBook(newBook);
+      // Replace this with code to save the book to your chosen storage or database
+      // Example: await YourDatabaseService.addBook(newBook);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Synopsis scanned and book added successfully.')),
       );
 
-      Navigator.pop(context); // Kembali ke layar sebelumnya
+      Navigator.pop(context); // Return to the previous screen
     } catch (e) {
       print('Error scanning and extracting synopsis: $e');
       ScaffoldMessenger.of(context).showSnackBar(

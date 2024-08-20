@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Otobook/navigation.dart'; // Import your navigation page
 
 class SignUp extends StatefulWidget {
@@ -180,28 +178,19 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Future<void> signUp() async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
+  // Dummy signUp function to replace Firebase functionality
+  void signUp() {
+    // Replace with your sign-up logic or API call
+    // This is a placeholder implementation
+    setState(() {
+      _errorMessage = 'Sign up functionality not implemented yet.';
+    });
 
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
-        'name': nameController.text,
-        'username': usernameController.text,
-        'email': emailController.text,
-      });
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => NavigationMenu()), // Navigasi ke halaman home
-      );
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
-    }
+    // Navigate to home or another page after sign-up
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => NavigationMenu()), // Navigasi ke halaman home
+    );
   }
 
   @override

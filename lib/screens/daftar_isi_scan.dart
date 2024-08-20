@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/models/book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 
 class DaftarIsiScanScreen extends StatefulWidget {
   @override
@@ -75,18 +74,19 @@ class _DaftarIsiScanScreenState extends State<DaftarIsiScanScreen> {
   Future<void> _saveDaftarIsiImage() async {
     if (_daftarIsiImage != null) {
       try {
-        // You can save the table of contents image path to the Book model or upload it to storage.
+        // Anda dapat menyimpan path gambar daftar isi ke model Book atau menyimpannya di penyimpanan lokal
         final book = Book(
           id: '',
-          daftarIsiImagePath: _daftarIsiImage!.path, // Save the table of contents image path
-          title: '', // Other fields can be filled as needed
+          daftarIsiImagePath: _daftarIsiImage!.path, // Simpan path gambar daftar isi
+          title: '', // Field lain bisa diisi sesuai kebutuhan
           author: '',
           publisher: '',
           publicationYear: 0,
           ISBN: '',
         );
 
-        await FirestoreService().addBook(book);
+        // Lakukan sesuatu dengan objek 'book', misalnya simpan di list atau database lokal
+        print('Table of contents image path saved: ${book.daftarIsiImagePath}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Table of contents image saved successfully.')),
