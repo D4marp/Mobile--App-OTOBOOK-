@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
 import 'package:Otobook/models/book.dart';
-import 'package:Otobook/screens/edit_book.dart';
+
 
 class OCRScannerScreen extends StatefulWidget {
   @override
@@ -28,7 +28,6 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        // Replace with improved OCR extraction logic
         String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
 
         if (extractedText.isNotEmpty) {
@@ -92,16 +91,14 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
       children: _extractedText.split('\n').map((line) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: GestureDetector(
-            onTap: () {
-              _showFieldSelectionDialog(line);
+          child: SelectableText(
+            line,
+            onSelectionChanged: (TextSelection selection, SelectionChangedCause? cause) {
+              if (cause == SelectionChangedCause.tap || cause == SelectionChangedCause.drag) {
+                String selectedText = line.substring(selection.start, selection.end);
+                _showFieldSelectionDialog(selectedText);
+              }
             },
-            child: Text(
-              line,
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-              ),
-            ),
           ),
         );
       }).toList(),
@@ -109,6 +106,10 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
   }
 
   void _showFieldSelectionDialog(String selectedText) {
+    if (selectedText.trim().isEmpty) {
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -142,7 +143,7 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     );
   }
 
-  Future<void> _navigateToEditBook() async {
+  Future<void> _addNewBook() async {
     final book = Book(
       id: '', // Generate an ID if needed
       title: _titleController.text,
@@ -152,12 +153,24 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
       ISBN: _isbnController.text,
     );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditBookScreen(book: book),
-      ),
+    // Simpan buku ke dalam database atau koleksi
+    // await BookService.addBook(book);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Book successfully added!')),
     );
+
+    // Clear the form
+    _clearForm();
+  }
+
+  void _clearForm() {
+    _titleController.clear();
+    _authorController.clear();
+    _publisherController.clear();
+    _publicationYearController.clear();
+    _isbnController.clear();
+    _extractedText = '';
   }
 
   @override
@@ -165,7 +178,6 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Scan Verso'),
-        backgroundColor: Color(0xFF95A2FF),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -186,8 +198,8 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
                     _buildBookFields(),
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: _navigateToEditBook,
-                      child: Text('Save and Edit Book'),
+                      onPressed: _addNewBook,
+                      child: Text('Save Book'),
                     ),
                   ],
                 ],
