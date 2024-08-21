@@ -19,8 +19,8 @@ class BookdetailPage extends StatefulWidget {
 class _BookdetailPageState extends State<BookdetailPage> {
   int get bookId => widget.bookId;
   Future<String> fetchCoverPath(int masterBukuId) async {
-    final response = await http
-        .get(Uri.parse('http://192.168.9.63:5000/api/getCover/$masterBukuId'));
+    final response =
+        await http.get(Uri.parse('${GetData().getCoverUrl}/$masterBukuId'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -38,7 +38,7 @@ class _BookdetailPageState extends State<BookdetailPage> {
         builder: (context, snapshot) {
           final coverPath = snapshot.data ?? '';
           final coverUrl = coverPath.isNotEmpty
-              ? 'http://192.168.9.63:5000$coverPath'
+              ? '${GetData().Url}$coverPath'
               : ''; // Jika path tidak kosong, buat URL, jika kosong tetap kosong
 
           return CustomScrollView(

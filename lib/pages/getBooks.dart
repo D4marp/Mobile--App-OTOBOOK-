@@ -67,8 +67,7 @@ class BookItem extends StatelessWidget {
   const BookItem({required this.book, required this.onDelete});
 
   Future<Map<String, dynamic>> _deleteBook(BuildContext context, int id) async {
-    Uri url =
-        Uri.parse('http://192.168.9.63:5000/api/deleteBuku/' + id.toString());
+    Uri url = Uri.parse(GetData().deleteBookUrl + id.toString());
 
     try {
       final response = await http.delete(url, headers: {
@@ -106,8 +105,8 @@ class BookItem extends StatelessWidget {
   }
 
   Future<String> fetchCoverPath(int masterBukuId) async {
-    final response = await http
-        .get(Uri.parse('http://192.168.9.63:5000/api/getCover/$masterBukuId'));
+    final response =
+        await http.get(Uri.parse('${GetData().getCoverUrl}/$masterBukuId'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -157,7 +156,7 @@ class BookItem extends StatelessWidget {
                     );
                   } else {
                     final coverPath = snapshot.data!;
-                    final coverUrl = 'http://192.168.9.63:5000$coverPath';
+                    final coverUrl = '${GetData().Url}$coverPath';
                     return Image.network(
                       coverUrl,
                       width: 100,

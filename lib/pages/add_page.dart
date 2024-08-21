@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otobook/models/api.dart';
 import 'package:otobook/models/masterBook.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -44,7 +45,7 @@ class _AddPageBookState extends State<AddPageBook> {
   }
 
   void _saveBook() async {
-    Uri url = Uri.parse('http://192.168.9.63:5000/api/addBuku');
+    Uri url = Uri.parse(GetData().addBookUrl);
     final response = await http.post(
       url,
       headers: {

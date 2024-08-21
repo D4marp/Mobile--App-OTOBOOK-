@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:otobook/navigation.dart';
-import 'package:otobook/services/auth_service.dart';
+import 'package:otobook/models/api.dart';
 import 'package:otobook/services/login_or_register.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? ontap;
@@ -24,34 +22,9 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscureText = true;
   String? _errorMessage;
 
-  // void register() async {
-  //   final _authService = AuthService();
-
-  //   if (passwordController.text == confirmPasswordController.text) {
-  //     try {
-  //       await _authService.singUpWithEmailPassword(
-  //           emailController.text, passwordController.text);
-  //     } catch (e) {
-  //       showDialog(
-  //         context: context,
-  //         builder: (context) => AlertDialog(
-  //           title: Text(e.toString()),
-  //         ),
-  //       );
-  //     }
-  //   } else {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) => const AlertDialog(
-  //         title: Text("Passwords do not match"),
-  //       ),
-  //     );
-  //   }
-  // }
-
   Future<void> register() async {
     final response = await http.post(
-      Uri.parse('http://192.168.9.63:5000/api/register'),
+      Uri.parse(GetData().registerUrl),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'username': usernameController.text,
@@ -204,31 +177,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           ? 'Please enter a password'
                           : null,
                     ),
-                    const SizedBox(height: 16.0),
-                    // _buildTextFormField(
-                    //   controller: confirmPasswordController,
-                    //   label: 'Confirm Password',
-                    //   obscureText: _obscureText,
-                    //   suffixIcon: IconButton(
-                    //     icon: Icon(_obscureText
-                    //         ? Icons.visibility_off
-                    //         : Icons.visibility),
-                    //     onPressed: () {
-                    //       setState(() {
-                    //         _obscureText = !_obscureText;
-                    //       });
-                    //     },
-                    //   ),
-                    //   validator: (value) => value == null || value.isEmpty
-                    //       ? 'Please confirm your password'
-                    //       : null,
-                    // ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
-                        // if (_formKey.currentState?.validate() ?? false) {
-                        //   register();
-                        // }
                         register();
                       },
                       child: Text('Sign Up'),

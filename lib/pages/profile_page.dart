@@ -1,9 +1,7 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:otobook/models/api.dart';
 import 'package:otobook/pages/start_page.dart';
-import 'package:otobook/services/auth_service.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,37 +13,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
-  // User? _user;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _user = _auth.currentUser;
-  // }
-
-  // void logout() async {
-  //   final authService = AuthService();
-  //   authService.singOut();
-  // }
-  // Future<void> logout() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.remove('token');
-
-  //   // Arahkan kembali ke halaman login
-  //   Navigator.of(context).pushReplacement(
-  //     MaterialPageRoute(
-  //       builder: (context) => const StartScreen(),
-  //     ),
-  //   );
-  // }
-
   Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
     print(token);
     final response = await http.post(
-      Uri.parse('http://192.168.9.63:5000/api/logout'),
+      Uri.parse(GetData().logoutUrl),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

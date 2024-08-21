@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:otobook/models/api.dart';
 import 'package:otobook/models/sinopsisBook.dart';
 import 'package:http/http.dart' as http;
 import 'package:otobook/pages/getBooks.dart';
@@ -42,8 +43,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   int get masterBookId => widget.sinopsisBookData.masterBookId;
 
   Future<Map<String, dynamic>> _saveKeyword(int id) async {
-    Uri url =
-        Uri.parse('http://192.168.9.63:5000/api/addSinopsis/' + id.toString());
+    Uri url = Uri.parse(GetData().addSinopsisUrl + id.toString());
     final response = await http.post(url,
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   }
 
   Future<void> _keyword({required String sinopsis}) async {
-    Uri url = Uri.parse('http://192.168.9.63:5000/api/getklasifikasi');
+    Uri url = Uri.parse(GetData().getKlasifikasiUrl);
     try {
       final result = await http.post(
         url,

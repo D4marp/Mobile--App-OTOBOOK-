@@ -1,42 +1,54 @@
 import 'package:http/http.dart' as http;
 import 'package:otobook/models/masterBook.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-
-String apiUrl = 'http://192.168.9.63:5000';
-
-class API {
-  Future<http.Response> postRequest({
-    required String route,
-    required Map<String, dynamic> data,
-  }) async {
-    String url = apiUrl + route;
-    try {
-      final headers = await _header();
-      return await http.post(
-        Uri.parse(url),
-        body: jsonEncode(data),
-        headers: headers,
-      );
-    } catch (e) {
-      print(e.toString());
-      // Mengembalikan response dengan status gagal
-      return http.Response(jsonEncode({'error': e.toString()}), 500);
-    }
-  }
-
-  Future<Map<String, String>> _header() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-  }
-}
 
 class GetData {
+  final String _apiUrl = 'http://192.168.9.63:5000/api/';
+
+  String get Url => 'http://192.168.9.63:5000';
+
+  // login user
+  String get loginUrl => '${_apiUrl}login';
+
+  // logout user
+  String get logoutUrl => '${_apiUrl}logout';
+
+  // register user
+  String get registerUrl => '${_apiUrl}register';
+
+  // add new book
+  String get addBookUrl => '${_apiUrl}addBuku';
+
+  // get book by id
+  String get getBookUrl => '${_apiUrl}getBuku';
+
+  // update book
+  String get updateBookUrl => '${_apiUrl}editBuku';
+
+  // delete book
+  String get deleteBookUrl => '${_apiUrl}deleteBuku';
+
+  // add cover book
+  String get addCoverUrl => '${_apiUrl}uploadCover';
+
+  // get cover book
+  String get getCoverUrl => '${_apiUrl}getCover';
+
+  // get sinopsis book
+  String get getSinopsisUrl => '${_apiUrl}getSinopsis';
+
+  // add sinopsis book
+  String get addSinopsisUrl => '${_apiUrl}addSinopsis/';
+
+  // get klassifikasi book
+  String get getKlasifikasiUrl => '${_apiUrl}getklasifikasi';
+
+  // get book and sinopsis
+  String get getBookWithSinopsisUrl => '${_apiUrl}getBookSinopsis/';
+
+  // edit sinopsis and book
+  String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis/';
+
   static const String baseUrl = 'http://192.168.9.63:5000/api/getBuku';
   static const String sinopsisUrl = 'http://192.168.9.63:5000/api/getSinopsis';
 

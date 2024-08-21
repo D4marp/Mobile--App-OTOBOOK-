@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:otobook/models/api.dart';
 import 'package:otobook/models/masterBook.dart'; // Ensure this import is correct
 
 class EditbookPage extends StatefulWidget {
@@ -42,8 +43,8 @@ class _EditbookPageState extends State<EditbookPage> {
       _isLoading = true;
     });
     try {
-      final response = await http.get(Uri.parse(
-          'http://192.168.9.63:5000/api/getBookSinopsis/${widget.id}'));
+      final response = await http
+          .get(Uri.parse('${GetData().getBookWithSinopsisUrl}${widget.id}'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -89,7 +90,7 @@ class _EditbookPageState extends State<EditbookPage> {
 
     try {
       final response = await http.put(
-        Uri.parse('http://192.168.9.63:5000/api/editBookSinopsis/${widget.id}'),
+        Uri.parse('${GetData().editBookSinopsisUrl}${widget.id}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(updatedBook),
       );
