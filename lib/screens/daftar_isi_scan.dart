@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:Otobook/models/book.dart';
 
 class DaftarIsiScanScreen extends StatefulWidget {
   @override
@@ -54,14 +53,16 @@ class _DaftarIsiScanScreenState extends State<DaftarIsiScanScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
                 leading: Icon(Icons.photo_library),
                 title: Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -71,38 +72,40 @@ class _DaftarIsiScanScreenState extends State<DaftarIsiScanScreen> {
     );
   }
 
-  Future<void> _saveDaftarIsiImage() async {
-    if (_daftarIsiImage != null) {
-      try {
-        // Anda dapat menyimpan path gambar daftar isi ke model Book atau menyimpannya di penyimpanan lokal
-        final book = Book(
-          id: '',
-          daftarIsiImagePath: _daftarIsiImage!.path, // Simpan path gambar daftar isi
-          title: '', // Field lain bisa diisi sesuai kebutuhan
-          author: '',
-          publisher: '',
-          publicationYear: 0,
-          ISBN: '',
-        );
+  // Future<void> _saveDaftarIsiImage() async {
+  //   if (_daftarIsiImage != null) {
+  //     try {
+  //       // Anda dapat menyimpan path gambar daftar isi ke model Book atau menyimpannya di penyimpanan lokal
+  //       final book = Book(
+  //         id: '',
+  //         daftarIsiImagePath:
+  //             _daftarIsiImage!.path, // Simpan path gambar daftar isi
+  //         title: '', // Field lain bisa diisi sesuai kebutuhan
+  //         author: '',
+  //         publisher: '',
+  //         publicationYear: 0,
+  //         ISBN: '',
+  //       );
 
-        // Lakukan sesuatu dengan objek 'book', misalnya simpan di list atau database lokal
-        print('Table of contents image path saved: ${book.daftarIsiImagePath}');
+  //       // Lakukan sesuatu dengan objek 'book', misalnya simpan di list atau database lokal
+  //       print('Table of contents image path saved: ${book.daftarIsiImagePath}');
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Table of contents image saved successfully.')),
-        );
-      } catch (e) {
-        print('Error saving table of contents image: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save image. Please try again.')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No image selected.')),
-      );
-    }
-  }
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content: Text('Table of contents image saved successfully.')),
+  //       );
+  //     } catch (e) {
+  //       print('Error saving table of contents image: $e');
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to save image. Please try again.')),
+  //       );
+  //     }
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('No image selected.')),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +134,7 @@ class _DaftarIsiScanScreenState extends State<DaftarIsiScanScreen> {
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: _saveDaftarIsiImage,
+                          onPressed: () {},
                           child: Text('Save Daftar Isi Image'),
                         ),
                       ],

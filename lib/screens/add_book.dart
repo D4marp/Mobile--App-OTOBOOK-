@@ -1,33 +1,99 @@
+import 'dart:convert';
+import 'package:Otobook/screens/list_book.dart';
+import 'package:http/http.dart' as http;
+import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
-import 'package:Otobook/models/book.dart';
+import 'package:Otobook/models/masterBook.dart';
 import 'package:Otobook/screens/start.dart';
 
 class AddBookScreen extends StatefulWidget {
-  const AddBookScreen({super.key});
+  final masterBook masterBookData;
+  const AddBookScreen({super.key, required this.masterBookData});
 
   @override
   State<AddBookScreen> createState() => _AddBookScreenState();
 }
 
 class _AddBookScreenState extends State<AddBookScreen> {
-  final _formKey = GlobalKey<FormState>(); // Key to manage form state
+  final _formKey = GlobalKey<FormState>();
+  late masterBook _masterBook;
+  late TextEditingController _judulController;
+  late TextEditingController _pengarangController;
+  late TextEditingController _penerbitanController;
+  late TextEditingController _deskripsiController;
+  late TextEditingController _isbnController;
 
-  // Controllers for form fields
-  final TextEditingController _judulController = TextEditingController();
-  final TextEditingController _pengarangController = TextEditingController();
-  final TextEditingController _penerbitController = TextEditingController();
-  final TextEditingController _tahunTerbitController = TextEditingController();
-  final TextEditingController _isbnController = TextEditingController();
+  @override
+  void initState() {
+    _masterBook = widget.masterBookData;
+    _judulController = TextEditingController(text: _masterBook.judul);
+    _pengarangController = TextEditingController(text: _masterBook.pengarang);
+    _penerbitanController = TextEditingController(text: _masterBook.penerbitan);
+    _deskripsiController = TextEditingController(text: _masterBook.deskripsi);
+    _isbnController = TextEditingController(text: _masterBook.isbn);
+    super.initState();
+  }
 
   @override
   void dispose() {
-    // Dispose controllers when the widget is removed
     _judulController.dispose();
     _pengarangController.dispose();
-    _penerbitController.dispose();
-    _tahunTerbitController.dispose();
+    _penerbitanController.dispose();
+    _deskripsiController.dispose();
     _isbnController.dispose();
     super.dispose();
+  }
+
+  void _saveBook() async {
+    Uri url = Uri.parse(GetData().addBookUrl);
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'judul': _judulController.text,
+        'isbn': _isbnController.text,
+        'pengarang': _pengarangController.text,
+        'penerbitan': _penerbitanController.text,
+        'deskripsi': _deskripsiController.text,
+      }),
+    );
+
+    final responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(responseBody['message'] ?? 'Book saved successfully'),
+        ),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const GetBooksPage(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(responseBody['message'] ?? 'Failed to save book'),
+        ),
+      );
+    }
+  }
+
+  Widget _buildTextArea(TextEditingController controller, String labelText) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+        labelStyle: const TextStyle(fontSize: 18),
+      ),
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
+    );
   }
 
   @override
@@ -87,34 +153,35 @@ class _AddBookScreenState extends State<AddBookScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTextField(_judulController, 'Judul', 'Please enter the title'),
-                    SizedBox(height: 16.0),
-                    _buildTextField(_pengarangController, 'Pengarang', 'Please enter the author'),
-                    SizedBox(height: 16.0),
-                    _buildTextField(_penerbitController, 'Penerbit', 'Please enter the publisher'),
-                    SizedBox(height: 16.0),
-                    _buildTextField(_tahunTerbitController, 'Tahun Terbit', 'Please enter the year of publication'),
-                    SizedBox(height: 16.0),
-                    _buildTextField(_isbnController, 'ISBN', 'Please enter the ISBN'),
-                    SizedBox(height: 16.0),
+                    _buildTextArea(_judulController, 'Judul'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_pengarangController, 'Pengarang'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_penerbitanController, 'Penerbit'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_deskripsiController, 'Deskripsi'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_isbnController, 'ISBN'),
+                    const SizedBox(height: 16.0),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: _submitForm,
-                        child: Text('Submit'),
+                        onPressed: _saveBook,
+                        child: const Text('Submit'),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String labelText, String validationMessage) {
+  Widget _buildTextField(TextEditingController controller, String labelText,
+      String validationMessage) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -128,24 +195,5 @@ class _AddBookScreenState extends State<AddBookScreen> {
         return null;
       },
     );
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final book = Book(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _judulController.text,
-        author: _pengarangController.text,
-        publisher: _penerbitController.text,
-        publicationYear: int.tryParse(_tahunTerbitController.text) ?? 0,
-        ISBN: _isbnController.text,
-      );
-
-      // Lakukan sesuatu dengan objek 'book', misalnya simpan di penyimpanan lokal atau list
-      print('Book added: ${book.title}');
-
-      // Clear form
-      _formKey.currentState?.reset();
-    }
   }
 }

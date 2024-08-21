@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:Otobook/screens/start.dart';
 
-
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter binding is initialized
- 
-
-  
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Ensure Flutter binding is initialized
 
   runApp(App());
 }

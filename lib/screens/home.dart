@@ -5,20 +5,6 @@ import 'package:Otobook/widgets/buttom.dart';
 import 'package:Otobook/widgets/cara_widget.dart';
 import 'package:Otobook/widgets/input_widget.dart';
 
-void main() {
-  runApp(App());
-}
-
-class App extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
-    );
-  }
-}
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 

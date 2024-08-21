@@ -1,189 +1,247 @@
+import 'dart:convert';
+import 'package:Otobook/models/masterBook.dart';
+import 'package:Otobook/screens/bookDetail_page.dart';
+import 'package:Otobook/screens/cover_scan.dart';
+import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
-import 'package:Otobook/models/book.dart';
-import 'package:Otobook/screens/edit_book.dart';
 
-class ListBooksScreen extends StatefulWidget {
+import 'package:http/http.dart' as http;
+
+class GetBooksPage extends StatefulWidget {
+  const GetBooksPage({super.key});
+
   @override
-  _ListBooksScreenState createState() => _ListBooksScreenState();
+  State<GetBooksPage> createState() => _GetBooksPageState();
 }
 
-class _ListBooksScreenState extends State<ListBooksScreen> {
-  late Future<List<Book>> _books;
+class _GetBooksPageState extends State<GetBooksPage> {
+  bool isLoading = false;
+  List<masterBook> books = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadBooks();
-  }
-
-  void _loadBooks() {
+  void getBooks() async {
     setState(() {
-      // Load books from local storage or another data source
-      _books = _fetchBooks();
+      isLoading = true;
+    });
+    final result = await GetData.getBooks();
+    setState(() {
+      books = result;
+      isLoading = false;
     });
   }
 
-  Future<List<Book>> _fetchBooks() async {
-    // Replace this method with actual implementation to fetch books from local storage or another data source
-    return []; // Example placeholder; return a list of books
-  }
-
-  void _deleteBook(String bookId) async {
-    try {
-      // Implement your book deletion logic here
-      // For example, delete the book from local storage or another data source
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Book deleted successfully')),
-      );
-      _loadBooks(); // Refresh the list of books
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete book: $e')),
-      );
-    }
+  @override
+  void initState() {
+    getBooks();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Books List'),
-        automaticallyImplyLeading: false, // Hide the back arrow
+        title: const Text('Book List'),
+        automaticallyImplyLeading: false,
       ),
-      body: FutureBuilder<List<Book>>(
-        future: _books,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No books available'));
-          }
-
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              // Adjust number of columns and aspect ratio based on screen width
-              int crossAxisCount = 1;
-              double aspectRatio = 2 / 3; // Default aspect ratio for mobile
-
-              if (constraints.maxWidth >= 600) {
-                crossAxisCount = 2; // Two columns for tablets and small screens
-              }
-              if (constraints.maxWidth >= 900) {
-                crossAxisCount = 3; // Three columns for medium screens
-              }
-              if (constraints.maxWidth >= 1200) {
-                crossAxisCount = 4; // Four columns for large screens
-              }
-
-              // Aspect ratio adjustments
-              if (constraints.maxWidth >= 600) {
-                aspectRatio = 1.5; // Adjust aspect ratio for larger screens
-              }
-              if (constraints.maxWidth >= 900) {
-                aspectRatio = 1.4; // Further adjust aspect ratio
-              }
-              if (constraints.maxWidth >= 1200) {
-                aspectRatio = 1.2; // Adjust aspect ratio for very large screens
-              }
-
-              return GridView.builder(
-                padding: const EdgeInsets.all(10.0),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  childAspectRatio: aspectRatio,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : books.isEmpty
+              ? const Center(child: Text('No books available'))
+              : ListView.builder(
+                  itemCount: books.length,
+                  itemBuilder: (context, index) {
+                    return BookItem(
+                      book: books[index],
+                      onDelete: () {
+                        getBooks(); // Refresh the book list when a book is deleted
+                      },
+                    );
+                  },
                 ),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  Book book = snapshot.data![index];
-                  return Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0), // Reduced padding
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            book.title,
-                            style: TextStyle(
-                              fontSize: 16, // Adjusted font size
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text('Author: ${book.author}', style: TextStyle(fontSize: 14)), // Adjusted font size
-                          Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Adjusted alignment
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditBookScreen(book: book),
-                                    ),
-                                  ).then((_) {
-                                    _loadBooks(); // Refresh list after editing
-                                  });
-                                },
-                                icon: Icon(Icons.edit),
-                                label: Text('Edit', style: TextStyle(fontSize: 14)), // Adjusted font size
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  padding: EdgeInsets.symmetric(horizontal: 10), // Adjusted padding
-                                ),
-                              ),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Delete Book'),
-                                      content: Text('Are you sure you want to delete this book?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            _deleteBook(book.id);
-                                          },
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                icon: Icon(Icons.delete),
-                                label: Text('Delete', style: TextStyle(fontSize: 14)), // Adjusted font size
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  padding: EdgeInsets.symmetric(horizontal: 10), // Adjusted padding
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+    );
+  }
+}
+
+class BookItem extends StatelessWidget {
+  final masterBook book;
+  final VoidCallback onDelete;
+
+  const BookItem({required this.book, required this.onDelete});
+
+  Future<Map<String, dynamic>> _deleteBook(BuildContext context, int id) async {
+    Uri url = Uri.parse(GetData().deleteBookUrl + id.toString());
+
+    try {
+      final response = await http.delete(url, headers: {
+        'Content-Type': 'application/json',
+      });
+
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Book deleted successfully'),
+          ),
+        );
+        onDelete();
+        return responseBody;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete book: ${responseBody['message']}'),
+          ),
+        );
+        return responseBody;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error occurred: $e'),
+        ),
+      );
+      return {
+        'message': 'Error occurred: $e',
+      };
+    }
+  }
+
+  Future<String> fetchCoverPath(int masterBukuId) async {
+    final response =
+        await http.get(Uri.parse('${GetData().getCoverUrl}/$masterBukuId'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data['path']; // Ambil path dari respon
+    } else {
+      throw Exception('Failed to load cover');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookdetailPage(
+              bookId: book.id,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              FutureBuilder<String>(
+                future: fetchCoverPath(book.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Image.asset(
+                      'assets/placeholder.jpg', // Gambar placeholder dari assets
+                      width: 100,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    );
+                  } else if (!snapshot.hasData || snapshot.data == null) {
+                    return Image.asset(
+                      'assets/placeholder.jpg', // Gambar placeholder dari assets
+                      width: 100,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    );
+                  } else {
+                    final coverPath = snapshot.data!;
+                    final coverUrl = '${GetData().Url}$coverPath';
+                    return Image.network(
+                      coverUrl,
+                      width: 100,
+                      height: 150,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/placeholder.jpg', // Gambar placeholder dari assets
+                          width: 100,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      book.judul,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Pengarang: ${book.pengarang}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Wrap(
+                        children: <Widget>[
+                          ListTile(
+                            leading: const Icon(Icons.image),
+                            title: const Text('Add Cover'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      CoverScanner(id: book.id),
+                                ),
+                              ).then((result) {
+                                if (result == true) {
+                                  onDelete(); // Refresh the book list when a cover is added
+                                }
+                              });
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.delete),
+                            title: const Text('Delete'),
+                            onTap: () async {
+                              Navigator.pop(
+                                  context); // Close the bottom sheet first
+                              await _deleteBook(context, book.id);
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
-              );
-            },
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

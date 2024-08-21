@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/book.dart';
+import 'package:Otobook/models/masterBook.dart';
 import 'package:Otobook/screens/edit_book.dart';
 
 class KDTScannerScreen extends StatefulWidget {
@@ -14,7 +14,8 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _publisherController = TextEditingController();
-  final TextEditingController _publicationYearController = TextEditingController();
+  final TextEditingController _publicationYearController =
+      TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
 
   bool _isLoading = false;
@@ -28,7 +29,8 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
+        String extractedText =
+            await OCRService.extractTextFromImage(pickedFile.path);
 
         if (extractedText.isNotEmpty) {
           setState(() {
@@ -44,7 +46,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     } catch (e) {
       print('Error scanning and extracting: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to scan and extract text. Please try again.')),
+        SnackBar(
+            content:
+                Text('Failed to scan and extract text. Please try again.')),
       );
     } finally {
       setState(() {
@@ -65,14 +69,16 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
                 leading: Icon(Icons.photo_library),
                 title: Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -102,7 +108,8 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
           title = parts[2].trim();
         }
       } else if (RegExp(r'\d{4}').hasMatch(line)) {
-        publicationYear = int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
+        publicationYear =
+            int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
       }
     }
 
@@ -114,24 +121,24 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     _isbnController.text = isbn ?? '';
   }
 
-  Future<void> _navigateToEditBook() async {
-    final book = Book(
-      id: '', // Generate an ID if needed or leave it empty for local use
-      title: _titleController.text,
-      author: _authorController.text,
-      publisher: _publisherController.text,
-      publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
-      ISBN: _isbnController.text,
-    );
+  // Future<void> _navigateToEditBook() async {
+  //   final book = Book(
+  //     id: '', // Generate an ID if needed or leave it empty for local use
+  //     title: _titleController.text,
+  //     author: _authorController.text,
+  //     publisher: _publisherController.text,
+  //     publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
+  //     ISBN: _isbnController.text,
+  //   );
 
-    // Navigate to EditBookScreen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditBookScreen(book: book),
-      ),
-    );
-  }
+  //   // Navigate to EditBookScreen
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => add(book: book),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +164,7 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
                     _buildBookFields(),
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: _navigateToEditBook,
+                      onPressed: () {},
                       child: Text('Save and Edit Book'),
                     ),
                   ],

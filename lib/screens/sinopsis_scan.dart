@@ -1,72 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:Otobook/services/gpt4_service.dart';
+import 'package:Otobook/models/sinopsisBook.dart';
+import 'package:Otobook/screens/add_keyword.dart';
 import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/book.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
-class OCRSynopsisScannerScreen extends StatefulWidget {
+class SinopsisScanner extends StatefulWidget {
+  final int id;
+
+  const SinopsisScanner({super.key, required this.id});
+
   @override
-  _OCRSynopsisScannerScreenState createState() => _OCRSynopsisScannerScreenState();
+  State<SinopsisScanner> createState() => _SinopsisScannerState();
 }
 
-class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
+class _SinopsisScannerState extends State<SinopsisScanner> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
+  String _extractedText = '';
+  String sinopsis = '';
 
-  Future<void> _scanAndExtractSynopsis() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final pickedFile = await _showImageSourceSelector();
-      if (pickedFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.')),
-        );
-        return;
-      }
-
-      String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
-
-      if (extractedText.isEmpty) {
-        throw Exception('OCR extraction returned empty text');
-      }
-
-      // Only perform keyword classification, without extracting book details from GPT-4
-      List<String> keywords = await GPT4Service.classifyKeywords(extractedText);
-
-      // You need to implement a way to get other book details like title, author, etc.
-      Book newBook = Book(
-        id: '', // ID should be set or determined if needed
-        title: 'Unknown Title', // Set default or allow user input
-        author: 'Unknown Author',
-        publisher: 'Unknown Publisher',
-        publicationYear: 0,
-        ISBN: 'Unknown ISBN',
-        synopsis: extractedText,
-        keywords: keywords,
-      );
-
-      // Replace this with code to save the book to your chosen storage or database
-      // Example: await YourDatabaseService.addBook(newBook);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Synopsis scanned and book added successfully.')),
-      );
-
-      Navigator.pop(context); // Return to the previous screen
-    } catch (e) {
-      print('Error scanning and extracting synopsis: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to scan and add synopsis. Please try again.')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  int get masterBookId => widget.id;
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -77,17 +31,19 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
           child: Column(
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Gallery'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -97,21 +53,127 @@ class _OCRSynopsisScannerScreenState extends State<OCRSynopsisScannerScreen> {
     );
   }
 
+  Future<void> _scanAndExtract() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final pickedFile = await _showImageSourceSelector();
+      if (pickedFile != null) {
+        String extractedText =
+            await OCRService.extractTextFromImage(pickedFile.path);
+
+        if (extractedText.isNotEmpty) {
+          setState(() {
+            _extractedText = extractedText;
+          });
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No image selected.')),
+        );
+      }
+    } catch (e) {
+      print('Error scanning and extracting: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content:
+                Text('Failed to scan and extract text. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _navigateToAddPage() {
+    final sinopsisbookData = Sinopsisbook(
+      id: 0,
+      sinopsis: sinopsis,
+      masterBookId: masterBookId,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            AddKeywordPages(sinopsisBookData: sinopsisbookData),
+      ),
+    );
+  }
+
+  Widget _buildExtractedTextWidget() {
+    return SelectableText(
+      _extractedText,
+      style: const TextStyle(fontSize: 16.0),
+      onSelectionChanged: (selection, cause) {
+        // Get selected text
+        final selectedText =
+            _extractedText.substring(selection.start, selection.end);
+        if (selectedText.isNotEmpty) {
+          setState(() {
+            sinopsis = selectedText;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _buildField(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildField('Sinopsis', sinopsis),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan Synopsis'),
-        backgroundColor: Color(0xFF95A2FF),
+        title: const Text('Scan Book'),
+        backgroundColor: const Color(0xFF95A2FF),
       ),
-      body: Center(
-        child: _isLoading
-            ? CircularProgressIndicator()
-            : ElevatedButton(
-                onPressed: _scanAndExtractSynopsis,
-                child: Text('Scan and Add Synopsis'),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: _scanAndExtract,
+                    child: const Text('Scan and Extract Text'),
+                  ),
+                  const SizedBox(height: 20),
+                  if (_extractedText.isNotEmpty) ...[
+                    const Text('Extracted Text:'),
+                    const SizedBox(height: 10),
+                    _buildExtractedTextWidget(),
+                    const SizedBox(height: 20),
+                    _buildFields(),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _navigateToAddPage,
+                      child: const Text('Save and Edit Book'),
+                    ),
+                  ],
+                ],
               ),
-      ),
+            ),
     );
   }
 }
