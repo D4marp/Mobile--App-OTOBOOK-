@@ -1,32 +1,70 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth package
-import 'package:Otobook/screens/signup.dart';
 import 'package:Otobook/navigation.dart';
+import 'package:Otobook/services/api.dart';
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
-class SignIn extends StatefulWidget {
+class LoginPage extends StatefulWidget {
+  final void Function()? ontap;
+
+  const LoginPage({super.key, this.ontap});
+
   @override
-  _SignInState createState() => _SignInState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignInState extends State<SignIn> {
-  final _formKey = GlobalKey<FormState>();
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Instance of FirebaseAuth
-  String? _errorMessage; // To hold error messages
+  String? _errorMessage;
+
+  Future<void> login() async {
+    final response = await http.post(
+      Uri.parse(GetData().loginUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': emailController.text,
+        'password': passwordController.text,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      String token = data['access_token'];
+
+      // Simpan token menggunakan SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+
+      // Arahkan ke halaman home atau yang sesuai
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const NavigationMenu(),
+        ),
+      );
+    } else {
+      // Tangani error, misalnya tampilkan pesan error
+      print('Login gagal: ${response.body}');
+      setState(() {
+        _errorMessage = json.decode(response.body)['message'];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color.fromARGB(255, 176, 176, 176)),
+          icon: const Icon(Icons.arrow_back,
+              color: Color.fromARGB(255, 176, 176, 176)),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           'Sign In',
           style: TextStyle(
             color: Color(0xFF3C83F5),
@@ -39,11 +77,11 @@ class _SignInState extends State<SignIn> {
         toolbarHeight: 79,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
+            const SizedBox(
               width: double.infinity,
               child: Opacity(
                 opacity: 0.50,
@@ -60,18 +98,13 @@ class _SignInState extends State<SignIn> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-            if (_errorMessage != null) // Display error message
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
+            const SizedBox(height: 20),
+            if (_errorMessage != null)
+              Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
               ),
             Form(
-              key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -81,9 +114,6 @@ class _SignInState extends State<SignIn> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email';
                       }
                       return null;
                     },
@@ -101,7 +131,7 @@ class _SignInState extends State<SignIn> {
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureText ? Icons.visibility_off : Icons.visibility,
-                        color: Color.fromARGB(255, 172, 170, 170),
+                        color: const Color.fromARGB(255, 172, 170, 170),
                       ),
                       onPressed: () {
                         setState(() {
@@ -116,7 +146,7 @@ class _SignInState extends State<SignIn> {
                       onPressed: () {
                         // Navigate to forget password page
                       },
-                      child: Text(
+                      child: const Text(
                         'Forget Password?',
                         style: TextStyle(
                           color: Color(0xFF3C83F5),
@@ -127,44 +157,23 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        try {
-                          UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text,
-                          );
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => NavigationMenu()),
-                          );
-                        } on FirebaseAuthException catch (e) {
-                          setState(() {
-                            _errorMessage = e.message;
-                          });
-                        } catch (e) {
-                          setState(() {
-                            _errorMessage = 'An unknown error occurred';
-                          });
-                        }
-                      }
-                    },
-                    child: Text(
+                    child: const Text(
                       'Sign In',
                       style: TextStyle(color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF3C83F5),
-                      minimumSize: Size(double.infinity, 50),
+                      backgroundColor: const Color(0xFF3C83F5),
+                      minimumSize: const Size(double.infinity, 50),
                     ),
+                    onPressed: login,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Don\'t have an account? ',
                         style: TextStyle(
                           color: Color(0xFF111827),
@@ -174,13 +183,8 @@ class _SignInState extends State<SignIn> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignUp()),
-                          );
-                        },
-                        child: Text(
+                        onPressed: widget.ontap,
+                        child: const Text(
                           'Sign Up',
                           style: TextStyle(
                             color: Color(0xFF3C83F5),
@@ -219,7 +223,7 @@ class _SignInState extends State<SignIn> {
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),

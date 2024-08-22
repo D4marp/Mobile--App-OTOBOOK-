@@ -2,7 +2,7 @@ name: Otobook
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,8 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -39,17 +37,14 @@ dependencies:
   flutter_native_splash: ^2.4.0
   flutter_svg: ^2.0.10+1
   font_awesome_flutter: ^10.7.0
-  firebase_core: ^3.2.0
-  firebase_auth: ^5.1.2
-  cloud_firestore: ^5.1.0
   google_ml_kit: ^0.18.0
-  image_picker: ^1.1.2 
+  image_picker: ^1.1.2
   http: ^1.2.2
   flutter_dotenv: ^5.1.0
   flutter_launcher_icons: ^0.13.1
   google_mlkit_text_recognition: ^0.13.0
   retry: ^3.1.2
-
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -61,12 +56,12 @@ flutter_native_splash:
   android: true
   ios: true
   web: true
-  
 
 flutter_icons:
 android: true
 ios: true
-image: "assets/icon/icon.png"
+image:
+  "assets/icon/icon.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -75,15 +70,11 @@ image: "assets/icon/icon.png"
   # rules and activating additional ones.
   #flutter_lints: ^3.0.0
 
-  
-
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -111,7 +102,6 @@ flutter:
     - assets/icon/icon.png
     - assets/icon/Biru.svg
     - assets/icon/Kuning.svg
-    - .env
 
   #   - images/a_dot_ham.jpeg
 

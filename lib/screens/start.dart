@@ -1,7 +1,6 @@
+import 'package:Otobook/services/auth_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:Otobook/screens/signin.dart';
-
 
 
 class StartScreen extends StatelessWidget {
@@ -32,7 +31,7 @@ class StartScreen extends StatelessWidget {
                         height: 38,
                       ),
                       const SizedBox(width: 10),
-                      Expanded(
+                      const Expanded(
                         child: Text(
                           'adalah aplikasi Pembaca otomatis metadata buku untuk koleksi buku di Perpustakaan',
                           textAlign: TextAlign.left,
@@ -50,16 +49,20 @@ class StartScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignIn()),
+                      MaterialPageRoute(
+                        builder: (context) => const AuthGate(),
+                      ),
                     );
-                    },
+                  },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                      Color.fromRGBO(0, 179, 255, 1), // Warna latar belakang biru muda (#00B3FF)
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                      const Color.fromRGBO(0, 179, 255,
+                          1), // Warna latar belakang biru muda (#00B3FF)
                     ),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0), // Tidak ada pembulatan, sudut lancip
+                        borderRadius: BorderRadius.circular(
+                            0), // Tidak ada pembulatan, sudut lancip
                       ),
                     ),
                   ),

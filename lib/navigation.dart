@@ -16,10 +16,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-   AddBookScreen(),
-   // Placeholder, jika perlu
-    ListBooksScreen(),
-    TeamScreen(),
+    //  AddBookScreen(),
+    // Placeholder, jika perlu
+    GetBooksPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -40,11 +40,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box),
-            label: 'Add',
-          ),
-        
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.add_box),
+          //   label: 'Add',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: 'list', // Sesuaikan label ini dengan _widgetOptions
@@ -59,7 +58,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
-      
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

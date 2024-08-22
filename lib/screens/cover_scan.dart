@@ -1,47 +1,21 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:Otobook/models/book.dart';
-import 'package:Otobook/services/firestore_service.dart';
+import 'package:http/http.dart' as http;
 
-class CoverScannerScreen extends StatefulWidget {
+class CoverScanner extends StatefulWidget {
+  final int id;
+  const CoverScanner({super.key, required this.id});
+
   @override
-  _CoverScannerScreenState createState() => _CoverScannerScreenState();
+  State<CoverScanner> createState() => _CoverScannerState();
 }
 
-class _CoverScannerScreenState extends State<CoverScannerScreen> {
+class _CoverScannerState extends State<CoverScanner> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
   XFile? _coverImage;
-
-  Future<void> _pickCoverImage() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final pickedFile = await _showImageSourceSelector();
-      if (pickedFile != null) {
-        setState(() {
-          _coverImage = pickedFile;
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.')),
-        );
-      }
-    } catch (e) {
-      print('Error picking cover image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick cover image. Please try again.')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  File? _coverImageFile;
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -55,14 +29,16 @@ class _CoverScannerScreenState extends State<CoverScannerScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
                 leading: Icon(Icons.photo_library),
                 title: Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -72,35 +48,83 @@ class _CoverScannerScreenState extends State<CoverScannerScreen> {
     );
   }
 
-  Future<void> _saveCoverImage() async {
-    if (_coverImage != null) {
-      try {
-        // You can save the cover image path to the Book model or upload it to storage.
-        final book = Book(
-          id: '',
-          coverImagePath: _coverImage!.path, // Save the cover image path
-          title: '', // Other fields can be filled as needed
-          author: '',
-          publisher: '',
-          publicationYear: 0,
-          ISBN: '',
-        );
+  Future<void> _pickCoverImage() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-        await FirestoreService().addBook(book);
-
+    try {
+      final pickedFile = await _showImageSourceSelector();
+      if (pickedFile != null) {
+        setState(() {
+          _coverImage = pickedFile;
+          _coverImageFile = File(pickedFile.path); // Convert to File
+        });
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cover image saved successfully.')),
-        );
-      } catch (e) {
-        print('Error saving cover image: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save cover image. Please try again.')),
+          SnackBar(content: Text('No image selected.')),
         );
       }
-    } else {
+    } catch (e) {
+      print('Error picking cover image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No cover image selected.')),
+        SnackBar(
+            content: Text('Failed to pick cover image. Please try again.')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _uploadCoverImage() async {
+    if (_coverImageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No image to upload.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      var uri =
+          Uri.parse('http://192.168.9.63:5000/api/uploadCover/${widget.id}');
+      var request = http.MultipartRequest('POST', uri)
+        ..files.add(
+            await http.MultipartFile.fromPath('file', _coverImageFile!.path));
+
+      var response = await request.send();
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cover image uploaded successfully.')),
+        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => const GetBooksPage(),
+        //   ),
+        // );
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload cover image.')),
+        );
+      }
+    } catch (e) {
+      print('Error uploading cover image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Failed to upload cover image. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -122,20 +146,18 @@ class _CoverScannerScreenState extends State<CoverScannerScreen> {
                     child: Text('Pick Cover Image'),
                   ),
                   SizedBox(height: 20),
-                  if (_coverImage != null)
-                    Column(
-                      children: [
-                        Image.file(
-                          File(_coverImage!.path),
-                          height: 200,
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: _saveCoverImage,
-                          child: Text('Save Cover Image'),
-                        ),
-                      ],
+                  if (_coverImage != null) ...[
+                    Image.file(
+                      _coverImageFile!,
+                      height: 200,
+                      fit: BoxFit.cover,
                     ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _uploadCoverImage,
+                      child: Text('Upload Cover Image'),
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // Import your actual page files
-import 'package:Otobook/screens/cover_scan.dart'; // Adjust the import path as needed
+// Adjust the import path as needed
 import 'package:Otobook/screens/verso_scan.dart'; // Adjust the import path as needed
 import 'package:Otobook/screens/kdt_scan.dart'; // Adjust the import path as needed
 import 'package:Otobook/screens/daftar_isi_scan.dart'; // Adjust the import path as needed
@@ -11,22 +11,28 @@ class IconRowWidget extends StatelessWidget {
     return Container(
       width: 369,
       height: 103,
-      padding: const EdgeInsets.symmetric(horizontal: 22), // Padding for spacing
+      padding:
+          const EdgeInsets.symmetric(horizontal: 22), // Padding for spacing
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Evenly spaces items
+        mainAxisAlignment:
+            MainAxisAlignment.spaceBetween, // Evenly spaces items
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildIconColumn(context, 'Cover', Icons.book, Color(0xFF4894FE), CoverScannerScreen()),
-          buildIconColumn(context, 'Verso', Icons.library_books, Color(0xFF4894FE), OCRScannerScreen()),
-          buildIconColumn(context, 'KDT', Icons.description, Color(0xFF4894FE), KDTScannerScreen()),
-          buildIconColumn(context, 'Daftar Isi', Icons.list, Color(0xFF4894FE), DaftarIsiScanScreen()),
+          // buildIconColumn(context, 'Cover', Icons.book, Color(0xFF4894FE), CoverScannerScreen()),
+          buildIconColumn(context, 'Verso', Icons.library_books,
+              Color(0xFF4894FE), VersoScanner()),
+          buildIconColumn(context, 'KDT', Icons.description, Color(0xFF4894FE),
+              KDTScannerScreen()),
+          buildIconColumn(context, 'Daftar Isi', Icons.list, Color(0xFF4894FE),
+              DaftarIsiScanScreen()),
         ],
       ),
     );
   }
 
-  Widget buildIconColumn(BuildContext context, String text, IconData icon, Color color, Widget page) {
+  Widget buildIconColumn(BuildContext context, String text, IconData icon,
+      Color color, Widget page) {
     return GestureDetector(
       onTap: () {
         Navigator.push(

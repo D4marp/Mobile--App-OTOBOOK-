@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/book.dart';
+import 'package:Otobook/models/masterBook.dart';
 import 'package:Otobook/screens/edit_book.dart';
-import 'package:Otobook/services/firestore_service.dart';
 
 class KDTScannerScreen extends StatefulWidget {
   @override
@@ -15,7 +14,8 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _publisherController = TextEditingController();
-  final TextEditingController _publicationYearController = TextEditingController();
+  final TextEditingController _publicationYearController =
+      TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
 
   bool _isLoading = false;
@@ -29,7 +29,8 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
+        String extractedText =
+            await OCRService.extractTextFromImage(pickedFile.path);
 
         if (extractedText.isNotEmpty) {
           setState(() {
@@ -45,7 +46,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     } catch (e) {
       print('Error scanning and extracting: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to scan and extract text. Please try again.')),
+        SnackBar(
+            content:
+                Text('Failed to scan and extract text. Please try again.')),
       );
     } finally {
       setState(() {
@@ -66,14 +69,16 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
                 leading: Icon(Icons.photo_library),
                 title: Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -84,64 +89,56 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
   }
 
   void _parseKDTText(String text) {
-  final lines = text.split('\n');
-  String? title, author, publisher, isbn;
-  int? publicationYear;
+    final lines = text.split('\n');
+    String? title, author, publisher, isbn;
+    int? publicationYear;
 
-  for (var line in lines) {
-    line = line.trim();
-    if (line.isEmpty) continue;
+    for (var line in lines) {
+      line = line.trim();
+      if (line.isEmpty) continue;
 
-    if (line.startsWith('ISBN')) {
-      isbn = line.replaceAll(RegExp(r'[^0-9\-]'), ''); // Extract ISBN number
-    } else if (line.contains('--')) {
-      final parts = line.split('--');
-      if (parts.length >= 2) {
-        author = parts[0].trim();
-        publisher = parts[1].split(',').first.trim();
-        title = parts[1].split(',').last.trim();
+      // Parsing each line based on KDT format
+      if (line.startsWith('ISBN')) {
+        isbn = line.replaceAll(RegExp(r'[^0-9\-]'), ''); // Extract ISBN number
+      } else if (line.startsWith('—')) {
+        final parts = line.split('—');
+        if (parts.length >= 3) {
+          author = parts[0].trim();
+          publisher = parts[1].trim();
+          title = parts[2].trim();
+        }
+      } else if (RegExp(r'\d{4}').hasMatch(line)) {
+        publicationYear =
+            int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
       }
-    } else if (line.contains(RegExp(r'\d{4}'))) {
-      publicationYear = int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
     }
+
+    // Set parsed values to the text controllers
+    _titleController.text = title ?? '';
+    _authorController.text = author ?? '';
+    _publisherController.text = publisher ?? '';
+    _publicationYearController.text = publicationYear?.toString() ?? '';
+    _isbnController.text = isbn ?? '';
   }
 
-  // Set parsed values to the text controllers
-  _titleController.text = title ?? '';
-  _authorController.text = author ?? '';
-  _publisherController.text = publisher ?? '';
-  _publicationYearController.text = publicationYear?.toString() ?? '';
-  _isbnController.text = isbn ?? '';
-}
+  // Future<void> _navigateToEditBook() async {
+  //   final book = Book(
+  //     id: '', // Generate an ID if needed or leave it empty for local use
+  //     title: _titleController.text,
+  //     author: _authorController.text,
+  //     publisher: _publisherController.text,
+  //     publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
+  //     ISBN: _isbnController.text,
+  //   );
 
-  Future<void> _navigateToEditBook() async {
-    final book = Book(
-      id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
-      title: _titleController.text,
-      author: _authorController.text,
-      publisher: _publisherController.text,
-      publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
-      ISBN: _isbnController.text,
-    );
-
-    try {
-      // Save the book to Firestore
-      await FirestoreService().addBook(book);
-
-      // Navigate to EditBookScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditBookScreen(book: book),
-        ),
-      );
-    } catch (e) {
-      print('Error saving book: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save book. Please try again.')),
-      );
-    }
-  }
+  //   // Navigate to EditBookScreen
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => add(book: book),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +164,7 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
                     _buildBookFields(),
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: _navigateToEditBook,
+                      onPressed: () {},
                       child: Text('Save and Edit Book'),
                     ),
                   ],

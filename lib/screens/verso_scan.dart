@@ -1,57 +1,25 @@
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/book.dart';
-import 'package:Otobook/screens/edit_book.dart';
-import 'package:Otobook/services/firestore_service.dart';
+import "package:Otobook/models/masterBook.dart";
+import "package:Otobook/screens/add_book.dart";
+import "package:Otobook/services/ocr_service.dart";
+import "package:flutter/material.dart";
+import "package:image_picker/image_picker.dart";
 
-class OCRScannerScreen extends StatefulWidget {
+class VersoScanner extends StatefulWidget {
+  const VersoScanner({super.key});
+
   @override
-  _OCRScannerScreenState createState() => _OCRScannerScreenState();
+  State<VersoScanner> createState() => _VersoScannerState();
 }
 
-class _OCRScannerScreenState extends State<OCRScannerScreen> {
+class _VersoScannerState extends State<VersoScanner> {
   final ImagePicker _picker = ImagePicker();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _authorController = TextEditingController();
-  final TextEditingController _publisherController = TextEditingController();
-  final TextEditingController _publicationYearController = TextEditingController();
-  final TextEditingController _isbnController = TextEditingController();
-
   bool _isLoading = false;
   String _extractedText = '';
-
-  Future<void> _scanAndExtract() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final pickedFile = await _showImageSourceSelector();
-      if (pickedFile != null) {
-        String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
-
-        if (extractedText.isNotEmpty) {
-          setState(() {
-            _extractedText = extractedText;
-          });
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.')),
-        );
-      }
-    } catch (e) {
-      print('Error scanning and extracting: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to scan and extract text. Please try again.')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  String judul = "";
+  String pengarang = "";
+  String penerbitan = "";
+  String deskripsi = "";
+  String isbn = "";
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -62,17 +30,19 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
           child: Column(
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.camera));
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Gallery'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(context,
+                      await _picker.pickImage(source: ImageSource.gallery));
                 },
               ),
             ],
@@ -81,6 +51,118 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
       },
     );
   }
+
+  Future<void> _scanAndExtract() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final pickedFile = await _showImageSourceSelector();
+      if (pickedFile != null) {
+        String extractedText =
+            await OCRService.extractTextFromImage(pickedFile.path);
+
+        if (extractedText.isNotEmpty) {
+          setState(() {
+            _extractedText = extractedText;
+          });
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No image selected.')),
+        );
+      }
+    } catch (e) {
+      print('Error scanning and extracting: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content:
+                Text('Failed to scan and extract text. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showFieldSelectionDialog(String selectedText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Field'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                ListTile(
+                  title: const Text('Judul'),
+                  onTap: () {
+                    setState(() {
+                      judul = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Pengarang'),
+                  onTap: () {
+                    setState(() {
+                      pengarang = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Penerbitan'),
+                  onTap: () {
+                    setState(() {
+                      penerbitan = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Deskripsi'),
+                  onTap: () {
+                    setState(() {
+                      deskripsi = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('ISBN'),
+                  onTap: () {
+                    setState(() {
+                      isbn = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Widget _buildExtractedTextWidget() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: _extractedText.split('\n').map((line) {
+  //       return GestureDetector(
+  //         onTap: () => _showFieldSelectionDialog(line),
+  //         child: Padding(
+  //           padding: const EdgeInsets.symmetric(vertical: 4.0),
+  //           child: Text(line),
+  //         ),
+  //       );
+  //     }).toList(),
+  //   );
+  // }
 
   Widget _buildExtractedTextWidget() {
     return Column(
@@ -94,7 +176,7 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
             },
             child: Text(
               line,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.blue,
                 decoration: TextDecoration.underline,
               ),
@@ -105,145 +187,84 @@ class _OCRScannerScreenState extends State<OCRScannerScreen> {
     );
   }
 
-  void _showFieldSelectionDialog(String selectedText) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Select Field for "$selectedText"'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  _titleController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Title'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _authorController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Author'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _publisherController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Publisher'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _publicationYearController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as Publication Year'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _isbnController.text = selectedText;
-                  Navigator.pop(context);
-                },
-                child: Text('Set as ISBN'),
-              ),
-            ],
-          ),
-        );
-      },
+  void _navigateToAddPage() {
+    print(
+        'Judul: $judul, Pengarang: $pengarang, Penerbitan: $penerbitan, Deskripsi: $deskripsi, ISBN: $isbn');
+
+    final masterBookData = masterBook(
+      id: 0,
+      judul: judul,
+      pengarang: pengarang,
+      penerbitan: penerbitan,
+      deskripsi: deskripsi,
+      isbn: isbn,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddBookScreen(masterBookData: masterBookData),
+      ),
     );
   }
 
-  Future<void> _navigateToEditBook() async {
-    final book = Book(
-      id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
-      title: _titleController.text,
-      author: _authorController.text,
-      publisher: _publisherController.text,
-      publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
-      ISBN: _isbnController.text,
+  Widget _buildField(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Text(value)),
+        ],
+      ),
     );
+  }
 
-    try {
-      // Save the book to Firestore
-      await FirestoreService().addBook(book);
-
-      // Navigate to EditBookScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditBookScreen(book: book),
-        ),
-      );
-    } catch (e) {
-      print('Error saving book: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save book. Please try again.')),
-      );
-    }
+  Widget _buildFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildField('Judul', judul),
+        _buildField('Pengarang', pengarang),
+        _buildField('Penerbitan', penerbitan),
+        _buildField('Deskripsi', deskripsi),
+        _buildField('ISBN', isbn),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan Verso'),
-        backgroundColor: Color(0xFF95A2FF),
+        title: const Text('Scan Book'),
+        backgroundColor: const Color(0xFF95A2FF),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   ElevatedButton(
                     onPressed: _scanAndExtract,
-                    child: Text('Scan and Extract Text'),
+                    child: const Text('Scan and Extract Text'),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   if (_extractedText.isNotEmpty) ...[
-                    Text('Extracted Text:'),
-                    SizedBox(height: 10),
+                    const Text('Extracted Text:'),
+                    const SizedBox(height: 10),
                     _buildExtractedTextWidget(),
-                    SizedBox(height: 20),
-                    _buildBookFields(),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    _buildFields(),
+                    const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: _navigateToEditBook,
-                      child: Text('Save and Edit Book'),
+                      onPressed: _navigateToAddPage,
+                      child: const Text('Save and Edit Book'),
                     ),
                   ],
                 ],
               ),
             ),
-    );
-  }
-
-  Widget _buildBookFields() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildField('Title', _titleController),
-        _buildField('Author', _authorController),
-        _buildField('Publisher', _publisherController),
-        _buildField('Publication Year', _publicationYearController),
-        _buildField('ISBN', _isbnController),
-      ],
-    );
-  }
-
-  Widget _buildField(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-        ),
-      ),
     );
   }
 }

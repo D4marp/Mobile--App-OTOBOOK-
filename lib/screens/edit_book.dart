@@ -1,227 +1,221 @@
+import 'dart:convert';
+import 'package:Otobook/models/masterBook.dart';
+import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
-import 'package:Otobook/models/book.dart';
-import 'package:Otobook/services/firestore_service.dart';
+import 'package:http/http.dart' as http;
 
-class EditBookScreen extends StatefulWidget {
-  final Book book;
+class EditbookPage extends StatefulWidget {
+  final int id;
 
-  const EditBookScreen({Key? key, required this.book}) : super(key: key);
+  const EditbookPage({super.key, required this.id});
 
   @override
-  _EditBookScreenState createState() => _EditBookScreenState();
+  State<EditbookPage> createState() => _EditbookPageState();
 }
 
-class _EditBookScreenState extends State<EditBookScreen> {
-  final _formKey = GlobalKey<FormState>();
-
+class _EditbookPageState extends State<EditbookPage> {
   late TextEditingController _judulController;
   late TextEditingController _pengarangController;
-  late TextEditingController _penerbitController;
-  late TextEditingController _tahunTerbitController;
+  late TextEditingController _penerbitanController;
+  late TextEditingController _deskripsiController;
   late TextEditingController _isbnController;
+  late TextEditingController _sinopsisController;
+  late TextEditingController _keywordController;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _judulController = TextEditingController(text: widget.book.title);
-    _pengarangController = TextEditingController(text: widget.book.author);
-    _penerbitController = TextEditingController(text: widget.book.publisher);
-    _tahunTerbitController = TextEditingController(text: widget.book.publicationYear.toString());
-    _isbnController = TextEditingController(text: widget.book.ISBN);
+    _judulController = TextEditingController();
+    _pengarangController = TextEditingController();
+    _penerbitanController = TextEditingController();
+    _deskripsiController = TextEditingController();
+    _isbnController = TextEditingController();
+    _sinopsisController = TextEditingController();
+    _keywordController = TextEditingController();
+
+    _fetchBookDetails();
+  }
+
+  Future<void> _fetchBookDetails() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final response = await http
+          .get(Uri.parse('${GetData().getBookWithSinopsisUrl}${widget.id}'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final book =
+            masterBook.fromJson(data); // Ensure this is the correct class
+        _judulController.text = book.judul;
+        _pengarangController.text = book.pengarang;
+        _penerbitanController.text = book.penerbitan;
+        _deskripsiController.text = book.deskripsi;
+        _isbnController.text = book.isbn;
+        _sinopsisController.text = book.sinopsis ?? '';
+        _keywordController.text = book.keyword ?? '';
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch book details')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _updateBook() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final updatedBook = {
+      'judul': _judulController.text,
+      'pengarang': _pengarangController.text,
+      'penerbitan': _penerbitanController.text,
+      'deskripsi': _deskripsiController.text,
+      'isbn': _isbnController.text,
+      'sinopsis': _sinopsisController.text,
+      'keyword': _keywordController.text,
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse('${GetData().editBookSinopsisUrl}${widget.id}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(updatedBook),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Book updated successfully')),
+        );
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update book')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   void dispose() {
     _judulController.dispose();
     _pengarangController.dispose();
-    _penerbitController.dispose();
-    _tahunTerbitController.dispose();
+    _penerbitanController.dispose();
+    _deskripsiController.dispose();
     _isbnController.dispose();
+    _sinopsisController.dispose();
+    _keywordController.dispose();
     super.dispose();
-  }
-
-  void _updateBook() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final updatedBook = Book(
-        id: widget.book.id,
-        title: _judulController.text,
-        author: _pengarangController.text,
-        publisher: _penerbitController.text,
-        publicationYear: int.parse(_tahunTerbitController.text),
-        ISBN: _isbnController.text,
-      );
-
-      FirestoreService().updateBook(updatedBook).then((_) {
-        Navigator.pop(context); // Go back to the previous screen
-      }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update book: $error')),
-        );
-      });
-    }
-  }
-
-  void _addNewBook() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        final _newTitleController = TextEditingController();
-        final _newAuthorController = TextEditingController();
-        final _newPublisherController = TextEditingController();
-        final _newYearController = TextEditingController();
-        final _newIsbnController = TextEditingController();
-
-        return AlertDialog(
-          title: Text('Add New Book'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildTextField(_newTitleController, 'Title', 'Please enter the title'),
-                SizedBox(height: 16.0),
-                _buildTextField(_newAuthorController, 'Author', 'Please enter the author'),
-                SizedBox(height: 16.0),
-                _buildTextField(_newPublisherController, 'Publisher', 'Please enter the publisher'),
-                SizedBox(height: 16.0),
-                _buildTextField(_newYearController, 'Publication Year', 'Please enter the year of publication', keyboardType: TextInputType.number),
-                SizedBox(height: 16.0),
-                _buildTextField(_newIsbnController, 'ISBN', 'Please enter the ISBN'),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final newBook = Book(
-                  id: '', // Generate an ID if needed or leave it empty for Firestore auto-ID
-                  title: _newTitleController.text,
-                  author: _newAuthorController.text,
-                  publisher: _newPublisherController.text,
-                  publicationYear: int.parse(_newYearController.text),
-                  ISBN: _newIsbnController.text,
-                );
-
-                FirestoreService().addBook(newBook).then((_) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('New book added successfully')),
-                  );
-                }).catchError((error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to add book: $error')),
-                  );
-                });
-              },
-              child: Text('Add Book'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _deleteBook() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this book?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                FirestoreService().deleteBook(widget.book.id).then((_) {
-                  Navigator.pop(context); // Go back to the previous screen
-                }).catchError((error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete book: $error')),
-                  );
-                });
-              },
-              child: Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Book'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: _deleteBook,
-          ),
-        ],
+        title: const Text('Edit Book'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildTextField(_judulController, 'Judul', 'Please enter the title'),
-              SizedBox(height: 16.0),
-              _buildTextField(_pengarangController, 'Pengarang', 'Please enter the author'),
-              SizedBox(height: 16.0),
-              _buildTextField(_penerbitController, 'Penerbit', 'Please enter the publisher'),
-              SizedBox(height: 16.0),
-              _buildTextField(_tahunTerbitController, 'Tahun Terbit', 'Please enter the year of publication', keyboardType: TextInputType.number),
-              SizedBox(height: 16.0),
-              _buildTextField(_isbnController, 'ISBN', 'Please enter the ISBN'),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _updateBook,
-                child: Text('Save Changes'),
-                style: ElevatedButton.styleFrom(
-                 
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            _buildTextArea(_judulController, 'Judul'),
+                            const SizedBox(height: 16),
+                            _buildTextField(_pengarangController, 'Pengarang'),
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                                _penerbitanController, 'Penerbitan'),
+                            const SizedBox(height: 16),
+                            _buildTextField(_deskripsiController, 'Deskripsi'),
+                            const SizedBox(height: 16),
+                            _buildTextField(_isbnController, 'ISBN'),
+                            const SizedBox(height: 16),
+                            _buildTextArea(_sinopsisController, 'Sinopsis'),
+                            const SizedBox(height: 16),
+                            _buildTextArea(_keywordController, 'Keyword'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 15),
+                          backgroundColor: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: _updateBook,
+                        child: const Text(
+                          'Update Book',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _addNewBook,
-                child: Text('Add New Book'),
-                style: ElevatedButton.styleFrom(
-                 
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String labelText, String validationMessage, {TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
+  Widget _buildTextField(TextEditingController controller, String labelText) {
+    return TextField(
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         border: OutlineInputBorder(),
+        labelStyle: const TextStyle(fontSize: 18),
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validationMessage;
-        }
-        return null;
-      },
-      keyboardType: keyboardType,
+    );
+  }
+
+  Widget _buildTextArea(TextEditingController controller, String labelText) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+        labelStyle: const TextStyle(fontSize: 18),
+      ),
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
     );
   }
 }
