@@ -102,6 +102,7 @@ flutter:
     - assets/icon/icon.png
     - assets/icon/Biru.svg
     - assets/icon/Kuning.svg
+    - assets/placeholder.jpg
 
   #   - images/a_dot_ham.jpeg
 

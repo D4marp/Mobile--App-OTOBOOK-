@@ -99,7 +99,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Color.fromARGB(253, 243, 239, 239),
       body: Column(
         children: [
           Container(
