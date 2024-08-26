@@ -26,7 +26,7 @@ class GetData {
   String get updateBookUrl => '${_apiUrl}editBuku';
 
   // delete book
-  String get deleteBookUrl => '${_apiUrl}deleteBuku/';
+  String get deleteBookUrl => '${_apiUrl}deleteBuku';
 
   // add cover book
   String get addCoverUrl => '${_apiUrl}uploadCover';
