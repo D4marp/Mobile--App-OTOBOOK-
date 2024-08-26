@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -91,8 +92,7 @@ class _CoverScannerState extends State<CoverScanner> {
     });
 
     try {
-      var uri =
-          Uri.parse('http://192.168.9.63:5000/api/uploadCover/${widget.id}');
+      var uri = Uri.parse('${GetData().addCoverUrl}/${widget.id}');
       var request = http.MultipartRequest('POST', uri)
         ..files.add(
             await http.MultipartFile.fromPath('file', _coverImageFile!.path));
