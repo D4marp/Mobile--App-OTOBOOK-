@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/masterBook.dart';
-import 'package:Otobook/screens/edit_book.dart';
+// import 'package:Otobook/models/masterBook.dart';
+// import 'package:Otobook/screens/edit_book.dart';
 
 class KDTScannerScreen extends StatefulWidget {
   @override

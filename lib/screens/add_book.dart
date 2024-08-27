@@ -99,7 +99,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(253, 243, 239, 239),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Column(
         children: [
           Container(
@@ -180,20 +180,4 @@ class _AddBookScreenState extends State<AddBookScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String labelText,
-      String validationMessage) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validationMessage;
-        }
-        return null;
-      },
-    );
-  }
 }

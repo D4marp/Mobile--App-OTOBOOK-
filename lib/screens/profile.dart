@@ -68,9 +68,13 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 logout(context);
               },
-              child: const Text('Logout'),
+              child: const Text('Logout',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )),
+              
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // Warna tombol logout
+                backgroundColor: const  Color(0xFF3C83F5), // Warna tombol logout
                 padding: const EdgeInsets.symmetric(
                     horizontal: 20.0, vertical: 10.0),
               ),
