@@ -33,10 +33,12 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       String token = data['access_token'];
+      String id = data['id'].toString();
 
       // Simpan token menggunakan SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
+      await prefs.setString('id', id);
 
       // Arahkan ke halaman home atau yang sesuai
       Navigator.of(context).pushReplacement(

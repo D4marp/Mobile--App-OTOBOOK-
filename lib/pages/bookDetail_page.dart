@@ -191,53 +191,121 @@ class _BookdetailPageState extends State<BookdetailPage> {
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditbookPage(id: bookId),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.all(16.0),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       ElevatedButton.icon(
+      //         onPressed: () {
+      //           Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //               builder: (context) => EditbookPage(id: bookId),
+      //             ),
+      //           ).then((result) {
+      //             if (result == true) {
+      //               setState(() {});
+      //             }
+      //           });
+      //         },
+      //         icon: const Icon(Icons.edit),
+      //         label: const Text('Edit Book'),
+      //         style: ElevatedButton.styleFrom(
+      //           padding:
+      //               const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      //           backgroundColor: Colors.blueAccent,
+      //           textStyle: const TextStyle(fontSize: 16),
+      //         ),
+      //       ),
+      //       ElevatedButton.icon(
+      //         onPressed: () {
+      //           Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //               builder: (context) => SinopsisScanner(id: bookId),
+      //             ),
+      //           );
+      //         },
+      //         icon: const Icon(Icons.add_a_photo_rounded),
+      //         label: const Text('Add Sinopsis'),
+      //         style: ElevatedButton.styleFrom(
+      //           padding:
+      //               const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      //           backgroundColor: const Color.fromARGB(255, 37, 198, 1),
+      //           textStyle: const TextStyle(fontSize: 16),
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      bottomNavigationBar: FutureBuilder<masterBook>(
+        future: GetData.getBookWithSinopsis(bookId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('No data available'));
+          } else {
+            final book = snapshot.data!;
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditbookPage(id: bookId),
+                        ),
+                      ).then((result) {
+                        if (result == true) {
+                          setState(() {});
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.edit),
+                    label: const Text('Edit Book'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      backgroundColor: Colors.blueAccent,
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
                   ),
-                ).then((result) {
-                  if (result == true) {
-                    setState(() {});
-                  }
-                });
-              },
-              icon: const Icon(Icons.edit),
-              label: const Text('Edit Book'),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                backgroundColor: Colors.blueAccent,
-                textStyle: const TextStyle(fontSize: 16),
+                  if (book.sinopsis == null || book.sinopsis!.isEmpty) ...[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SinopsisScanner(id: bookId),
+                          ),
+                        ).then((result) {
+                          if (result == true) {
+                            setState(() {});
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.add_a_photo_rounded),
+                      label: const Text('Add Sinopsis'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        backgroundColor: const Color.fromARGB(255, 37, 198, 1),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ]
+                ],
               ),
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SinopsisScanner(id: bookId),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.add_a_photo_rounded),
-              label: const Text('Add Sinopsis'),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                backgroundColor: const Color.fromARGB(255, 37, 198, 1),
-                textStyle: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+            );
+          }
+        },
       ),
     );
   }

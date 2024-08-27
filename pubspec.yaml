@@ -84,6 +84,7 @@ flutter:
     - assets/placeholder.jpg
     - assets/icon/Kuning.svg
     - assets/icon/Biru.svg
+    - assets/profile_placeholder.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

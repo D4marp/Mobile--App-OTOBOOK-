@@ -13,6 +13,9 @@ class GetData {
   // logout user
   String get logoutUrl => '${_apiUrl}logout';
 
+  // get user Id
+  String get getUserIdUrl => '${_apiUrl}getUser';
+
   // register user
   String get registerUrl => '${_apiUrl}register';
 
