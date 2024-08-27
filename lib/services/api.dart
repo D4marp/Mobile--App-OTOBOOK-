@@ -13,6 +13,9 @@ class GetData {
   // logout user
   String get logoutUrl => '${_apiUrl}logout';
 
+  // get user Id
+  String get getUserIdUrl => '${_apiUrl}getUser';
+
   // register user
   String get registerUrl => '${_apiUrl}register';
 
@@ -49,7 +52,7 @@ class GetData {
   // edit sinopsis and book
   String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis/';
 
-  static const String baseUrl = 'http://192.168.9.54:5000/getBuku';
+  static const String baseUrl = 'http://192.168.9.54:5000/api/getBuku';
   static const String sinopsisUrl = 'http://192.168.9.54:5000/api/getSinopsis';
 
   // Fetch data buku

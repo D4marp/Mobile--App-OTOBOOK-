@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Otobook/screens/start.dart';
 import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +14,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String? username;
+  String? email;
+
   Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
-    print(token);
+    // print(token);
     final response = await http.post(
       Uri.parse(GetData().logoutUrl),
       headers: {
@@ -27,13 +32,42 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (response.statusCode == 200) {
       await prefs.remove('token');
+      await prefs.remove('id');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => StartScreen()),
+        MaterialPageRoute(builder: (context) => const StartScreen()),
       );
     } else {
       // Handle error
     }
+  }
+
+  Future<String?> getId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('id');
+    return id;
+  }
+
+  Future<void> getUserId() async {
+    String? id = await getId();
+    final response = await http.get(
+      Uri.parse('${GetData().getUserIdUrl}/$id'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      setState(() {
+        username = data['username'];
+        email = data['email'];
+      });
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
+  @override
+  void initState() {
+    getUserId();
+    super.initState();
   }
 
   @override
@@ -41,46 +75,132 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: const Color(0xFF95A2FF),
+        backgroundColor: const Color.fromARGB(255, 245, 245, 245),
+        elevation: 0,
+        automaticallyImplyLeading: false,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // CircleAvatar(
-            //   backgroundImage: NetworkImage(
-            //     _user?.photoURL ??
-            //         'https://via.placeholder.com/150', // Gambar default jika foto tidak tersedia
-            //   ),
-            //   radius: 50,
-            // ),
-            // const SizedBox(height: 16.0),
-            // Text(
-            //   _user?.email ?? 'No email available',
-            //   style: const TextStyle(
-            //     fontSize: 20,
-            //     fontWeight: FontWeight.bold,
-            //   ),
-            // ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                logout(context);
-              },
-              child: const Text('Logout',
-                  style: TextStyle(
-                    color: Colors.white,
-                  )),
-              
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const  Color(0xFF3C83F5), // Warna tombol logout
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 10.0),
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 130, 130, 132),
+                  Color.fromARGB(255, 177, 177, 179)
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Profile Image
+                const CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 55,
+                    backgroundImage:
+                        AssetImage('assets/profile_placeholder.jpg'),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+
+                // Profile Information Card with Edit Buttons
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  elevation: 5,
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.person,
+                                    color: Colors.blueAccent),
+                                const SizedBox(width: 10.0),
+                                Text(
+                                  'Username: $username',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // IconButton(
+                            //   onPressed: () {
+                            //     // Add your edit functionality here
+                            //   },
+                            //   icon: const Icon(Icons.edit,
+                            //       color: Colors.blueAccent),
+                            // ),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.email,
+                                    color: Colors.blueAccent),
+                                const SizedBox(width: 10.0),
+                                Text(
+                                  'Email: $email',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                // Add your edit functionality here
+                              },
+                              icon: const Icon(Icons.edit,
+                                  color: Colors.blueAccent),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(),
+
+                // Logout Button
+                ElevatedButton.icon(
+                  onPressed: () {
+                    logout(context);
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  label: const Text('Logout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 59, 52, 52),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0, vertical: 15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
