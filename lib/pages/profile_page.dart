@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:otobook/models/api.dart';
+import 'package:otobook/pages/editUser_page.dart';
 import 'package:otobook/pages/start_page.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Future<Map<String, dynamic>>? userData;
   String? username;
   String? email;
 
@@ -43,23 +45,28 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Future<String?> getId() async {
+  Future<int?> getId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? id = prefs.getString('id');
-    return id;
+    if (id != null) {
+      return int.tryParse(id);
+    }
+    return null;
   }
 
-  Future<void> getUserId() async {
-    String? id = await getId();
+  Future<Map<String, dynamic>> getUserData() async {
+    int? id = await getId();
     final response = await http.get(
       Uri.parse('${GetData().getUserIdUrl}/$id'),
     );
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      setState(() {
-        username = data['username'];
-        email = data['email'];
-      });
+      return {
+        'username': data['username'],
+        'email': data['email'],
+        'path': data['path'],
+      };
     } else {
       throw Exception('Failed to load');
     }
@@ -67,8 +74,28 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    getUserId();
     super.initState();
+    userData = getUserData();
+  }
+
+  void navigateToEditUser(BuildContext context) async {
+    int? id = await getId();
+    if (id != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EdituserPage(id: id),
+        ),
+      ).then((result) {
+        if (result == true) {
+          setState(() {
+            userData = getUserData(); // Refresh user data
+          });
+        }
+      });
+    } else {
+      print("User ID is null");
+    }
   }
 
   @override
@@ -97,108 +124,131 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Profile Image
-                const CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.white,
-                  child: CircleAvatar(
-                    radius: 55,
-                    backgroundImage:
-                        AssetImage('assets/profile_placeholder.jpg'),
-                  ),
-                ),
-                const SizedBox(height: 20.0),
-
-                // Profile Information Card with Edit Buttons
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  elevation: 5,
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.person,
-                                    color: Colors.blueAccent),
-                                const SizedBox(width: 10.0),
-                                Text(
-                                  'Username: $username',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // IconButton(
-                            //   onPressed: () {
-                            //     // Add your edit functionality here
-                            //   },
-                            //   icon: const Icon(Icons.edit,
-                            //       color: Colors.blueAccent),
-                            // ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.email,
-                                    color: Colors.blueAccent),
-                                const SizedBox(width: 10.0),
-                                Text(
-                                  'Email: $email',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                // Add your edit functionality here
-                              },
-                              icon: const Icon(Icons.edit,
-                                  color: Colors.blueAccent),
-                            ),
-                          ],
-                        ),
-                      ],
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: userData,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  return const Center(
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundColor: Colors.white,
+                      backgroundImage:
+                          AssetImage('assets/profile_placeholder.jpg'),
                     ),
-                  ),
-                ),
-                const Spacer(),
-
-                // Logout Button
-                ElevatedButton.icon(
-                  onPressed: () {
-                    logout(context);
-                  },
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text('Logout'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 59, 52, 52),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0, vertical: 15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
-              ],
+                  );
+                } else {
+                  final data = snapshot.data!;
+                  final coverUrl = '${GetData().Url}${data['path']}';
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.white,
+                        child: ClipOval(
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/profile_placeholder.jpg',
+                            image: coverUrl,
+                            fit: BoxFit.cover,
+                            width: 120,
+                            height: 120,
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/profile_placeholder.jpg',
+                                fit: BoxFit.cover,
+                                width: 120,
+                                height: 120,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        elevation: 5,
+                        margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.person,
+                                          color: Colors.blueAccent),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        'Username: ${data['username']}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.email,
+                                          color: Colors.blueAccent),
+                                      const SizedBox(width: 10.0),
+                                      Text(
+                                        'Email: ${data['email']}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      navigateToEditUser(context);
+                                    },
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blueAccent),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          logout(context);
+                        },
+                        icon: const Icon(Icons.logout, color: Colors.white),
+                        label: const Text('Logout'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 59, 52, 52),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30.0, vertical: 15.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
             ),
           ),
         ],

@@ -26,7 +26,7 @@ class _CoverScannerState extends State<CoverScanner> {
           child: Column(
             children: <Widget>[
               ListTile(
-                leading: Icon(Icons.camera_alt),
+                leading: const Icon(Icons.camera_alt),
                 title: Text('Camera'),
                 onTap: () async {
                   Navigator.pop(context,
@@ -34,7 +34,7 @@ class _CoverScannerState extends State<CoverScanner> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library),
+                leading: const Icon(Icons.photo_library),
                 title: Text('Gallery'),
                 onTap: () async {
                   Navigator.pop(context,
@@ -62,13 +62,13 @@ class _CoverScannerState extends State<CoverScanner> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.')),
+          const SnackBar(content: Text('No image selected.')),
         );
       }
     } catch (e) {
       print('Error picking cover image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('Failed to pick cover image. Please try again.')),
       );
     } finally {
@@ -81,7 +81,7 @@ class _CoverScannerState extends State<CoverScanner> {
   Future<void> _uploadCoverImage() async {
     if (_coverImageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No image to upload.')),
+        const SnackBar(content: Text('No image to upload.')),
       );
       return;
     }
@@ -101,7 +101,7 @@ class _CoverScannerState extends State<CoverScanner> {
 
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cover image uploaded successfully.')),
+          const SnackBar(content: Text('Cover image uploaded successfully.')),
         );
         // Navigator.push(
         //   context,
@@ -112,13 +112,13 @@ class _CoverScannerState extends State<CoverScanner> {
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload cover image.')),
+          const SnackBar(content: Text('Failed to upload cover image.')),
         );
       }
     } catch (e) {
       print('Error uploading cover image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('Failed to upload cover image. Please try again.')),
       );
     } finally {
@@ -132,30 +132,30 @@ class _CoverScannerState extends State<CoverScanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan Book Cover'),
-        backgroundColor: Color(0xFF95A2FF),
+        title: const Text('Scan Book Cover'),
+        backgroundColor: const Color(0xFF95A2FF),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   ElevatedButton(
                     onPressed: _pickCoverImage,
-                    child: Text('Pick Cover Image'),
+                    child: const Text('Pick Cover Image'),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   if (_coverImage != null) ...[
                     Image.file(
                       _coverImageFile!,
                       height: 200,
                       fit: BoxFit.cover,
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _uploadCoverImage,
-                      child: Text('Upload Cover Image'),
+                      child: const Text('Upload Cover Image'),
                     ),
                   ],
                 ],

@@ -16,6 +16,9 @@ class GetData {
   // get user Id
   String get getUserIdUrl => '${_apiUrl}getUser';
 
+  // edit user by id
+  String get editUserByIdUrl => '${_apiUrl}editUser';
+
   // register user
   String get registerUrl => '${_apiUrl}register';
 
