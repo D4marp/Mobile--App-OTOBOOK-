@@ -1,33 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/masterBook.dart';
-import 'package:Otobook/screens/add_book.dart';
+import "package:Otobook/models/masterBook.dart";
+import "package:Otobook/screens/add_book.dart";
+import "package:Otobook/services/ocr_service.dart";
+import "package:flutter/material.dart";
+import "package:image_picker/image_picker.dart";
 
 class VersoScanner extends StatefulWidget {
   const VersoScanner({super.key});
 
   @override
-  _VersoScannerState createState() => _VersoScannerState();
+  State<VersoScanner> createState() => _VersoScannerState();
 }
 
 class _VersoScannerState extends State<VersoScanner> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
-  String _rawText = '';
-  Map<String, String> extractedData = {
-    'Judul': '',
-    'Pengarang': '',
-    'Penerbitan': '',
-    'Deskripsi': '',
-    'ISBN': ''
-  };
+  String _extractedText = '';
+  String judul = "";
+  String pengarang = "";
+  String penerbitan = "";
+  String deskripsi = "";
+  String isbn = "";
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
+        return Container(
           height: 150,
           child: Column(
             children: <Widget>[
@@ -62,10 +60,12 @@ class _VersoScannerState extends State<VersoScanner> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String rawText = await OCRService.extractTextFromImage(pickedFile.path);
-        if (rawText.isNotEmpty) {
+        String extractedText =
+            await OCRService.extractTextFromImage(pickedFile.path);
+
+        if (extractedText.isNotEmpty) {
           setState(() {
-            _rawText = rawText.trim();
+            _extractedText = extractedText;
           });
         }
       } else {
@@ -87,46 +87,117 @@ class _VersoScannerState extends State<VersoScanner> {
     }
   }
 
-  void _onTextSelection(TextSelection selection, SelectionChangedCause? cause) async {
-    if (selection.isValid && selection.start != selection.end) {
-      final String selectedText = _rawText.substring(selection.start, selection.end).trim();
-
-      if (selectedText.isNotEmpty) {
-        final String? selectedField = await showMenu<String>(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            selection.start.toDouble(),
-            selection.end.toDouble(),
-            0.0,
-            0.0,
+  void _showFieldSelectionDialog(String selectedText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Field'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                ListTile(
+                  title: const Text('Judul'),
+                  onTap: () {
+                    setState(() {
+                      judul = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Pengarang'),
+                  onTap: () {
+                    setState(() {
+                      pengarang = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Penerbitan'),
+                  onTap: () {
+                    setState(() {
+                      penerbitan = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Deskripsi'),
+                  onTap: () {
+                    setState(() {
+                      deskripsi = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('ISBN'),
+                  onTap: () {
+                    setState(() {
+                      isbn = selectedText;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
-          items: extractedData.keys.map((String field) {
-            return PopupMenuItem<String>(
-              value: field,
-              child: Text(field),
-            );
-          }).toList(),
         );
+      },
+    );
+  }
 
-        if (selectedField != null) {
-          setState(() {
-            extractedData[selectedField] = extractedData[selectedField]! +
-                (extractedData[selectedField]!.isEmpty ? '' : ' ') +
-                selectedText;
-          });
-        }
-      }
-    }
+  // Widget _buildExtractedTextWidget() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: _extractedText.split('\n').map((line) {
+  //       return GestureDetector(
+  //         onTap: () => _showFieldSelectionDialog(line),
+  //         child: Padding(
+  //           padding: const EdgeInsets.symmetric(vertical: 4.0),
+  //           child: Text(line),
+  //         ),
+  //       );
+  //     }).toList(),
+  //   );
+  // }
+
+  Widget _buildExtractedTextWidget() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _extractedText.split('\n').map((line) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: GestureDetector(
+            onTap: () {
+              _showFieldSelectionDialog(line);
+            },
+            child: Text(
+              line,
+              style: const TextStyle(
+           
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   void _navigateToAddPage() {
+    print(
+        'Judul: $judul, Pengarang: $pengarang, Penerbitan: $penerbitan, Deskripsi: $deskripsi, ISBN: $isbn');
+
     final masterBookData = masterBook(
       id: 0,
-      judul: extractedData['Judul']!,
-      pengarang: extractedData['Pengarang']!,
-      penerbitan: extractedData['Penerbitan']!,
-      deskripsi: extractedData['Deskripsi']!,
-      isbn: extractedData['ISBN']!,
+      judul: judul,
+      pengarang: pengarang,
+      penerbitan: penerbitan,
+      deskripsi: deskripsi,
+      isbn: isbn,
     );
     Navigator.push(
       context,
@@ -135,6 +206,54 @@ class _VersoScannerState extends State<VersoScanner> {
       ),
     );
   }
+
+ Widget _buildField(String label, String value, Function(String) onChanged) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: TextFormField(
+      initialValue: value,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      onChanged: onChanged,
+    ),
+  );
+}
+
+Widget _buildFields() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _buildField('Judul', judul, (newValue) {
+        setState(() {
+          judul = newValue;
+        });
+      }),
+      _buildField('Pengarang', pengarang, (newValue) {
+        setState(() {
+          pengarang = newValue;
+        });
+      }),
+      _buildField('Penerbitan', penerbitan, (newValue) {
+        setState(() {
+          penerbitan = newValue;
+        });
+      }),
+      _buildField('Deskripsi', deskripsi, (newValue) {
+        setState(() {
+          deskripsi = newValue;
+        });
+      }),
+      _buildField('ISBN', isbn, (newValue) {
+        setState(() {
+          isbn = newValue;
+        });
+      }),
+    ],
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,64 +267,18 @@ class _VersoScannerState extends State<VersoScanner> {
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ElevatedButton(
                     onPressed: _scanAndExtract,
                     child: const Text('Scan and Extract Text'),
                   ),
                   const SizedBox(height: 20),
-                  if (_rawText.isNotEmpty) ...[
-                    const Text('Tap and drag to select text for a field:'),
+                  if (_extractedText.isNotEmpty) ...[
+                    const Text('Extracted Text:'),
                     const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.white,
-                      ),
-                      child: SingleChildScrollView(
-                        child: SelectableText.rich(
-                          TextSpan(
-                            text: _rawText,
-                            style: const TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                          onSelectionChanged: _onTextSelection,
-                          showCursor: true,
-                          cursorColor: Colors.blue,
-                          cursorWidth: 2.0,
-                          toolbarOptions: const ToolbarOptions(
-                            copy: true,
-                            selectAll: true,
-                          ),
-                          enableInteractiveSelection: true,
-                        ),
-                      ),
-                    ),
+                    _buildExtractedTextWidget(),
                     const SizedBox(height: 20),
-                    const Text('Extracted Data:'),
-                    const SizedBox(height: 10),
-                    ...extractedData.entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${entry.key}: ',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            Expanded(
-                              child: Text(
-                                entry.value.isEmpty
-                                    ? 'No data selected'
-                                    : entry.value,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                    _buildFields(),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _navigateToAddPage,
