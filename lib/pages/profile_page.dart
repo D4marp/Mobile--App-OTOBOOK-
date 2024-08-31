@@ -166,67 +166,73 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const SizedBox(height: 20.0),
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        elevation: 5,
-                        margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            elevation: 5,
+                            margin: EdgeInsets.symmetric(
+                              horizontal: constraints.maxWidth * 0.05,
+                            ), // Adjust margin to 5% of the screen width
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
                                 children: [
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Icon(Icons.person,
-                                          color: Colors.blueAccent),
-                                      const SizedBox(width: 10.0),
-                                      Text(
-                                        'Username: ${data['username']}',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.black87,
-                                        ),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.person,
+                                              color: Colors.blueAccent),
+                                          const SizedBox(width: 10.0),
+                                          Text(
+                                            'Username: ${data['username']}',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.email,
+                                              color: Colors.blueAccent),
+                                          const SizedBox(width: 10.0),
+                                          Text(
+                                            'Email: ${data['email']}',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          navigateToEditUser(context);
+                                        },
+                                        icon: const Icon(Icons.edit,
+                                            color: Colors.blueAccent),
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10.0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.email,
-                                          color: Colors.blueAccent),
-                                      const SizedBox(width: 10.0),
-                                      Text(
-                                        'Email: ${data['email']}',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      navigateToEditUser(context);
-                                    },
-                                    icon: const Icon(Icons.edit,
-                                        color: Colors.blueAccent),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
                       const Spacer(),
                       ElevatedButton.icon(

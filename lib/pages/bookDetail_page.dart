@@ -207,52 +207,78 @@ class _BookdetailPageState extends State<BookdetailPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditbookPage(id: bookId),
-                        ),
-                      ).then((result) {
-                        if (result == true) {
-                          setState(() {});
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.edit),
-                    label: const Text('Edit Book'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      backgroundColor: Colors.blueAccent,
-                      textStyle: const TextStyle(fontSize: 16),
+                  if (book.sinopsis == "No synopsis available") ...[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SinopsisScanner(id: bookId),
+                          ),
+                        ).then((result) {
+                          if (result == true) {
+                            setState(() {
+                              // You might want to refresh the book data here if needed
+                            });
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.add_a_photo_rounded),
+                      label: const Text('Add Sinopsis'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        backgroundColor: const Color.fromARGB(255, 37, 198, 1),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
                     ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SinopsisScanner(id: bookId),
-                        ),
-                      ).then((result) {
-                        if (result == true) {
-                          setState(() {
-                            // You might want to refresh the book data here if needed
-                          });
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.add_a_photo_rounded),
-                    label: const Text('Add Sinopsis'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      backgroundColor: const Color.fromARGB(255, 37, 198, 1),
-                      textStyle: const TextStyle(fontSize: 16),
+                  ] else ...[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditbookPage(id: bookId),
+                          ),
+                        ).then((result) {
+                          if (result == true) {
+                            setState(() {});
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.edit),
+                      label: const Text('Edit Book'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        backgroundColor: Colors.blueAccent,
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
                     ),
-                  ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => EditbookPage(id: bookId),
+                        //   ),
+                        // ).then((result) {
+                        //   if (result == true) {
+                        //     setState(() {});
+                        //   }
+                        // });
+                      },
+                      icon: const Icon(Icons.arrow_forward_sharp),
+                      label: const Text('Add RPA'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
+                        backgroundColor:
+                            const Color.fromARGB(255, 249, 255, 68),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             );

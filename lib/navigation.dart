@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:otobook/pages/getBooks.dart';
 import 'package:otobook/pages/home_page.dart';
 import 'package:otobook/pages/profile_page.dart';
+import 'package:otobook/pages/search_page.dart';
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
@@ -15,7 +16,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   List<Widget> _widgetOptions = <Widget>[
     const HomePage(),
-    // HomePage(),
+    const SearchPage(),
     const GetBooksPage(),
     const ProfilePage(),
   ];
@@ -38,10 +39,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.add_box),
-          //   label: 'Add',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: 'list', // Sesuaikan label ini dengan _widgetOptions
