@@ -1,3 +1,4 @@
+import 'package:Otobook/screens/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Otobook/screens/add_book.dart';
 import 'package:Otobook/screens/profile.dart';
@@ -16,8 +17,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    //  AddBookScreen(),
-    // Placeholder, jika perlu
+    SearchPage(),
     GetBooksPage(),
     ProfilePage(),
   ];
@@ -40,10 +40,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.add_box),
-          //   label: 'Add',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
             label: 'list', // Sesuaikan label ini dengan _widgetOptions
