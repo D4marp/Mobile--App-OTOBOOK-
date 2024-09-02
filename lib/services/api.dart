@@ -3,9 +3,9 @@ import 'package:Otobook/models/masterBook.dart';
 import 'dart:convert';
 
 class GetData {
-  final String _apiUrl = 'http://192.168.9.62:5000/api/';
+  final String _apiUrl = 'http://192.168.9.63:5000/api/';
 
-  String get Url => 'http://192.168.9.62:5000';
+  String get Url => 'http://192.168.9.63:5000';
 
   // login user
   String get loginUrl => '${_apiUrl}login';
@@ -55,19 +55,11 @@ class GetData {
   // edit sinopsis and book
   String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis/';
 
-<<<<<<< HEAD
-  //run-automation
-  String get runAutomationUrl => '${_apiUrl}run-automation';
-
-  static const String baseUrl = 'http://192.168.9.62:5000/api/getBuku';
-  static const String sinopsisUrl = 'http://192.168.9.62:5000/api/getSinopsis';
-=======
   // search book
   String get searchBookUrl => '${_apiUrl}searchBuku';
 
   static const String baseUrl = 'http://192.168.9.63:5000/api/getBuku';
   static const String sinopsisUrl = 'http://192.168.9.63:5000/api/getSinopsis';
->>>>>>> 08b50d0149e18e57f5ea16bea00e2402e832e179
 
   // Fetch data buku
   static Future<List<masterBook>> getBooks() async {
@@ -109,31 +101,13 @@ class GetData {
         if (sinopsisResponse.statusCode == 200) {
           final sinopsisData = jsonDecode(sinopsisResponse.body);
 
-          // Cek apakah respons mengandung pesan 'Data tidak ditemukan'
-          if (sinopsisData is Map<String, dynamic> &&
-              sinopsisData.containsKey('message') &&
-              sinopsisData['message'] == 'Data tidak ditemukan') {
-            // Jika sinopsis tidak ditemukan, kembalikan hanya data buku
-            return masterBook.fromJson({
-              ...bookData,
-              'sinopsis': null, // Kosongkan sinopsis
-            });
-          } else {
-            // Jika sinopsis ditemukan, gabungkan dengan data buku
-            return masterBook.fromJson({
-              ...bookData,
-              'sinopsis': sinopsisData['sinopsis'] ?? '',
-              'keyword': sinopsisData['keyword'] ?? [],
-            });
-          }
-        } else if (sinopsisResponse.statusCode == 404) {
-          // Jika sinopsis tidak ditemukan (404), kembalikan data buku saja
           return masterBook.fromJson({
             ...bookData,
-            'sinopsis': null, // Kosongkan sinopsis
+            'sinopsis': sinopsisData['sinopsis'],
+            'keyword': sinopsisData['keyword'],
           });
         } else {
-          // Untuk status code lain, return data buku saja tanpa sinopsis
+          // If sinopsis is not found, return book data only
           return masterBook.fromJson(bookData);
         }
       } else {
@@ -141,7 +115,6 @@ class GetData {
             'Failed to load book data. Status code: ${bookResponse.statusCode}');
       }
     } catch (e) {
-      // Tangani error tanpa memblokir aplikasi
       throw Exception('Error fetching book and sinopsis: ${e.toString()}');
     }
   }
