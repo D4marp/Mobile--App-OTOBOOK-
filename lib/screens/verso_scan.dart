@@ -177,7 +177,7 @@ class _VersoScannerState extends State<VersoScanner> {
             child: Text(
               line,
               style: const TextStyle(
-                color: Colors.blue,
+           
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -207,30 +207,53 @@ class _VersoScannerState extends State<VersoScanner> {
     );
   }
 
-  Widget _buildField(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
-        ],
+ Widget _buildField(String label, String value, Function(String) onChanged) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: TextFormField(
+      initialValue: value,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
       ),
-    );
-  }
+      onChanged: onChanged,
+    ),
+  );
+}
 
-  Widget _buildFields() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildField('Judul', judul),
-        _buildField('Pengarang', pengarang),
-        _buildField('Penerbitan', penerbitan),
-        _buildField('Deskripsi', deskripsi),
-        _buildField('ISBN', isbn),
-      ],
-    );
-  }
+Widget _buildFields() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _buildField('Judul', judul, (newValue) {
+        setState(() {
+          judul = newValue;
+        });
+      }),
+      _buildField('Pengarang', pengarang, (newValue) {
+        setState(() {
+          pengarang = newValue;
+        });
+      }),
+      _buildField('Penerbitan', penerbitan, (newValue) {
+        setState(() {
+          penerbitan = newValue;
+        });
+      }),
+      _buildField('Deskripsi', deskripsi, (newValue) {
+        setState(() {
+          deskripsi = newValue;
+        });
+      }),
+      _buildField('ISBN', isbn, (newValue) {
+        setState(() {
+          isbn = newValue;
+        });
+      }),
+    ],
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

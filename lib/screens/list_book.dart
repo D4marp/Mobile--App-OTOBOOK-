@@ -68,7 +68,7 @@ class BookItem extends StatelessWidget {
   const BookItem({required this.book, required this.onDelete});
 
   Future<Map<String, dynamic>> _deleteBook(BuildContext context, int id) async {
-    Uri url = Uri.parse(GetData().deleteBookUrl + id.toString());
+    Uri url = Uri.parse("${GetData().deleteBookUrl}/$id");
 
     try {
       final response = await http.delete(url, headers: {

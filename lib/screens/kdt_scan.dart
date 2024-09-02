@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Otobook/services/ocr_service.dart';
-import 'package:Otobook/models/masterBook.dart';
-import 'package:Otobook/screens/edit_book.dart';
 
 class KDTScannerScreen extends StatefulWidget {
   @override
@@ -14,9 +12,12 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _publisherController = TextEditingController();
-  final TextEditingController _publicationYearController =
-      TextEditingController();
+  final TextEditingController _publicationYearController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
+  final TextEditingController _editionController = TextEditingController();
+  final TextEditingController _physicalDescriptionController = TextEditingController();
+  final TextEditingController _seriesController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
 
   bool _isLoading = false;
   String _extractedText = '';
@@ -29,8 +30,7 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String extractedText =
-            await OCRService.extractTextFromImage(pickedFile.path);
+        String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
 
         if (extractedText.isNotEmpty) {
           setState(() {
@@ -90,7 +90,7 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
 
   void _parseKDTText(String text) {
     final lines = text.split('\n');
-    String? title, author, publisher, isbn;
+    String? title, author, publisher, isbn, edition, physicalDescription, series, notes;
     int? publicationYear;
 
     for (var line in lines) {
@@ -108,8 +108,15 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
           title = parts[2].trim();
         }
       } else if (RegExp(r'\d{4}').hasMatch(line)) {
-        publicationYear =
-            int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
+        publicationYear = int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
+      } else if (line.startsWith('Edisi')) {
+        edition = line.replaceFirst('Edisi', '').trim();
+      } else if (line.startsWith('Deskripsi Fisik')) {
+        physicalDescription = line.replaceFirst('Deskripsi Fisik', '').trim();
+      } else if (line.startsWith('Seri')) {
+        series = line.replaceFirst('Seri', '').trim();
+      } else if (line.startsWith('Catatan')) {
+        notes = line.replaceFirst('Catatan', '').trim();
       }
     }
 
@@ -119,26 +126,11 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     _publisherController.text = publisher ?? '';
     _publicationYearController.text = publicationYear?.toString() ?? '';
     _isbnController.text = isbn ?? '';
+    _editionController.text = edition ?? '';
+    _physicalDescriptionController.text = physicalDescription ?? '';
+    _seriesController.text = series ?? '';
+    _notesController.text = notes ?? '';
   }
-
-  // Future<void> _navigateToEditBook() async {
-  //   final book = Book(
-  //     id: '', // Generate an ID if needed or leave it empty for local use
-  //     title: _titleController.text,
-  //     author: _authorController.text,
-  //     publisher: _publisherController.text,
-  //     publicationYear: int.tryParse(_publicationYearController.text) ?? 0,
-  //     ISBN: _isbnController.text,
-  //   );
-
-  //   // Navigate to EditBookScreen
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => add(book: book),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +156,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
                     _buildBookFields(),
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // Handle save or further action
+                      },
                       child: Text('Save and Edit Book'),
                     ),
                   ],
@@ -183,6 +177,10 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
         _buildField('Publisher', _publisherController),
         _buildField('Publication Year', _publicationYearController),
         _buildField('ISBN', _isbnController),
+        _buildField('Edition', _editionController),
+        _buildField('Physical Description', _physicalDescriptionController),
+        _buildField('Series', _seriesController),
+        _buildField('Notes', _notesController),
       ],
     );
   }

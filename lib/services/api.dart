@@ -13,8 +13,14 @@ class GetData {
   // logout user
   String get logoutUrl => '${_apiUrl}logout';
 
+  // get user Id
+  String get getUserIdUrl => '${_apiUrl}getUser';
+
   // register user
   String get registerUrl => '${_apiUrl}register';
+
+  // edit user by id
+  String get editUserByIdUrl => '${_apiUrl}editUser';
 
   // add new book
   String get addBookUrl => '${_apiUrl}addBuku';
@@ -49,11 +55,19 @@ class GetData {
   // edit sinopsis and book
   String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis/';
 
+<<<<<<< HEAD
   //run-automation
   String get runAutomationUrl => '${_apiUrl}run-automation';
 
   static const String baseUrl = 'http://192.168.9.62:5000/api/getBuku';
   static const String sinopsisUrl = 'http://192.168.9.62:5000/api/getSinopsis';
+=======
+  // search book
+  String get searchBookUrl => '${_apiUrl}searchBuku';
+
+  static const String baseUrl = 'http://192.168.9.63:5000/api/getBuku';
+  static const String sinopsisUrl = 'http://192.168.9.63:5000/api/getSinopsis';
+>>>>>>> 08b50d0149e18e57f5ea16bea00e2402e832e179
 
   // Fetch data buku
   static Future<List<masterBook>> getBooks() async {

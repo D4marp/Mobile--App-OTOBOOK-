@@ -5,6 +5,7 @@ import 'package:Otobook/widgets/buttom.dart';
 import 'package:Otobook/widgets/cara_widget.dart';
 import 'package:Otobook/widgets/input_widget.dart';
 
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -15,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  String _userName = 'User'; // Nama pengguna default
+  String _userName = ''; // Nama pengguna default
 
   @override
   void initState() {
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: <Widget>[
             // Greeting and logo section
             LayoutBuilder(
               builder: (context, constraints) {
@@ -113,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 10.0),
 
-            // Carousel section
+            // // Carousel section
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.16,
               child: PageView(
@@ -144,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             _buildPageIndicator(),
-
+            
             SizedBox(height: 20.0),
 
             IconRowWidget(),

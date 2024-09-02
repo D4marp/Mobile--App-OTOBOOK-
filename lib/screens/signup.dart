@@ -183,7 +183,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: () {
                         register();
                       },
-                      child: Text('Sign Up'),
+                      child: Text('Sign Up',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          )),
+                      
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3C83F5),
                         minimumSize: const Size(double.infinity, 50),
