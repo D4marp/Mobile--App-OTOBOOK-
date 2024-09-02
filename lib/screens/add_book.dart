@@ -83,6 +83,31 @@ class _AddBookScreenState extends State<AddBookScreen> {
     }
   }
 
+  // Future<void> _runAutomation() async {
+  //   Uri url = Uri.parse(GetData().runAutomationUrl);
+  //   try {
+  //     final response = await http.post(url);
+
+  //     if (response.statusCode == 200) {
+  //       final responseData = json.decode(response.body);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content:
+  //                 Text('Automation triggered: ${responseData['message']}')),
+  //       );
+  //     } else {
+  //       final responseData = json.decode(response.body);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Error: ${responseData['error']}')),
+  //       );
+  //     }
+  //   } catch (error) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Failed to connect to the server: $error')),
+  //     );
+  //   }
+  // }
+
   Widget _buildTextArea(TextEditingController controller, String labelText) {
     return TextField(
       controller: controller,
@@ -166,7 +191,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: _saveBook,
+                        onPressed: () async {
+                          _saveBook(); // Kirim data formulir
+                          //await _runAutomation(); // Jalankan otomatisasi
+                        },
                         child: const Text('Submit'),
                       ),
                     ),
