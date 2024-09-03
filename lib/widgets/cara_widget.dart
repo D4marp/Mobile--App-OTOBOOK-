@@ -42,7 +42,8 @@ class CaraWidget extends StatelessWidget {
                     SizedBox(
                       width: screenWidth * 0.5,
                       child: Text(
-                        'Cara Cepat dan Mudah',
+                        'Digitalisasi Perpustakaan',
+                       
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: textSize, // Use dynamic text size
@@ -55,7 +56,7 @@ class CaraWidget extends StatelessWidget {
                     SizedBox(
                       width: screenWidth * 0.6,
                       child: Text(
-                        'Solusi mudah dan cepat untuk pengkatalogan data bibliografis, yang dirancang khusus untuk mendukung digitalisasi perpustakaan di Indonesia. Solusi ini memungkinkan perpustakaan untuk mempercepat proses katalogisasi, meningkatkan akurasi data, dan mempermudah akses informasi bagi para pengguna perpustakaan.',
+                        'Aplikasi yang dirancang khusus untuk mendukung proses digitalisasi perpustakaan diseluruh Indonesia. ',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.96),
                           fontSize: subTextSize, // Use dynamic subtext size
