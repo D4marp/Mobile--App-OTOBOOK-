@@ -19,12 +19,14 @@ class BookdetailPage extends StatefulWidget {
 
 class _BookdetailPageState extends State<BookdetailPage> {
   int get bookId => widget.bookId;
+
   Future<String> fetchCoverPath(int masterBukuId) async {
     final response =
         await http.get(Uri.parse('${GetData().getCoverUrl}/$masterBukuId'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
+
       return data['path']; // Ambil path dari respon
     } else {
       throw Exception('Failed to load cover');
@@ -32,6 +34,44 @@ class _BookdetailPageState extends State<BookdetailPage> {
   }
 
   @override
+  void initState() {
+    print("id Buku :${bookId} ");
+    super.initState();
+  }
+
+  void _runAutomation() async {
+    Uri url = Uri.parse('${GetData().runAutomationUrl}/$bookId');
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'bookId': widget.bookId, // Kirim bookId sebagai parameter
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Automation triggered: ${responseData['message']}')),
+        );
+      } else {
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${responseData['error']}')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to connect to the server: $error')),
+      );
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<String>(
@@ -257,17 +297,9 @@ class _BookdetailPageState extends State<BookdetailPage> {
                       ),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => EditbookPage(id: bookId),
-                        //   ),
-                        // ).then((result) {
-                        //   if (result == true) {
-                        //     setState(() {});
-                        //   }
-                        // });
+                      onPressed: () async {
+                        _runAutomation(); // Kirim data formulir
+                        //await _runAutomation(); // Jalankan otomatisasi
                       },
                       icon: const Icon(Icons.arrow_forward_sharp),
                       label: const Text('Add RPA'),
