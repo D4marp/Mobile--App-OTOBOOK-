@@ -113,8 +113,8 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromARGB(255, 130, 130, 132),
-                  Color.fromARGB(255, 177, 177, 179)
+                  Color.fromARGB(255, 126, 181, 215),
+                  Color.fromARGB(255, 177, 190, 210)
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

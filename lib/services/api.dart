@@ -7,6 +7,7 @@ class GetData {
 
   String get Url => 'http://103.106.72.182:8770';
 
+
   // login user
   String get loginUrl => '${_apiUrl}login';
 
@@ -58,11 +59,11 @@ class GetData {
   // search book
   String get searchBookUrl => '${_apiUrl}searchBuku';
 
-  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
-  static const String sinopsisUrl =
-      'http://103.106.72.182:8770/api/getSinopsis';
 
-  // Fetch data buku
+  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
+  static const String sinopsisUrl ='http://103.106.72.182:8770/api/getSinopsis';
+
+
   static Future<List<masterBook>> getBooks() async {
     try {
       final response = await http.get(Uri.parse(baseUrl));
@@ -119,4 +120,7 @@ class GetData {
       throw Exception('Error fetching book and sinopsis: ${e.toString()}');
     }
   }
+
+  //run-automation
+  String get runAutomationUrl => '${_apiUrl}run-automation';
 }
