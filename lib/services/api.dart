@@ -3,9 +3,9 @@ import 'package:Otobook/models/masterBook.dart';
 import 'dart:convert';
 
 class GetData {
-  final String _apiUrl = 'http://192.168.9.63:5000/api/';
+  final String _apiUrl = 'http://103.106.72.182:8770/api/';
 
-  String get Url => 'http://192.168.9.63:5000';
+  String get Url => 'http://103.106.72.182:8770';
 
   // login user
   String get loginUrl => '${_apiUrl}login';
@@ -58,8 +58,9 @@ class GetData {
   // search book
   String get searchBookUrl => '${_apiUrl}searchBuku';
 
-  static const String baseUrl = 'http://192.168.9.63:5000/api/getBuku';
-  static const String sinopsisUrl = 'http://192.168.9.63:5000/api/getSinopsis';
+  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
+  static const String sinopsisUrl =
+      'http://103.106.72.182:8770/api/getSinopsis';
 
   // Fetch data buku
   static Future<List<masterBook>> getBooks() async {
