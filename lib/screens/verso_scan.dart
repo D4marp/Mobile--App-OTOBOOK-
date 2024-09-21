@@ -1,8 +1,8 @@
-import "package:Otobook/models/masterBook.dart";
-import "package:Otobook/screens/add_book.dart";
-import "package:Otobook/services/ocr_service.dart";
-import "package:flutter/material.dart";
-import "package:image_picker/image_picker.dart";
+import 'package:Otobook/models/masterBook.dart';
+import 'package:Otobook/screens/add_book.dart';
+import 'package:Otobook/services/ocr_service.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class VersoScanner extends StatefulWidget {
   const VersoScanner({super.key});
@@ -20,6 +20,18 @@ class _VersoScannerState extends State<VersoScanner> {
   String penerbitan = "";
   String deskripsi = "";
   String isbn = "";
+
+  final FocusNode _judulFocusNode = FocusNode();
+  final FocusNode _pengarangFocusNode = FocusNode();
+  final FocusNode _penerbitanFocusNode = FocusNode();
+  final FocusNode _deskripsiFocusNode = FocusNode();
+  final FocusNode _isbnFocusNode = FocusNode();
+
+  final TextEditingController _judulController = TextEditingController();
+  final TextEditingController _pengarangController = TextEditingController();
+  final TextEditingController _penerbitanController = TextEditingController();
+  final TextEditingController _deskripsiController = TextEditingController();
+  final TextEditingController _isbnController = TextEditingController();
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -100,7 +112,8 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Judul'),
                   onTap: () {
                     setState(() {
-                      judul = selectedText;
+                      _judulController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_judulFocusNode);
                     });
                     Navigator.pop(context);
                   },
@@ -109,7 +122,8 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Pengarang'),
                   onTap: () {
                     setState(() {
-                      pengarang = selectedText;
+                      _pengarangController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_pengarangFocusNode);
                     });
                     Navigator.pop(context);
                   },
@@ -118,7 +132,8 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Penerbitan'),
                   onTap: () {
                     setState(() {
-                      penerbitan = selectedText;
+                      _penerbitanController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_penerbitanFocusNode);
                     });
                     Navigator.pop(context);
                   },
@@ -127,7 +142,8 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Deskripsi'),
                   onTap: () {
                     setState(() {
-                      deskripsi = selectedText;
+                      _deskripsiController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_deskripsiFocusNode);
                     });
                     Navigator.pop(context);
                   },
@@ -136,7 +152,8 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('ISBN'),
                   onTap: () {
                     setState(() {
-                      isbn = selectedText;
+                      _isbnController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_isbnFocusNode);
                     });
                     Navigator.pop(context);
                   },
@@ -148,21 +165,6 @@ class _VersoScannerState extends State<VersoScanner> {
       },
     );
   }
-
-  // Widget _buildExtractedTextWidget() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: _extractedText.split('\n').map((line) {
-  //       return GestureDetector(
-  //         onTap: () => _showFieldSelectionDialog(line),
-  //         child: Padding(
-  //           padding: const EdgeInsets.symmetric(vertical: 4.0),
-  //           child: Text(line),
-  //         ),
-  //       );
-  //     }).toList(),
-  //   );
-  // }
 
   Widget _buildExtractedTextWidget() {
     return Column(
@@ -177,8 +179,7 @@ class _VersoScannerState extends State<VersoScanner> {
             child: Text(
               line,
               style: const TextStyle(
-           
-                decoration: TextDecoration.underline,
+                decoration: TextDecoration.underline// Optionally change text color
               ),
             ),
           ),
@@ -188,16 +189,13 @@ class _VersoScannerState extends State<VersoScanner> {
   }
 
   void _navigateToAddPage() {
-    print(
-        'Judul: $judul, Pengarang: $pengarang, Penerbitan: $penerbitan, Deskripsi: $deskripsi, ISBN: $isbn');
-
     final masterBookData = masterBook(
       id: 0,
-      judul: judul,
-      pengarang: pengarang,
-      penerbitan: penerbitan,
-      deskripsi: deskripsi,
-      isbn: isbn,
+      judul: _judulController.text,
+      pengarang: _pengarangController.text,
+      penerbitan: _penerbitanController.text,
+      deskripsi: _deskripsiController.text,
+      isbn: _isbnController.text,
     );
     Navigator.push(
       context,
@@ -207,53 +205,32 @@ class _VersoScannerState extends State<VersoScanner> {
     );
   }
 
- Widget _buildField(String label, String value, Function(String) onChanged) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4.0),
-    child: TextFormField(
-      initialValue: value,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
+  Widget _buildField(String label, TextEditingController controller, FocusNode focusNode) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: TextFormField(
+        controller: controller,
+        focusNode: focusNode,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
       ),
-      onChanged: onChanged,
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildFields() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _buildField('Judul', judul, (newValue) {
-        setState(() {
-          judul = newValue;
-        });
-      }),
-      _buildField('Pengarang', pengarang, (newValue) {
-        setState(() {
-          pengarang = newValue;
-        });
-      }),
-      _buildField('Penerbitan', penerbitan, (newValue) {
-        setState(() {
-          penerbitan = newValue;
-        });
-      }),
-      _buildField('Deskripsi', deskripsi, (newValue) {
-        setState(() {
-          deskripsi = newValue;
-        });
-      }),
-      _buildField('ISBN', isbn, (newValue) {
-        setState(() {
-          isbn = newValue;
-        });
-      }),
-    ],
-  );
-}
-
+  Widget _buildFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildField('Judul', _judulController, _judulFocusNode),
+        _buildField('Pengarang', _pengarangController, _pengarangFocusNode),
+        _buildField('Penerbitan', _penerbitanController, _penerbitanFocusNode),
+        _buildField('Deskripsi', _deskripsiController, _deskripsiFocusNode),
+        _buildField('ISBN', _isbnController, _isbnFocusNode),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
