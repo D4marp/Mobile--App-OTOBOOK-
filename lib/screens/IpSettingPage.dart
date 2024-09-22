@@ -23,8 +23,8 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
       final response = await http.post(
         url,
         body: json.encode({
-          'bookId': widget.bookId, // Kirim bookId sebagai parameter
-          'ipAdress': enteredIp, // Kirim IP yang diatur
+          'bookId': widget.bookId, 
+          'ipAddress': enteredIp, 
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -33,21 +33,20 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Automation triggered: ${responseData['message']}'),
-          ),
-        );
+      print(responseData['message']);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(responseData['message'])),
+      );
+      Navigator.pop(context, responseData['message']);
       } else {
         final responseData = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${responseData['error']}')),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${responseData['error']}')),
+      );
+      Navigator.pop(context, 'Error: ${responseData['error']}');
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to connect to the server: $error')),
-      );
+      Navigator.pop(context, 'Failed to connect to the server: $error');
     }
   }
 
@@ -74,8 +73,8 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
                 String enteredIp = _ipController.text;
 
                 // Simpan IP dan jalankan automasi
-                Navigator.pop(context,
-                    enteredIp); // Kembali ke halaman sebelumnya dengan IP yang diatur
+                // Navigator.pop(context,
+                //     enteredIp); // Kembali ke halaman sebelumnya dengan IP yang diatur
                 _runAutomation(
                     enteredIp); // Jalankan automasi setelah IP diatur
               },
