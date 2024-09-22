@@ -5,7 +5,6 @@ import 'package:Otobook/widgets/buttom.dart';
 import 'package:Otobook/widgets/cara_widget.dart';
 import 'package:Otobook/widgets/input_widget.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _loadUserName() {
     // Fungsi ini sekarang hanya mengatur nama pengguna ke nilai default
     setState(() {
-      _userName = 'User'; // Atur nama pengguna default
+      _userName = 'Otobook'; // Atur nama pengguna default
     });
   }
 
@@ -145,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             _buildPageIndicator(),
-            
+
             SizedBox(height: 20.0),
 
             IconRowWidget(),
