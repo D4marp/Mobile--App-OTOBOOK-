@@ -7,11 +7,11 @@ import 'package:Otobook/services/api.dart';
 import 'package:Otobook/screens/IpSettingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookdetailPage extends StatefulWidget {
   final int bookId;
-  final String? message;
-  const BookdetailPage({super.key, required this.bookId, this.message});
+  const BookdetailPage({super.key, required this.bookId});
 
   @override
   State<BookdetailPage> createState() => _BookdetailPageState();
@@ -19,6 +19,7 @@ class BookdetailPage extends StatefulWidget {
 
 class _BookdetailPageState extends State<BookdetailPage> {
   int get bookId => widget.bookId;
+  String? rpaResponse;
 
   Future<String> fetchCoverPath(int masterBukuId) async {
     final response =
@@ -31,6 +32,20 @@ class _BookdetailPageState extends State<BookdetailPage> {
     } else {
       throw Exception('Failed to load cover');
     }
+  }
+
+  Future<void> _getRpaResponse() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? response = prefs.getString('rpa_response_${widget.bookId}');
+    setState(() {
+      rpaResponse = response; // Simpan pesan respon
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getRpaResponse(); // Ambil pesan respon saat inisialisasi
   }
 
   @override
@@ -182,18 +197,6 @@ class _BookdetailPageState extends State<BookdetailPage> {
                                 ),
                               ],
                             ],
-                            if (widget.message != null &&
-                                widget.message!.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 16.0),
-                                child: Text(
-                                  widget.message!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                       );
@@ -269,26 +272,39 @@ class _BookdetailPageState extends State<BookdetailPage> {
                         textStyle: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                IpSettingsPage(bookId: widget.bookId),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.arrow_forward_sharp),
-                      label: const Text('Add RPA'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        backgroundColor:
-                            const Color.fromARGB(255, 249, 255, 68),
-                        textStyle: const TextStyle(fontSize: 16),
+                    if (rpaResponse == null || rpaResponse!.contains('Error')) ...[
+                      // Tombol Add RPA hanya ditampilkan jika rpaResponse null
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  IpSettingsPage(bookId: widget.bookId),
+                            ),
+                          ).then((result) {
+                            if (result != null) {
+                              setState(() {
+                                rpaResponse = result;
+                              });
+                              SharedPreferences.getInstance().then((prefs) {
+                                prefs.setString(
+                                    'rpa_response_${widget.bookId}', result);
+                              });
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.arrow_forward_sharp),
+                        label: const Text('Add RPA'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                          backgroundColor:
+                              const Color.fromARGB(255, 249, 255, 68),
+                          textStyle: const TextStyle(fontSize: 16),
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ],
               ),

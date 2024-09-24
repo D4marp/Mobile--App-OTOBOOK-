@@ -1,115 +1,157 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.0.1 (Python 3.10.11 on win32)" generated="2024-09-10T16:28:24.243767" rpa="false" schemaversion="5">
+<robot generator="Robot 7.0.1 (Python 3.10.11 on win32)" generated="2024-09-22T22:17:08.886320" rpa="false" schemaversion="5">
 <suite id="s1" name="Tasks" source="D:\projek-otobook\Otobook\Mobile--App-OTOBOOK-\..\..\..\Robocorp-projects\testing\tasks.robot">
-<test id="s1-t1" name="Get JSON Data From API" line="15">
+<test id="s1-t1" name="Get JSON Data From API" line="17">
 <kw name="Set Variable" owner="BuiltIn">
-<msg time="2024-09-10T16:28:25.491381" level="INFO">${book_id} = 2</msg>
+<msg time="2024-09-22T22:17:11.309459" level="INFO">${book_id} = 1</msg>
 <var>${book_id}</var>
 <arg>${BOOK_ID}</arg>
 <doc>Returns the given values which can then be assigned to a variables.</doc>
-<status status="PASS" start="2024-09-10T16:28:25.490381" elapsed="0.001000"/>
+<status status="PASS" start="2024-09-22T22:17:11.308459" elapsed="0.001000"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2024-09-22T22:17:11.310460" level="INFO">${ip_address} = 192.168.1.11</msg>
+<var>${ip_address}</var>
+<arg>${IP_ADDRESS}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2024-09-22T22:17:11.310460" elapsed="0.000000"/>
 </kw>
 <kw name="Create Session" owner="RPA.HTTP">
-<msg time="2024-09-10T16:28:25.492479" level="INFO">Creating Session using : alias=mysession, url=http://192.168.9.62:5000, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<msg time="2024-09-22T22:17:11.312460" level="INFO">Creating Session using : alias=mysession, url=http://192.168.1.11:5000, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
 <arg>mysession</arg>
 <arg>${API_URL}</arg>
 <arg>verify=${False}</arg>
 <doc>Create Session: create a HTTP session to a server</doc>
-<status status="PASS" start="2024-09-10T16:28:25.491381" elapsed="0.001098"/>
+<status status="PASS" start="2024-09-22T22:17:11.311460" elapsed="0.001000"/>
 </kw>
 <kw name="GET On Session" owner="RPA.HTTP">
-<msg time="2024-09-10T16:28:25.508271" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<msg time="2024-09-22T22:17:11.477649" level="INFO">${response} = &lt;Response [200]&gt;</msg>
 <var>${response}</var>
 <arg>mysession</arg>
 <arg>/api/getBookSinopsis/${book_id}</arg>
 <doc>Sends a GET request on a previously created HTTP Session.</doc>
-<status status="PASS" start="2024-09-10T16:28:25.493484" elapsed="0.014787"/>
+<status status="PASS" start="2024-09-22T22:17:11.314460" elapsed="0.163189"/>
 </kw>
 <kw name="Convert To Dictionary">
 <kw name="Evaluate" owner="BuiltIn">
-<msg time="2024-09-10T16:28:25.512722" level="FAIL">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"Access the latest information about Addison-Wesley books from our World Wide Web site:","isbn":"0201741865","judul":"Semior Acquisitions Editor","keyword":"yyyyy, wwwww, ttttt","penerbitan":"Kim Arney Mulcahy","pengarang":"Copyeditor","sinopsis":"important graphics API for years to come.\\nsufficient functionality and is close enough to the hardware that it should be an\\not operations but rather the time taken to move data. Fortunately, OpenGL provides\\npace, the limiting factor in many applications is not the time required for graphics\\nFinally, as the capabilities of graphics hardware continue to improve at a rapid\\nfor the operations required in games.\\nis especially noticeable with boards for PCs, most of which have been optimized\\nmight not have the same relative performance for texture mapping"}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 303 (char 302)</msg>
+<msg time="2024-09-22T22:17:11.481801" level="FAIL">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</msg>
 <var>${json_data}</var>
 <arg>json.loads('''${json_string}''')</arg>
 <arg>json</arg>
 <doc>Evaluates the given expression in Python and returns the result.</doc>
-<status status="FAIL" start="2024-09-10T16:28:25.511288" elapsed="0.001940">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"Access the latest information about Addison-Wesley books from our World Wide Web site:","isbn":"0201741865","judul":"Semior Acquisitions Editor","keyword":"yyyyy, wwwww, ttttt","penerbitan":"Kim Arney Mulcahy","pengarang":"Copyeditor","sinopsis":"important graphics API for years to come.\\nsufficient functionality and is close enough to the hardware that it should be an\\not operations but rather the time taken to move data. Fortunately, OpenGL provides\\npace, the limiting factor in many applications is not the time required for graphics\\nFinally, as the capabilities of graphics hardware continue to improve at a rapid\\nfor the operations required in games.\\nis especially noticeable with boards for PCs, most of which have been optimized\\nmight not have the same relative performance for texture mapping"}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 303 (char 302)</status>
+<status status="FAIL" start="2024-09-22T22:17:11.480445" elapsed="0.002375">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</status>
 </kw>
 <return>
 <value>${json_data}</value>
-<status status="NOT RUN" start="2024-09-10T16:28:25.513228" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.482820" elapsed="0.000000"/>
 </return>
 <var>${json_data}</var>
 <arg>${response.content}</arg>
-<status status="FAIL" start="2024-09-10T16:28:25.509287" elapsed="0.003941">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"Access the latest information about Addison-Wesley books from our World Wide Web site:","isbn":"0201741865","judul":"Semior Acquisitions Editor","keyword":"yyyyy, wwwww, ttttt","penerbitan":"Kim Arney Mulcahy","pengarang":"Copyeditor","sinopsis":"important graphics API for years to come.\\nsufficient functionality and is close enough to the hardware that it should be an\\not operations but rather the time taken to move data. Fortunately, OpenGL provides\\npace, the limiting factor in many applications is not the time required for graphics\\nFinally, as the capabilities of graphics hardware continue to improve at a rapid\\nfor the operations required in games.\\nis especially noticeable with boards for PCs, most of which have been optimized\\nmight not have the same relative performance for texture mapping"}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 303 (char 302)</status>
+<status status="FAIL" start="2024-09-22T22:17:11.478647" elapsed="0.004173">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</status>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Full JSON Response: ${json_data}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.514234" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.483809" elapsed="0.001000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
 <var>${JUDUL}</var>
 <arg>${json_data}</arg>
 <arg>judul</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.514234" elapsed="0.001189"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.484809" elapsed="0.000000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
 <var>${PENGARANG}</var>
 <arg>${json_data}</arg>
 <arg>pengarang</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.515423" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.485961" elapsed="0.000000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
 <var>${PENERBITAN}</var>
 <arg>${json_data}</arg>
 <arg>penerbitan</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.516700" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.486970" elapsed="0.000000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
 <var>${DESC}</var>
 <arg>${json_data}</arg>
 <arg>deskripsi</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.517744" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.487978" elapsed="0.001007"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
 <var>${ISBN}</var>
 <arg>${json_data}</arg>
 <arg>isbn</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.517744" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.488985" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Judul: ${JUDUL}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.517744" elapsed="0.001112"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.489970" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Pengarang: ${PENGARANG}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.518856" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.490970" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Penerbitan: ${PENERBITAN}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.518856" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.491970" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Deskripsi: ${DESC}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.519909" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.491970" elapsed="0.001001"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>ISBN: ${ISBN}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="NOT RUN" start="2024-09-10T16:28:25.519909" elapsed="0.001099"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.492971" elapsed="0.000000"/>
 </kw>
-<status status="FAIL" start="2024-09-10T16:28:25.488121" elapsed="0.032887">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"Access the latest information about Addison-Wesley books from our World Wide Web site:","isbn":"0201741865","judul":"Semior Acquisitions Editor","keyword":"yyyyy, wwwww, ttttt","penerbitan":"Kim Arney Mulcahy","pengarang":"Copyeditor","sinopsis":"important graphics API for years to come.\\nsufficient functionality and is close enough to the hardware that it should be an\\not operations but rather the time taken to move data. Fortunately, OpenGL provides\\npace, the limiting factor in many applications is not the time required for graphics\\nFinally, as the capabilities of graphics hardware continue to improve at a rapid\\nfor the operations required in games.\\nis especially noticeable with boards for PCs, most of which have been optimized\\nmight not have the same relative performance for texture mapping"}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 303 (char 302)</status>
+<kw name="Log To Console" owner="BuiltIn">
+<arg>IP Address: ${ip_address}</arg>
+<doc>Logs the given message to the console.</doc>
+<status status="NOT RUN" start="2024-09-22T22:17:11.493972" elapsed="0.000000"/>
+</kw>
+<kw name="Open website">
+<arg>${ip_address}</arg>
+<status status="NOT RUN" start="2024-09-22T22:17:11.494971" elapsed="0.000000"/>
+</kw>
+<kw name="Login website">
+<status status="NOT RUN" start="2024-09-22T22:17:11.495971" elapsed="0.000000"/>
+</kw>
+<kw name="Select Library Location">
+<status status="NOT RUN" start="2024-09-22T22:17:11.496971" elapsed="0.000000"/>
+</kw>
+<kw name="Click Submit Button">
+<status status="NOT RUN" start="2024-09-22T22:17:11.496971" elapsed="0.001001"/>
+</kw>
+<kw name="Navigate to Entri Katalog">
+<status status="NOT RUN" start="2024-09-22T22:17:11.497972" elapsed="0.000000"/>
+</kw>
+<kw name="Input Book Data">
+<arg>${JUDUL}</arg>
+<arg>${PENGARANG}</arg>
+<arg>${PENERBITAN}</arg>
+<arg>${DESC}</arg>
+<arg>${ISBN}</arg>
+<status status="NOT RUN" start="2024-09-22T22:17:11.498972" elapsed="0.000000"/>
+</kw>
+<kw name="Logout Website">
+<status status="NOT RUN" start="2024-09-22T22:17:11.499972" elapsed="0.000000"/>
+</kw>
+<kw name="Close Browser">
+<status status="NOT RUN" start="2024-09-22T22:17:11.500971" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2024-09-22T22:17:11.304458" elapsed="0.196513">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</status>
 </test>
-<status status="FAIL" start="2024-09-10T16:28:24.246767" elapsed="1.278199"/>
+<status status="FAIL" start="2024-09-22T22:17:08.891413" elapsed="2.613536"/>
 </suite>
 <statistics>
 <total>

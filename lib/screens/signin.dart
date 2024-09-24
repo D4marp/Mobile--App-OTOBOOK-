@@ -34,11 +34,15 @@ class _LoginPageState extends State<LoginPage> {
       final data = json.decode(response.body);
       String token = data['access_token'];
       String id = data['id'].toString();
+      String username = data['username'];
+      String password = data['password'];
 
       // Simpan token menggunakan SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
       await prefs.setString('id', id);
+      await prefs.setString('username', username);
+      await prefs.setString('password', password);
 
       // Arahkan ke halaman home atau yang sesuai
       Navigator.of(context).pushReplacement(
