@@ -45,11 +45,12 @@ dependencies:
   google_mlkit_text_recognition: ^0.13.0
   retry: ^3.1.2
   shared_preferences: ^2.2.3
-<<<<<<< HEAD
-  image_cropper: ^8.0.2
-=======
+
   image: ^4.2.0
->>>>>>> 3b76ab19263be12411ecbcd9e984a71b436b46d2
+  image_cropper: ^8.0.2 
+ 
+  path_provider: ^2.1.4
+
 
 dev_dependencies:
   flutter_test:

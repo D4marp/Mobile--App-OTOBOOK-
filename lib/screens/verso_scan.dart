@@ -112,7 +112,10 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Judul'),
                   onTap: () {
                     setState(() {
-                      _judulController.text = selectedText;
+                      // Gabungkan teks yang sudah ada dengan yang baru
+                      _judulController.text = _judulController.text.isEmpty
+                          ? selectedText
+                          : '${_judulController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_judulFocusNode);
                     });
                     Navigator.pop(context);
@@ -122,7 +125,9 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Pengarang'),
                   onTap: () {
                     setState(() {
-                      _pengarangController.text = selectedText;
+                      _pengarangController.text = _pengarangController.text.isEmpty
+                          ? selectedText
+                          : '${_pengarangController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_pengarangFocusNode);
                     });
                     Navigator.pop(context);
@@ -132,7 +137,9 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Penerbitan'),
                   onTap: () {
                     setState(() {
-                      _penerbitanController.text = selectedText;
+                      _penerbitanController.text = _penerbitanController.text.isEmpty
+                          ? selectedText
+                          : '${_penerbitanController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_penerbitanFocusNode);
                     });
                     Navigator.pop(context);
@@ -142,7 +149,9 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Deskripsi'),
                   onTap: () {
                     setState(() {
-                      _deskripsiController.text = selectedText;
+                      _deskripsiController.text = _deskripsiController.text.isEmpty
+                          ? selectedText
+                          : '${_deskripsiController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_deskripsiFocusNode);
                     });
                     Navigator.pop(context);
@@ -152,7 +161,9 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('ISBN'),
                   onTap: () {
                     setState(() {
-                      _isbnController.text = selectedText;
+                      _isbnController.text = _isbnController.text.isEmpty
+                          ? selectedText
+                          : '${_isbnController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_isbnFocusNode);
                     });
                     Navigator.pop(context);
@@ -179,7 +190,7 @@ class _VersoScannerState extends State<VersoScanner> {
             child: Text(
               line,
               style: const TextStyle(
-                decoration: TextDecoration.underline// Optionally change text color
+                decoration: TextDecoration.underline,
               ),
             ),
           ),
