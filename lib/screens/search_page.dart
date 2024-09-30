@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Otobook/models/masterBook.dart';
-import 'package:Otobook/screens/bookDetail_page.dart';
+import 'package:Otobook/screens/bookSearch.dart';
 import 'package:Otobook/screens/cover_scan.dart';
 import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
@@ -160,7 +160,7 @@ class _SearchPageState extends State<SearchPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => BookdetailPage(
+                                        builder: (context) => Booksearch(
                                           bookId: book.id,
                                         ),
                                       ),

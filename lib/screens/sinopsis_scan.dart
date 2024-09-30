@@ -65,6 +65,9 @@ class _SinopsisScannerState extends State<SinopsisScanner> {
             await OCRService.extractTextFromImage(pickedFile.path);
 
         if (extractedText.isNotEmpty) {
+          // Hilangkan baris baru (enter)
+          extractedText = extractedText.replaceAll('\n', ' ');
+
           setState(() {
             _extractedText = extractedText;
           });

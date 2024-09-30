@@ -1,25 +1,19 @@
 import 'dart:convert';
-
 import 'package:Otobook/models/masterBook.dart';
-import 'package:Otobook/screens/edit_book.dart';
-import 'package:Otobook/screens/sinopsis_scan.dart';
 import 'package:Otobook/services/api.dart';
-import 'package:Otobook/screens/IpSettingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-class BookdetailPage extends StatefulWidget {
+class Booksearch extends StatefulWidget {
   final int bookId;
-  const BookdetailPage({super.key, required this.bookId});
+  const Booksearch({super.key, required this.bookId});
 
   @override
-  State<BookdetailPage> createState() => _BookdetailPageState();
+  State<Booksearch> createState() => _BooksearchState();
 }
 
-class _BookdetailPageState extends State<BookdetailPage> {
+class _BooksearchState extends State<Booksearch> {
   int get bookId => widget.bookId;
-  String? rpaResponse;
 
   Future<String> fetchCoverPath(int masterBukuId) async {
     final response =
@@ -34,34 +28,26 @@ class _BookdetailPageState extends State<BookdetailPage> {
     }
   }
 
-  Future<void> _getRpaResponse() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? response = prefs.getString('rpa_response_${widget.bookId}');
-    setState(() {
-      rpaResponse = response; // Simpan pesan respon
-    });
-  }
-
   @override
   void initState() {
+    print("id Buku :${bookId} ");
     super.initState();
-    _getRpaResponse(); // Ambil pesan respon saat inisialisasi
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<String>(
-        future: fetchCoverPath(widget.bookId),
+        future: fetchCoverPath(bookId),
         builder: (context, snapshot) {
           final coverPath = snapshot.data ?? '';
-          final coverUrl =
-              coverPath.isNotEmpty ? '${GetData().Url}$coverPath' : '';
+          final coverUrl = coverPath.isNotEmpty
+              ? '${GetData().Url}$coverPath'
+              : ''; // Jika path tidak kosong, buat URL, jika kosong tetap kosong
 
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 400.0,
+                expandedHeight: 400.0, // Meningkatkan tinggi untuk gambar penuh
                 pinned: true,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Stack(
@@ -97,7 +83,7 @@ class _BookdetailPageState extends State<BookdetailPage> {
               ),
               SliverToBoxAdapter(
                 child: FutureBuilder<masterBook>(
-                  future: GetData.getBookWithSinopsis(widget.bookId),
+                  future: GetData.getBookWithSinopsis(bookId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -206,110 +192,6 @@ class _BookdetailPageState extends State<BookdetailPage> {
               ),
             ],
           );
-        },
-      ),
-      bottomNavigationBar: FutureBuilder<masterBook>(
-        future: GetData.getBookWithSinopsis(widget.bookId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text('No data available'));
-          } else {
-            final book = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (book.sinopsis == "No synopsis available") ...[
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                SinopsisScanner(id: widget.bookId),
-                          ),
-                        ).then((result) {
-                          if (result == true) {
-                            setState(() {});
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.add_a_photo_rounded),
-                      label: const Text('Add Sinopsis'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        backgroundColor: const Color.fromARGB(255, 37, 198, 1),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ] else ...[
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                EditbookPage(id: widget.bookId),
-                          ),
-                        ).then((result) {
-                          if (result == true) {
-                            setState(() {});
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Edit Book'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        backgroundColor: Colors.blueAccent,
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    if (rpaResponse == null || rpaResponse!.contains('Error')) ...[
-                      // Tombol Add RPA hanya ditampilkan jika rpaResponse null
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  IpSettingsPage(bookId: widget.bookId),
-                            ),
-                          ).then((result) {
-                            if (result != null) {
-                              setState(() {
-                                rpaResponse = result;
-                              });
-                              SharedPreferences.getInstance().then((prefs) {
-                                prefs.setString(
-                                    'rpa_response_${widget.bookId}', result);
-                              });
-                            }
-                          });
-                        },
-                        icon: const Icon(Icons.arrow_forward_sharp),
-                        label: const Text('Add RPA'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
-                          backgroundColor:
-                              const Color.fromARGB(255, 249, 255, 68),
-                          textStyle: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ],
-                ],
-              ),
-            );
-          }
         },
       ),
     );

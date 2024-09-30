@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'package:Otobook/screens/list_book.dart';
+import 'package:Otobook/navigation.dart';
 import 'package:http/http.dart' as http;
 import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:Otobook/models/masterBook.dart';
 import 'package:Otobook/screens/start.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddBookScreen extends StatefulWidget {
   final masterBook masterBookData;
@@ -44,8 +45,14 @@ class _AddBookScreenState extends State<AddBookScreen> {
     super.dispose();
   }
 
+  Future<String?> _userId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('id');
+  }
+
   void _saveBook() async {
-    Uri url = Uri.parse(GetData().addBookUrl);
+    String? userId = await _userId();
+    Uri url = Uri.parse(GetData().addBookUrl + userId!);
     final response = await http.post(
       url,
       headers: {
@@ -59,7 +66,6 @@ class _AddBookScreenState extends State<AddBookScreen> {
         'deskripsi': _deskripsiController.text,
       }),
     );
-
     final responseBody = jsonDecode(response.body);
 
     if (response.statusCode == 201) {
@@ -68,11 +74,12 @@ class _AddBookScreenState extends State<AddBookScreen> {
           content: Text(responseBody['message'] ?? 'Book saved successfully'),
         ),
       );
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const GetBooksPage(),
+          builder: (context) => const NavigationMenu(),
         ),
+        (Route<dynamic> route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,31 +89,6 @@ class _AddBookScreenState extends State<AddBookScreen> {
       );
     }
   }
-
-  // Future<void> _runAutomation() async {
-  //   Uri url = Uri.parse(GetData().runAutomationUrl);
-  //   try {
-  //     final response = await http.post(url);
-
-  //     if (response.statusCode == 200) {
-  //       final responseData = json.decode(response.body);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //             content:
-  //                 Text('Automation triggered: ${responseData['message']}')),
-  //       );
-  //     } else {
-  //       final responseData = json.decode(response.body);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Error: ${responseData['error']}')),
-  //       );
-  //     }
-  //   } catch (error) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Failed to connect to the server: $error')),
-  //     );
-  //   }
-  // }
 
   Widget _buildTextArea(TextEditingController controller, String labelText) {
     return TextField(
@@ -207,5 +189,4 @@ class _AddBookScreenState extends State<AddBookScreen> {
       ),
     );
   }
-
 }

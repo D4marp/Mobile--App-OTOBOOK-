@@ -1,130 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.0.1 (Python 3.10.11 on win32)" generated="2024-09-05T16:17:04.743082" rpa="false" schemaversion="5">
+<robot generator="Robot 7.0.1 (Python 3.10.11 on win32)" generated="2024-09-22T22:17:08.886320" rpa="false" schemaversion="5">
 <suite id="s1" name="Tasks" source="D:\projek-otobook\Otobook\Mobile--App-OTOBOOK-\..\..\..\Robocorp-projects\testing\tasks.robot">
-<test id="s1-t1" name="Get JSON Data From API" line="14">
+<test id="s1-t1" name="Get JSON Data From API" line="17">
 <kw name="Set Variable" owner="BuiltIn">
-<msg time="2024-09-05T16:17:06.043779" level="INFO">${book_id} = 1</msg>
+<msg time="2024-09-22T22:17:11.309459" level="INFO">${book_id} = 1</msg>
 <var>${book_id}</var>
 <arg>${BOOK_ID}</arg>
 <doc>Returns the given values which can then be assigned to a variables.</doc>
-<status status="PASS" start="2024-09-05T16:17:06.042773" elapsed="0.001006"/>
+<status status="PASS" start="2024-09-22T22:17:11.308459" elapsed="0.001000"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2024-09-22T22:17:11.310460" level="INFO">${ip_address} = 192.168.1.11</msg>
+<var>${ip_address}</var>
+<arg>${IP_ADDRESS}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2024-09-22T22:17:11.310460" elapsed="0.000000"/>
 </kw>
 <kw name="Create Session" owner="RPA.HTTP">
-<msg time="2024-09-05T16:17:06.045640" level="INFO">Creating Session using : alias=mysession, url=http://localhost:5000, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
+<msg time="2024-09-22T22:17:11.312460" level="INFO">Creating Session using : alias=mysession, url=http://192.168.1.11:5000, headers={},                     cookies={}, auth=None, timeout=None, proxies=None, verify=False,                     debug=0 </msg>
 <arg>mysession</arg>
 <arg>${API_URL}</arg>
 <arg>verify=${False}</arg>
 <doc>Create Session: create a HTTP session to a server</doc>
-<status status="PASS" start="2024-09-05T16:17:06.045134" elapsed="0.001658"/>
+<status status="PASS" start="2024-09-22T22:17:11.311460" elapsed="0.001000"/>
 </kw>
 <kw name="GET On Session" owner="RPA.HTTP">
-<msg time="2024-09-05T16:17:09.404206" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<msg time="2024-09-22T22:17:11.477649" level="INFO">${response} = &lt;Response [200]&gt;</msg>
 <var>${response}</var>
 <arg>mysession</arg>
 <arg>/api/getBookSinopsis/${book_id}</arg>
 <doc>Sends a GET request on a previously created HTTP Session.</doc>
-<status status="PASS" start="2024-09-05T16:17:06.048802" elapsed="3.355404"/>
+<status status="PASS" start="2024-09-22T22:17:11.314460" elapsed="0.163189"/>
 </kw>
 <kw name="Convert To Dictionary">
 <kw name="Evaluate" owner="BuiltIn">
-<msg time="2024-09-05T16:17:09.408984" level="INFO">${json_data} = {'deskripsi': 'Ini hanya percobaan', 'isbn': '113478548827', 'judul': 'Mencoba Saja', 'keyword': 'ini keyword', 'penerbitan': 'Airlangga', 'pengarang': 'Dafiq', 'sinopsis': 'ini sinopsis'}</msg>
+<msg time="2024-09-22T22:17:11.481801" level="FAIL">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</msg>
 <var>${json_data}</var>
 <arg>json.loads('''${json_string}''')</arg>
 <arg>json</arg>
 <doc>Evaluates the given expression in Python and returns the result.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.408476" elapsed="0.000508"/>
+<status status="FAIL" start="2024-09-22T22:17:11.480445" elapsed="0.002375">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</status>
 </kw>
 <return>
 <value>${json_data}</value>
-<status status="PASS" start="2024-09-05T16:17:09.408984" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.482820" elapsed="0.000000"/>
 </return>
-<msg time="2024-09-05T16:17:09.410058" level="INFO">${json_data} = {'deskripsi': 'Ini hanya percobaan', 'isbn': '113478548827', 'judul': 'Mencoba Saja', 'keyword': 'ini keyword', 'penerbitan': 'Airlangga', 'pengarang': 'Dafiq', 'sinopsis': 'ini sinopsis'}</msg>
 <var>${json_data}</var>
 <arg>${response.content}</arg>
-<status status="PASS" start="2024-09-05T16:17:09.405623" elapsed="0.004435"/>
+<status status="FAIL" start="2024-09-22T22:17:11.478647" elapsed="0.004173">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</status>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Full JSON Response: ${json_data}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.410511" elapsed="0.000920"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.483809" elapsed="0.001000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
-<msg time="2024-09-05T16:17:09.411919" level="INFO">${JUDUL} = Mencoba Saja</msg>
 <var>${JUDUL}</var>
 <arg>${json_data}</arg>
 <arg>judul</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.411919" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.484809" elapsed="0.000000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
-<msg time="2024-09-05T16:17:09.412927" level="INFO">${PENGARANG} = Dafiq</msg>
 <var>${PENGARANG}</var>
 <arg>${json_data}</arg>
 <arg>pengarang</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.412927" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.485961" elapsed="0.000000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
-<msg time="2024-09-05T16:17:09.414946" level="INFO">${PENERBITAN} = Airlangga</msg>
 <var>${PENERBITAN}</var>
 <arg>${json_data}</arg>
 <arg>penerbitan</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.413932" elapsed="0.001014"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.486970" elapsed="0.000000"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
-<msg time="2024-09-05T16:17:09.415919" level="INFO">${DESC} = Ini hanya percobaan</msg>
 <var>${DESC}</var>
 <arg>${json_data}</arg>
 <arg>deskripsi</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.415919" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.487978" elapsed="0.001007"/>
 </kw>
 <kw name="Get From Dictionary" owner="Collections">
-<msg time="2024-09-05T16:17:09.417580" level="INFO">${ISBN} = 113478548827</msg>
 <var>${ISBN}</var>
 <arg>${json_data}</arg>
 <arg>isbn</arg>
 <doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.417580" elapsed="0.000000"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.488985" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Judul: ${JUDUL}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.418586" elapsed="0.000745"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.489970" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Pengarang: ${PENGARANG}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.419627" elapsed="0.000765"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.490970" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Penerbitan: ${PENERBITAN}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.420610" elapsed="0.001135"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.491970" elapsed="0.000000"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>Deskripsi: ${DESC}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.421745" elapsed="0.001494"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.491970" elapsed="0.001001"/>
 </kw>
 <kw name="Log To Console" owner="BuiltIn">
 <arg>ISBN: ${ISBN}</arg>
 <doc>Logs the given message to the console.</doc>
-<status status="PASS" start="2024-09-05T16:17:09.424293" elapsed="0.001088"/>
+<status status="NOT RUN" start="2024-09-22T22:17:11.492971" elapsed="0.000000"/>
 </kw>
-<status status="PASS" start="2024-09-05T16:17:06.039289" elapsed="3.386590"/>
+<kw name="Log To Console" owner="BuiltIn">
+<arg>IP Address: ${ip_address}</arg>
+<doc>Logs the given message to the console.</doc>
+<status status="NOT RUN" start="2024-09-22T22:17:11.493972" elapsed="0.000000"/>
+</kw>
+<kw name="Open website">
+<arg>${ip_address}</arg>
+<status status="NOT RUN" start="2024-09-22T22:17:11.494971" elapsed="0.000000"/>
+</kw>
+<kw name="Login website">
+<status status="NOT RUN" start="2024-09-22T22:17:11.495971" elapsed="0.000000"/>
+</kw>
+<kw name="Select Library Location">
+<status status="NOT RUN" start="2024-09-22T22:17:11.496971" elapsed="0.000000"/>
+</kw>
+<kw name="Click Submit Button">
+<status status="NOT RUN" start="2024-09-22T22:17:11.496971" elapsed="0.001001"/>
+</kw>
+<kw name="Navigate to Entri Katalog">
+<status status="NOT RUN" start="2024-09-22T22:17:11.497972" elapsed="0.000000"/>
+</kw>
+<kw name="Input Book Data">
+<arg>${JUDUL}</arg>
+<arg>${PENGARANG}</arg>
+<arg>${PENERBITAN}</arg>
+<arg>${DESC}</arg>
+<arg>${ISBN}</arg>
+<status status="NOT RUN" start="2024-09-22T22:17:11.498972" elapsed="0.000000"/>
+</kw>
+<kw name="Logout Website">
+<status status="NOT RUN" start="2024-09-22T22:17:11.499972" elapsed="0.000000"/>
+</kw>
+<kw name="Close Browser">
+<status status="NOT RUN" start="2024-09-22T22:17:11.500971" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2024-09-22T22:17:11.304458" elapsed="0.196513">Evaluating expression 'json.loads(\'\'\'{"deskripsi":"For information about special discounts for bulk purchases please","isbn":"9781451671827","judul":"Design to grow how Coca Cola learned to combine scale and agility","keyword":"design, technological innovation","penerbitan":"David Butler and Linda Tischler","pengarang":"Butler David","sinopsis":"Design to Grow shows readers how to reach extraordinary and often infernally\\nComplexX accomplishmentSlike scale and agility a seemingly impossible\\nCQmbination in a way that isnt magical or exclusive but rather a systematic\\nOoach to creative thinking Whats more it does what every great design\\nto dot makes t look easy."}\n\'\'\')' failed: JSONDecodeError: Invalid control character at: line 1 column 388 (char 387)</status>
 </test>
-<status status="PASS" start="2024-09-05T16:17:04.746910" elapsed="4.680905"/>
+<status status="FAIL" start="2024-09-22T22:17:08.891413" elapsed="2.613536"/>
 </suite>
 <statistics>
 <total>
-<stat pass="1" fail="0" skip="0">All Tests</stat>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
 </total>
 <tag>
 </tag>
 <suite>
-<stat pass="1" fail="0" skip="0" id="s1" name="Tasks">Tasks</stat>
+<stat pass="0" fail="1" skip="0" id="s1" name="Tasks">Tasks</stat>
 </suite>
 </statistics>
 <errors>

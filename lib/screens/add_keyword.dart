@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:Otobook/models/sinopsisBook.dart';
-import 'package:Otobook/screens/list_book.dart';
+import 'package:Otobook/navigation.dart';
 import 'package:Otobook/services/api.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-
 
 class AddKeywordPages extends StatefulWidget {
   final Sinopsisbook sinopsisBookData;
@@ -63,11 +62,12 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
           content: Text(responseBody['message'] ?? 'Book saved successfully'),
         ),
       );
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const GetBooksPage(),
+          builder: (context) => const NavigationMenu(),
         ),
+        (Route<dynamic> route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
       await prefs.setString('id', id);
-
+      
       // Arahkan ke halaman home atau yang sesuai
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(

@@ -18,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<Map<String, dynamic>>? userData;
   String? username;
   String? email;
+  String? password;
 
   Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

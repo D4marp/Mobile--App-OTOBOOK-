@@ -17,16 +17,31 @@ class GetBooksPage extends StatefulWidget {
 class _GetBooksPageState extends State<GetBooksPage> {
   bool isLoading = false;
   List<masterBook> books = [];
+  String noBooksMessage = '';
 
   void getBooks() async {
     setState(() {
       isLoading = true;
     });
-    final result = await GetData.getBooks();
-    setState(() {
-      books = result;
-      isLoading = false;
-    });
+
+    try {
+      final result = await GetData.getBooks();
+
+      setState(() {
+        books = result;
+        if (books.isEmpty) {
+          noBooksMessage = 'You have not added any books yet.';
+        } else {
+          noBooksMessage = ''; // Reset the message if books are available
+        }
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        noBooksMessage = 'Buku belum tersedia';
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -45,7 +60,10 @@ class _GetBooksPageState extends State<GetBooksPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : books.isEmpty
-              ? const Center(child: Text('No books available'))
+              ? Center(
+                  child: Text(noBooksMessage.isNotEmpty
+                      ? noBooksMessage
+                      : 'No books available'))
               : ListView.builder(
                   itemCount: books.length,
                   itemBuilder: (context, index) {
