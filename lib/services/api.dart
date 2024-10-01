@@ -4,21 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetData {
-<<<<<<< HEAD
-  final String _apiUrl = 'http://192.168.9.63:5000/api/';
-=======
   final String _apiUrl = 'http://103.106.72.182:8770/api/';
->>>>>>> 59da5d507ee42a5758cf9d4c5e8395a66842b800
   Future<String?> _userId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
   }
 
-<<<<<<< HEAD
-  String get Url => 'http://192.168.9.63:5000';
-=======
   String get Url => 'http://103.106.72.182:8770';
->>>>>>> 59da5d507ee42a5758cf9d4c5e8395a66842b800
 
   // login user
   String get loginUrl => '${_apiUrl}login';
@@ -70,13 +62,9 @@ class GetData {
 
   // search book
   String get searchBookUrl => '${_apiUrl}searchBuku';
-<<<<<<< HEAD
-  static const String baseUrl = 'http://192.168.9.63:5000/api/getBuku';
-  static const String sinopsisUrl = 'http://192.168.9.63:5000/api/getSinopsis';
-=======
   static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
-  static const String sinopsisUrl = 'http://103.106.72.182:8770/api/getSinopsis';
->>>>>>> 59da5d507ee42a5758cf9d4c5e8395a66842b800
+  static const String sinopsisUrl =
+      'http://103.106.72.182:8770/api/getSinopsis';
 
   static Future<List<masterBook>> getBooks() async {
     try {

@@ -242,14 +242,9 @@ class _VersoScannerState extends State<VersoScanner> {
             child: Text(
               line,
               style: const TextStyle(
-<<<<<<< HEAD
                   decoration:
                       TextDecoration.underline // Optionally change text color
                   ),
-=======
-                decoration: TextDecoration.underline,
-              ),
->>>>>>> 59da5d507ee42a5758cf9d4c5e8395a66842b800
             ),
           ),
         );
