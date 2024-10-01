@@ -26,7 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _loadUserName() {
     // Fungsi ini sekarang hanya mengatur nama pengguna ke nilai default
     setState(() {
-      _userName = 'Otobook'; // Atur nama pengguna default
+      _userName = 'Welcome to Otobook'; // Atur nama pengguna default
+      _userName = 'Otobook'; // Atur nama pengguna def
     });
   }
 

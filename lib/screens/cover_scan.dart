@@ -1,8 +1,19 @@
 import 'dart:io';
-import 'package:Otobook/services/api.dart';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart'; // Import image_cropper
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart'; // Import MediaType class
+import 'package:Otobook/services/api.dart'; // Pastikan path ini benar
+
+class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {
+  @override
+  (int, int)? get data => (2, 3);
+
+  @override
+  String get name => '2x3 (customized)';
+}
 
 class CoverScanner extends StatefulWidget {
   final int id;
@@ -15,38 +26,32 @@ class CoverScanner extends StatefulWidget {
 class _CoverScannerState extends State<CoverScanner> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
-  XFile? _coverImage;
-  File? _coverImageFile;
+  File? _imageFile; // Untuk menyimpan file gambar yang dipilih
 
   Future<XFile?> _showImageSourceSelector() async {
-    return showModalBottomSheet<XFile?>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 150,
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
-                onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.camera));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Gallery'),
-                onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.gallery));
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    return showModalBottomSheet<XFile?>(context: context, builder: (BuildContext context) {
+      return Container(
+        height: 150,
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Camera'),
+              onTap: () async {
+                Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Gallery'),
+              onTap: () async {
+                Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
+              },
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Future<void> _pickCoverImage() async {
@@ -57,10 +62,8 @@ class _CoverScannerState extends State<CoverScanner> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        setState(() {
-          _coverImage = pickedFile;
-          _coverImageFile = File(pickedFile.path); // Convert to File
-        });
+        _imageFile = File(pickedFile.path); // Simpan file gambar yang dipilih
+        setState(() {}); // Update UI setelah gambar dipilih
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No image selected.')),
@@ -69,8 +72,7 @@ class _CoverScannerState extends State<CoverScanner> {
     } catch (e) {
       print('Error picking cover image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Failed to pick cover image. Please try again.')),
+        SnackBar(content: Text('Failed to pick cover image. Please try again.')),
       );
     } finally {
       setState(() {
@@ -79,14 +81,43 @@ class _CoverScannerState extends State<CoverScanner> {
     }
   }
 
-  Future<void> _uploadCoverImage() async {
-    if (_coverImageFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No image to upload.')),
-      );
-      return;
-    }
+  Future<void> _cropImage() async {
+    if (_imageFile == null) return;
 
+    // Menggunakan image_cropper untuk cropping dengan custom aspect ratio
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: _imageFile!.path, // Gunakan path file yang dipilih
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: const Color.fromARGB(255, 0, 170, 255),
+          toolbarWidgetColor: Colors.white,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPresetCustom(),
+          ],
+        ),
+        IOSUiSettings(
+          title: 'Cropper',
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPresetCustom(), // IMPORTANT: iOS supports only one custom aspect ratio in preset list
+          ],
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+
+    if (croppedFile != null) {
+      await _uploadCoverImage(File(croppedFile.path)); // Mengupload gambar yang sudah di-crop
+    }
+  }
+
+  Future<void> _uploadCoverImage(File croppedFile) async {
     setState(() {
       _isLoading = true;
     });
@@ -94,8 +125,11 @@ class _CoverScannerState extends State<CoverScanner> {
     try {
       var uri = Uri.parse('${GetData().addCoverUrl}/${widget.id}');
       var request = http.MultipartRequest('POST', uri)
-        ..files.add(
-            await http.MultipartFile.fromPath('file', _coverImageFile!.path));
+        ..files.add(await http.MultipartFile.fromPath(
+          'file', 
+          croppedFile.path, 
+          contentType: MediaType('image', 'png'), // Pastikan tipe file sesuai
+        ));
 
       var response = await request.send();
 
@@ -103,12 +137,6 @@ class _CoverScannerState extends State<CoverScanner> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Cover image uploaded successfully.')),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => const GetBooksPage(),
-        //   ),
-        // );
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -118,8 +146,7 @@ class _CoverScannerState extends State<CoverScanner> {
     } catch (e) {
       print('Error uploading cover image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Failed to upload cover image. Please try again.')),
+        SnackBar(content: Text('Failed to upload cover image. Please try again.')),
       );
     } finally {
       setState(() {
@@ -146,16 +173,12 @@ class _CoverScannerState extends State<CoverScanner> {
                     child: Text('Pick Cover Image'),
                   ),
                   SizedBox(height: 20),
-                  if (_coverImage != null) ...[
-                    Image.file(
-                      _coverImageFile!,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
+                  if (_imageFile != null) ...[
+                    Image.file(_imageFile!), // Menampilkan gambar yang dipilih
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: _uploadCoverImage,
-                      child: Text('Upload Cover Image'),
+                      onPressed: _cropImage, // Memulai proses cropping
+                      child: Text('Crop and Upload Cover Image'),
                     ),
                   ],
                 ],
