@@ -19,6 +19,10 @@ class _EditbookPageState extends State<EditbookPage> {
   late TextEditingController _penerbitanController;
   late TextEditingController _deskripsiController;
   late TextEditingController _isbnController;
+  late TextEditingController _kotaController;
+  late TextEditingController _tahunController;
+  late TextEditingController _editorController;
+  late TextEditingController _ilustratorController;
   late TextEditingController _sinopsisController;
   late TextEditingController _keywordController;
 
@@ -32,9 +36,12 @@ class _EditbookPageState extends State<EditbookPage> {
     _penerbitanController = TextEditingController();
     _deskripsiController = TextEditingController();
     _isbnController = TextEditingController();
+    _kotaController = TextEditingController();
+    _tahunController = TextEditingController();
+    _editorController = TextEditingController();
+    _ilustratorController = TextEditingController();
     _sinopsisController = TextEditingController();
     _keywordController = TextEditingController();
-
     _fetchBookDetails();
   }
 
@@ -55,6 +62,10 @@ class _EditbookPageState extends State<EditbookPage> {
         _penerbitanController.text = book.penerbitan;
         _deskripsiController.text = book.deskripsi;
         _isbnController.text = book.isbn;
+        _kotaController.text = book.kota;
+        _tahunController.text = book.tahun;
+        _editorController.text = book.editor;
+        _ilustratorController.text = book.ilustrator ?? '';
         _sinopsisController.text = book.sinopsis ?? '';
         _keywordController.text = book.keyword ?? '';
       } else {
@@ -84,6 +95,10 @@ class _EditbookPageState extends State<EditbookPage> {
       'penerbitan': _penerbitanController.text,
       'deskripsi': _deskripsiController.text,
       'isbn': _isbnController.text,
+      'kota': _kotaController.text,
+      'tahun': _tahunController.text,
+      'editor': _editorController.text,
+      'ilustrator': _ilustratorController.text,
       'sinopsis': _sinopsisController.text,
       'keyword': _keywordController.text,
     };
@@ -123,6 +138,10 @@ class _EditbookPageState extends State<EditbookPage> {
     _penerbitanController.dispose();
     _deskripsiController.dispose();
     _isbnController.dispose();
+    _kotaController.dispose();
+    _tahunController.dispose();
+    _editorController.dispose();
+    _ilustratorController.dispose();
     _sinopsisController.dispose();
     _keywordController.dispose();
     super.dispose();
@@ -161,6 +180,15 @@ class _EditbookPageState extends State<EditbookPage> {
                             _buildTextField(_deskripsiController, 'Deskripsi'),
                             const SizedBox(height: 16),
                             _buildTextField(_isbnController, 'ISBN'),
+                            const SizedBox(height: 16),
+                            _buildTextField(_kotaController, 'Kota'),
+                            const SizedBox(height: 16),
+                            _buildTextField(_tahunController, 'Tahun Terbit'),
+                            const SizedBox(height: 16),
+                            _buildTextField(_editorController, 'Editor'),
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                                _ilustratorController, 'Ilustrator'),
                             const SizedBox(height: 16),
                             _buildTextArea(_sinopsisController, 'Sinopsis'),
                             const SizedBox(height: 16),
