@@ -89,8 +89,8 @@ class _CoverScannerState extends State<CoverScanner> {
       sourcePath: _imageFile!.path, // Gunakan path file yang dipilih
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
+          toolbarTitle: 'Crop Image',
+          toolbarColor: const Color.fromARGB(255, 0, 170, 255),
           toolbarWidgetColor: Colors.white,
           aspectRatioPresets: [
             CropAspectRatioPreset.original,
