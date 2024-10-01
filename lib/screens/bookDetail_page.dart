@@ -142,6 +142,34 @@ class _BookdetailPageState extends State<BookdetailPage> {
                                 color: Colors.black54,
                               ),
                             ),
+                            Text(
+                              'Kota: ${book.kota}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Tahun Terbit: ${book.tahun}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Editor: ${book.editor}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Ilustrator: ${book.ilustrator}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             const Text(
                               'Deskripsi:',
@@ -272,7 +300,8 @@ class _BookdetailPageState extends State<BookdetailPage> {
                         textStyle: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    if (rpaResponse == null || rpaResponse!.contains('Error')) ...[
+                    if (rpaResponse == null ||
+                        rpaResponse!.contains('Error')) ...[
                       // Tombol Add RPA hanya ditampilkan jika rpaResponse null
                       ElevatedButton.icon(
                         onPressed: () {

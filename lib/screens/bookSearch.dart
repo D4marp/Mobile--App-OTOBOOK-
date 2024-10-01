@@ -28,11 +28,11 @@ class _BooksearchState extends State<Booksearch> {
     }
   }
 
-  @override
-  void initState() {
-    print("id Buku :${bookId} ");
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   print("id Buku :${bookId} ");
+  //   super.initState();
+  // }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +123,34 @@ class _BooksearchState extends State<Booksearch> {
                             ),
                             Text(
                               'ISBN: ${book.isbn}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Kota: ${book.kota}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Tahun: ${book.tahun}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Editor: ${book.editor}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Ilustrator: ${book.ilustrator}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.black54,

@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class EdituserPage extends StatefulWidget {
   final int id;
   const EdituserPage({super.key, required this.id});

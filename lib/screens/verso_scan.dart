@@ -20,18 +20,30 @@ class _VersoScannerState extends State<VersoScanner> {
   String penerbitan = "";
   String deskripsi = "";
   String isbn = "";
+  String kota = "";
+  String tahun = "";
+  String editor = "";
+  String ilustrator = "";
 
   final FocusNode _judulFocusNode = FocusNode();
   final FocusNode _pengarangFocusNode = FocusNode();
   final FocusNode _penerbitanFocusNode = FocusNode();
   final FocusNode _deskripsiFocusNode = FocusNode();
   final FocusNode _isbnFocusNode = FocusNode();
+  final FocusNode _kotaFocusNode = FocusNode();
+  final FocusNode _tahunFocusNode = FocusNode();
+  final FocusNode _editorFocusNode = FocusNode();
+  final FocusNode _ilustratorFocusNode = FocusNode();
 
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _pengarangController = TextEditingController();
   final TextEditingController _penerbitanController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
+  final TextEditingController _kotaController = TextEditingController();
+  final TextEditingController _tahunController = TextEditingController();
+  final TextEditingController _editorController = TextEditingController();
+  final TextEditingController _ilustratorController = TextEditingController();
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -158,6 +170,46 @@ class _VersoScannerState extends State<VersoScanner> {
                     Navigator.pop(context);
                   },
                 ),
+                ListTile(
+                  title: const Text('Kota'),
+                  onTap: () {
+                    setState(() {
+                      _kotaController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_kotaFocusNode);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Tahun Terbit'),
+                  onTap: () {
+                    setState(() {
+                      _tahunController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_tahunFocusNode);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Editor'),
+                  onTap: () {
+                    setState(() {
+                      _editorController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_editorFocusNode);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Ilustrator'),
+                  onTap: () {
+                    setState(() {
+                      _ilustratorController.text = selectedText;
+                      FocusScope.of(context).requestFocus(_ilustratorFocusNode);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
               ],
             ),
           ),
@@ -179,8 +231,9 @@ class _VersoScannerState extends State<VersoScanner> {
             child: Text(
               line,
               style: const TextStyle(
-                decoration: TextDecoration.underline// Optionally change text color
-              ),
+                  decoration:
+                      TextDecoration.underline // Optionally change text color
+                  ),
             ),
           ),
         );
@@ -196,6 +249,10 @@ class _VersoScannerState extends State<VersoScanner> {
       penerbitan: _penerbitanController.text,
       deskripsi: _deskripsiController.text,
       isbn: _isbnController.text,
+      kota: _kotaController.text,
+      tahun: _tahunController.text,
+      editor: _editorController.text,
+      ilustrator: _ilustratorController.text,
     );
     Navigator.push(
       context,
@@ -205,7 +262,8 @@ class _VersoScannerState extends State<VersoScanner> {
     );
   }
 
-  Widget _buildField(String label, TextEditingController controller, FocusNode focusNode) {
+  Widget _buildField(
+      String label, TextEditingController controller, FocusNode focusNode) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: TextFormField(
@@ -228,6 +286,10 @@ class _VersoScannerState extends State<VersoScanner> {
         _buildField('Penerbitan', _penerbitanController, _penerbitanFocusNode),
         _buildField('Deskripsi', _deskripsiController, _deskripsiFocusNode),
         _buildField('ISBN', _isbnController, _isbnFocusNode),
+        _buildField('Kota', _kotaController, _kotaFocusNode),
+        _buildField('Tahun Terbit', _tahunController, _tahunFocusNode),
+        _buildField('Editor', _editorController, _editorFocusNode),
+        _buildField('Ilustrator', _ilustratorController, _ilustratorFocusNode),
       ],
     );
   }

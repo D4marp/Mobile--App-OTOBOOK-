@@ -5,6 +5,10 @@ class masterBook {
   final String penerbitan;
   final String deskripsi;
   final String isbn;
+  final String kota;
+  final String tahun;
+  final String editor;
+  final String? ilustrator;
   final String? sinopsis;
   final String? keyword;
 
@@ -15,6 +19,10 @@ class masterBook {
     required this.penerbitan,
     required this.deskripsi,
     required this.isbn,
+    required this.kota,
+    required this.tahun,
+    required this.editor,
+    this.ilustrator,
     this.sinopsis,
     this.keyword,
   });
@@ -27,6 +35,10 @@ class masterBook {
       penerbitan: json['penerbitan'] ?? 'Unknown Publisher',
       deskripsi: json['deskripsi'] ?? 'No description available',
       isbn: json['isbn'] ?? 'Unknown ISBN',
+      kota: json['kota'] ?? 'Unknown City',
+      tahun: json['tahun'] ?? 'Unknown Year',
+      editor: json['editor'] ?? 'Unknown Editor',
+      ilustrator: json['ilustrator'] ?? 'Unknown Illustrator',
       sinopsis: json['sinopsis'] ?? 'No synopsis available',
       keyword: json['keyword'] ?? 'No keyword available',
     );
@@ -40,6 +52,10 @@ class masterBook {
       'penerbitan': penerbitan,
       'deskripsi': deskripsi,
       'isbn': isbn,
+      'kota': kota,
+      'tahun': tahun,
+      'editor': editor,
+      'ilustrator': ilustrator,
       'sinopsis': sinopsis,
       'keyword': keyword,
     };

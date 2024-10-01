@@ -26,7 +26,6 @@ class _GetBooksPageState extends State<GetBooksPage> {
 
     try {
       final result = await GetData.getBooks();
-
       setState(() {
         books = result;
         if (books.isEmpty) {

@@ -23,6 +23,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
   late TextEditingController _penerbitanController;
   late TextEditingController _deskripsiController;
   late TextEditingController _isbnController;
+  late TextEditingController _kotaController;
+  late TextEditingController _tahunController;
+  late TextEditingController _editorController;
+  late TextEditingController _ilustratorController;
 
   @override
   void initState() {
@@ -32,6 +36,11 @@ class _AddBookScreenState extends State<AddBookScreen> {
     _penerbitanController = TextEditingController(text: _masterBook.penerbitan);
     _deskripsiController = TextEditingController(text: _masterBook.deskripsi);
     _isbnController = TextEditingController(text: _masterBook.isbn);
+    _kotaController = TextEditingController(text: _masterBook.kota);
+    _tahunController = TextEditingController(text: _masterBook.tahun);
+    _editorController = TextEditingController(text: _masterBook.editor);
+    _ilustratorController =
+        TextEditingController(text: _masterBook.ilustrator ?? '');
     super.initState();
   }
 
@@ -42,6 +51,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
     _penerbitanController.dispose();
     _deskripsiController.dispose();
     _isbnController.dispose();
+    _kotaController.dispose();
+    _tahunController.dispose();
+    _editorController.dispose();
+    _ilustratorController.dispose();
     super.dispose();
   }
 
@@ -64,6 +77,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
         'pengarang': _pengarangController.text,
         'penerbitan': _penerbitanController.text,
         'deskripsi': _deskripsiController.text,
+        'kota': _kotaController.text,
+        'tahun': _tahunController.text,
+        'editor': _editorController.text,
+        'ilustrator': _ilustratorController.text,
       }),
     );
     final responseBody = jsonDecode(response.body);
@@ -169,6 +186,14 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     _buildTextArea(_deskripsiController, 'Deskripsi'),
                     const SizedBox(height: 16.0),
                     _buildTextArea(_isbnController, 'ISBN'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_kotaController, 'Kota'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_tahunController, 'Tahun Terbit'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_editorController, 'Editor'),
+                    const SizedBox(height: 16.0),
+                    _buildTextArea(_ilustratorController, 'Ilustrator'),
                     const SizedBox(height: 16.0),
                     Align(
                       alignment: Alignment.centerRight,
