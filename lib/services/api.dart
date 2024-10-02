@@ -58,7 +58,7 @@ class GetData {
   String get getBookWithSinopsisUrl => '${_apiUrl}getBookSinopsis/';
 
   // edit sinopsis and book
-  String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis/';
+  String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis';
 
   // search book
   String get searchBookUrl => '${_apiUrl}searchBuku';

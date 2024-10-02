@@ -96,7 +96,7 @@ class _EditbookPageState extends State<EditbookPage> {
       'deskripsi': _deskripsiController.text,
       'isbn': _isbnController.text,
       'kota': _kotaController.text,
-      'tahun': _tahunController.text,
+      'tahun_terbit': _tahunController.text,
       'editor': _editorController.text,
       'ilustrator': _ilustratorController.text,
       'sinopsis': _sinopsisController.text,
@@ -104,8 +104,9 @@ class _EditbookPageState extends State<EditbookPage> {
     };
 
     try {
+      print(updatedBook);
       final response = await http.put(
-        Uri.parse('${GetData().editBookSinopsisUrl}${widget.id}'),
+        Uri.parse('${GetData().editBookSinopsisUrl}/${widget.id}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(updatedBook),
       );
@@ -118,6 +119,12 @@ class _EditbookPageState extends State<EditbookPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to update book')),
+        );
+      }
+      if (response.statusCode != 200) {
+        print('Error: ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.body}')),
         );
       }
     } catch (e) {

@@ -137,9 +137,10 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Pengarang'),
                   onTap: () {
                     setState(() {
-                      _pengarangController.text = _pengarangController.text.isEmpty
-                          ? selectedText
-                          : '${_pengarangController.text}, $selectedText';
+                      _pengarangController.text =
+                          _pengarangController.text.isEmpty
+                              ? selectedText
+                              : '${_pengarangController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_pengarangFocusNode);
                     });
                     Navigator.pop(context);
@@ -149,9 +150,10 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Penerbitan'),
                   onTap: () {
                     setState(() {
-                      _penerbitanController.text = _penerbitanController.text.isEmpty
-                          ? selectedText
-                          : '${_penerbitanController.text}, $selectedText';
+                      _penerbitanController.text =
+                          _penerbitanController.text.isEmpty
+                              ? selectedText
+                              : '${_penerbitanController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_penerbitanFocusNode);
                     });
                     Navigator.pop(context);
@@ -161,9 +163,10 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Deskripsi'),
                   onTap: () {
                     setState(() {
-                      _deskripsiController.text = _deskripsiController.text.isEmpty
-                          ? selectedText
-                          : '${_deskripsiController.text}, $selectedText';
+                      _deskripsiController.text =
+                          _deskripsiController.text.isEmpty
+                              ? selectedText
+                              : '${_deskripsiController.text}, $selectedText';
                       FocusScope.of(context).requestFocus(_deskripsiFocusNode);
                     });
                     Navigator.pop(context);
@@ -288,19 +291,44 @@ class _VersoScannerState extends State<VersoScanner> {
     );
   }
 
+  Widget _buildTextArea(
+      String labelText, TextEditingController controller, FocusNode focusNode) {
+    return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+        labelStyle: const TextStyle(fontSize: 18),
+      ),
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
+    );
+  }
+
   Widget _buildFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildField('Judul', _judulController, _judulFocusNode),
-        _buildField('Pengarang', _pengarangController, _pengarangFocusNode),
-        _buildField('Penerbitan', _penerbitanController, _penerbitanFocusNode),
-        _buildField('Deskripsi', _deskripsiController, _deskripsiFocusNode),
-        _buildField('ISBN', _isbnController, _isbnFocusNode),
-        _buildField('Kota', _kotaController, _kotaFocusNode),
-        _buildField('Tahun Terbit', _tahunController, _tahunFocusNode),
-        _buildField('Editor', _editorController, _editorFocusNode),
-        _buildField('Ilustrator', _ilustratorController, _ilustratorFocusNode),
+        _buildTextArea('Judul', _judulController, _judulFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea('Pengarang', _pengarangController, _pengarangFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea(
+            'Penerbitan', _penerbitanController, _penerbitanFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea('Deskripsi', _deskripsiController, _deskripsiFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea('ISBN', _isbnController, _isbnFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea('Kota', _kotaController, _kotaFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea('Tahun Terbit', _tahunController, _tahunFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea('Editor', _editorController, _editorFocusNode),
+        const SizedBox(height: 10),
+        _buildTextArea(
+            'Ilustrator', _ilustratorController, _ilustratorFocusNode),
       ],
     );
   }
