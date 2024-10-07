@@ -14,19 +14,19 @@ class IpSettingsPage extends StatefulWidget {
 }
 
 class _IpSettingsPageState extends State<IpSettingsPage> {
-  List<String> ipList = ['192.168.9.62', '192.168.1.2', '192.168.1.3'];
+  // List<String> ipList = ['192.168.9.62', '192.168.1.2', '192.168.1.3'];
 
-  String? selectedIp;
-  String username = '';
-  String password = '';
+  // String? selectedIp;
+  // String username = '';
+  // String password = '';
   // Fungsi untuk menjalankan automasi
   void _runAutomation() async {
-    if (selectedIp == null && username.isEmpty && password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tidak ada IP yang dipilih atau username dan password kosong.')),
-      );
-      return;
-    }
+    // if (selectedIp == null && username.isEmpty && password.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Tidak ada IP yang dipilih atau username dan password kosong.')),
+    //   );
+    //   return;
+    // }
     Uri url = Uri.parse(
         '${GetData().runAutomationUrl}/${widget.bookId}'); // Mengambil bookId dari widget
     try {
@@ -34,9 +34,9 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
         url,
         body: json.encode({
           'bookId': widget.bookId,
-          'ipAddress': selectedIp,
-          'username': username,
-          'password': password,
+          // 'ipAddress': selectedIp,
+          // 'username': username,
+          // 'password': password,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -78,63 +78,64 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
         child: Column(
           children: <Widget>[
             // Input untuk username
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  username = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            // Input untuk password
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-              obscureText: true, // Menyembunyikan input password
-              onChanged: (value) {
-                setState(() {
-                  password = value;
-                });
-              },
-            ),
-            SizedBox(height: 20.0),
-            Text('Pilih Alamat IP:'),
-            // Membuat daftar checkbox untuk setiap IP
-            Column(
-              children: ipList.map((ip) {
-                return RadioListTile<String>(
-                  title: Text(ip),
-                  value: ip,
-                  groupValue: selectedIp,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedIp = value;
-                    });
-                  },
-                );
-              }).toList(),
-            ),
+            // TextFormField(
+            //   decoration: InputDecoration(
+            //     labelText: 'Username',
+            //     border: OutlineInputBorder(),
+            //   ),
+            //   onChanged: (value) {
+            //     setState(() {
+            //       username = value;
+            //     });
+            //   },
+            // ),
+            // SizedBox(height: 20),
+            // // Input untuk password
+            // TextFormField(
+            //   decoration: InputDecoration(
+            //     labelText: 'Password',
+            //     border: OutlineInputBorder(),
+            //   ),
+            //   obscureText: true, // Menyembunyikan input password
+            //   onChanged: (value) {
+            //     setState(() {
+            //       password = value;
+            //     });
+            //   },
+            // ),
+            // SizedBox(height: 20.0),
+            // Text('Pilih Alamat IP:'),
+            // // Membuat daftar checkbox untuk setiap IP
+            // Column(
+            //   children: ipList.map((ip) {
+            //     return RadioListTile<String>(
+            //       title: Text(ip),
+            //       value: ip,
+            //       groupValue: selectedIp,
+            //       onChanged: (String? value) {
+            //         setState(() {
+            //           selectedIp = value;
+            //         });
+            //       },
+            //     );
+            //   }).toList(),
+            // ),
             SizedBox(height: 20),
 
             ElevatedButton(
               onPressed: () {
-                if (username.isNotEmpty &&
-                    password.isNotEmpty &&
-                    selectedIp != null) {
-                  _runAutomation(); // Jalankan automasi setelah IP dipilih
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            'Harap isi username, password, dan pilih IP terlebih dahulu.')),
-                  );
-                }
+                // if (username.isNotEmpty &&
+                //     password.isNotEmpty &&
+                //     selectedIp != null)
+                // {
+                _runAutomation(); // Jalankan automasi setelah IP dipilih
+                //   } else {
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //       SnackBar(
+                //           content: Text(
+                //               'Harap isi username, password, dan pilih IP terlebih dahulu.')),
+                //     );
+                //   }
               },
               child: Text(
                 'Simpan IP dan Jalankan Automasi untuk Book ID: ${widget.bookId}',
