@@ -61,7 +61,7 @@ class StartScreen extends StatelessWidget {
                     // ignore: deprecated_member_use
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0), // Tidak ada pembulatan, sudut lancip
+                        borderRadius: BorderRadius.circular(30), // Tidak ada pembulatan, sudut lancip
                       ),
                     ),
                   ),
@@ -70,7 +70,7 @@ class StartScreen extends StatelessWidget {
                     height: 50,
                     alignment: Alignment.center,
                     child: const Text(
-                      'Get Started',
+                      'Masuk',
                       style: TextStyle(color: Colors.white), // Warna teks putih
                     ),
                   ),
