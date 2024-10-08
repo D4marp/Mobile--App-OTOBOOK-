@@ -49,6 +49,7 @@ dependencies:
   image_cropper: ^8.0.2 
  
   path_provider: ^2.1.4
+  cunning_document_scanner: ^1.2.3
 
 
 dev_dependencies:
@@ -57,7 +58,7 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/Splash_Oto.svg
+  image: assets/Splash_oto.png
   android: true
   ios: true
   web: true
@@ -109,7 +110,8 @@ flutter:
     - assets/icon/Kuning.svg
     - assets/placeholder.jpg
     - assets/profile_placeholder.jpg
-    - assets/Start.svg
+    - assets/Splash_oto.png
+    
 
   #   - images/a_dot_ham.jpeg
 

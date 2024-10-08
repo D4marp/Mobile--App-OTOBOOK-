@@ -1,19 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart'; // Import image_cropper
+import 'package:cunning_document_scanner/cunning_document_scanner.dart'; // Hapus 'image_picker' karena tidak diperlukan lagi
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart'; // Import MediaType class
+import 'package:http_parser/http_parser.dart';
 import 'package:Otobook/services/api.dart'; // Pastikan path ini benar
-
-class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {
-  @override
-  (int, int)? get data => (2, 3);
-
-  @override
-  String get name => '2x3 (customized)';
-}
 
 class CoverScanner extends StatefulWidget {
   final int id;
@@ -24,55 +14,29 @@ class CoverScanner extends StatefulWidget {
 }
 
 class _CoverScannerState extends State<CoverScanner> {
-  final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
-  File? _imageFile; // Untuk menyimpan file gambar yang dipilih
+  File? _scannedFile;
 
-  Future<XFile?> _showImageSourceSelector() async {
-    return showModalBottomSheet<XFile?>(context: context, builder: (BuildContext context) {
-      return Container(
-        height: 150,
-        child: Column(
-          children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.camera_alt),
-              title: Text('Camera'),
-              onTap: () async {
-                Navigator.pop(context, await _picker.pickImage(source: ImageSource.camera));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library),
-              title: Text('Gallery'),
-              onTap: () async {
-                Navigator.pop(context, await _picker.pickImage(source: ImageSource.gallery));
-              },
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Future<void> _pickCoverImage() async {
+  Future<void> _scanCoverImage() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final pickedFile = await _showImageSourceSelector();
-      if (pickedFile != null) {
-        _imageFile = File(pickedFile.path); // Simpan file gambar yang dipilih
-        setState(() {}); // Update UI setelah gambar dipilih
+      final scannedImagePaths = await CunningDocumentScanner.getPictures(); // Memindai dokumen
+
+      if (scannedImagePaths != null && scannedImagePaths.isNotEmpty) {
+        _scannedFile = File(scannedImagePaths[0]); // Ambil gambar pertama (cover buku)
+        setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.')),
+          SnackBar(content: Text('No document scanned.')),
         );
       }
     } catch (e) {
-      print('Error picking cover image: $e');
+      print('Error scanning document: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick cover image. Please try again.')),
+        SnackBar(content: Text('Failed to scan document. Please try again.')),
       );
     } finally {
       setState(() {
@@ -81,43 +45,7 @@ class _CoverScannerState extends State<CoverScanner> {
     }
   }
 
-  Future<void> _cropImage() async {
-    if (_imageFile == null) return;
-
-    // Menggunakan image_cropper untuk cropping dengan custom aspect ratio
-    CroppedFile? croppedFile = await ImageCropper().cropImage(
-      sourcePath: _imageFile!.path, // Gunakan path file yang dipilih
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          toolbarColor: const Color.fromARGB(255, 0, 170, 255),
-          toolbarWidgetColor: Colors.white,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.square,
-            CropAspectRatioPresetCustom(),
-          ],
-        ),
-        IOSUiSettings(
-          title: 'Cropper',
-          aspectRatioPresets: [
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.square,
-            CropAspectRatioPresetCustom(), // IMPORTANT: iOS supports only one custom aspect ratio in preset list
-          ],
-        ),
-        WebUiSettings(
-          context: context,
-        ),
-      ],
-    );
-
-    if (croppedFile != null) {
-      await _uploadCoverImage(File(croppedFile.path)); // Mengupload gambar yang sudah di-crop
-    }
-  }
-
-  Future<void> _uploadCoverImage(File croppedFile) async {
+  Future<void> _uploadCoverImage(File scannedFile) async {
     setState(() {
       _isLoading = true;
     });
@@ -126,9 +54,9 @@ class _CoverScannerState extends State<CoverScanner> {
       var uri = Uri.parse('${GetData().addCoverUrl}/${widget.id}');
       var request = http.MultipartRequest('POST', uri)
         ..files.add(await http.MultipartFile.fromPath(
-          'file', 
-          croppedFile.path, 
-          contentType: MediaType('image', 'png'), // Pastikan tipe file sesuai
+          'file',
+          scannedFile.path,
+          contentType: MediaType('image', 'png'), // Pastikan format file sesuai
         ));
 
       var response = await request.send();
@@ -169,16 +97,16 @@ class _CoverScannerState extends State<CoverScanner> {
               child: Column(
                 children: [
                   ElevatedButton(
-                    onPressed: _pickCoverImage,
-                    child: Text('Pick Cover Image'),
+                    onPressed: _scanCoverImage, // Gunakan scanner untuk mengambil gambar cover
+                    child: Text('Scan Cover Image'),
                   ),
                   SizedBox(height: 20),
-                  if (_imageFile != null) ...[
-                    Image.file(_imageFile!), // Menampilkan gambar yang dipilih
+                  if (_scannedFile != null) ...[
+                    Image.file(_scannedFile!), // Menampilkan hasil gambar yang dipindai
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: _cropImage, // Memulai proses cropping
-                      child: Text('Crop and Upload Cover Image'),
+                      onPressed: () => _uploadCoverImage(_scannedFile!), // Mengupload gambar
+                      child: Text('Upload Cover Image'),
                     ),
                   ],
                 ],
