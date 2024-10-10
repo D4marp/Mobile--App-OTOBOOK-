@@ -40,7 +40,6 @@ dependencies:
   google_ml_kit: ^0.18.0
   image_picker: ^1.1.2
   http: ^1.2.2
-  flutter_dotenv: ^5.1.0
   flutter_launcher_icons: ^0.13.1
   google_mlkit_text_recognition: ^0.13.0
   retry: ^3.1.2
@@ -50,6 +49,7 @@ dependencies:
   image_cropper: ^8.0.2 
  
   path_provider: ^2.1.4
+  cunning_document_scanner: ^1.2.3
 
 
 dev_dependencies:
@@ -58,7 +58,7 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/Splash_Oto.svg
+  image: assets/Splash_oto.png
   android: true
   ios: true
   web: true
@@ -110,6 +110,8 @@ flutter:
     - assets/icon/Kuning.svg
     - assets/placeholder.jpg
     - assets/profile_placeholder.jpg
+    - assets/Splash_oto.png
+    
 
   #   - images/a_dot_ham.jpeg
 

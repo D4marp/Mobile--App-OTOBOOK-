@@ -144,20 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Navigate to forget password page
-                      },
-                      child: const Text(
-                        'Forget Password?',
-                        style: TextStyle(
-                          color: Color(0xFF3C83F5),
-                          fontSize: 12,
-                          fontFamily: 'Montserrat',
-                          letterSpacing: 0.07,
-                        ),
-                      ),
-                    ),
+                    
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(

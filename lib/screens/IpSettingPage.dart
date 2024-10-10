@@ -120,12 +120,17 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
             //     );
             //   }).toList(),
             // ),
+<<<<<<< HEAD
             // SizedBox(height: 20),
+=======
+            SizedBox(height: 20),
+>>>>>>> c3eed047629cc81af158e03d52846372bdd5e9be
 
             ElevatedButton(
               onPressed: () {
                 // if (username.isNotEmpty &&
                 //     password.isNotEmpty &&
+<<<<<<< HEAD
                 //     selectedIp != null) 
                 {
                   _runAutomation(); // Jalankan automasi setelah IP dipilih
@@ -136,6 +141,18 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
                 //             'Harap isi username, password, dan pilih IP terlebih dahulu.')),
                 //   );
                 }
+=======
+                //     selectedIp != null)
+                // {
+                _runAutomation(); // Jalankan automasi setelah IP dipilih
+                //   } else {
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //       SnackBar(
+                //           content: Text(
+                //               'Harap isi username, password, dan pilih IP terlebih dahulu.')),
+                //     );
+                //   }
+>>>>>>> c3eed047629cc81af158e03d52846372bdd5e9be
               },
               child: Text(
                 'Simpan IP dan Jalankan Automasi untuk Book ID: ${widget.bookId}',

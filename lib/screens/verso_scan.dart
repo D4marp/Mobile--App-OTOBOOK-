@@ -25,6 +25,8 @@ class _VersoScannerState extends State<VersoScanner> {
   String editor = "";
   String ilustrator = "";
 
+  //
+
   final FocusNode _judulFocusNode = FocusNode();
   final FocusNode _pengarangFocusNode = FocusNode();
   final FocusNode _penerbitanFocusNode = FocusNode();
@@ -44,6 +46,16 @@ class _VersoScannerState extends State<VersoScanner> {
   final TextEditingController _tahunController = TextEditingController();
   final TextEditingController _editorController = TextEditingController();
   final TextEditingController _ilustratorController = TextEditingController();
+
+     
+   String formatAsTitle(String text) {
+  // Memastikan teks tidak kosong
+  if (text.isEmpty) return '';
+
+  // Mengubah huruf pertama dari teks menjadi huruf besar, dan sisanya huruf kecil
+  return text[0].toUpperCase() + text.substring(1).toLowerCase();
+}
+
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -120,19 +132,25 @@ class _VersoScannerState extends State<VersoScanner> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                ListTile(
-                  title: const Text('Judul'),
-                  onTap: () {
-                    setState(() {
-                      // Gabungkan teks yang sudah ada dengan yang baru
-                      _judulController.text = _judulController.text.isEmpty
-                          ? selectedText
-                          : '${_judulController.text}, $selectedText';
-                      FocusScope.of(context).requestFocus(_judulFocusNode);
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
+                 ListTile(
+  title: const Text('Judul'),
+  onTap: () {
+    setState(() {
+      // Mengubah teks hasil ekstraksi menggunakan formatAsTitle
+      String formattedText = formatAsTitle(selectedText);
+
+      // Gabungkan teks yang sudah ada dengan yang baru
+      _judulController.text = _judulController.text.isEmpty
+          ? formattedText
+          : '${_judulController.text}, $formattedText';
+
+      FocusScope.of(context).requestFocus(_judulFocusNode);
+    });
+    Navigator.pop(context);
+  },
+),
+
+
                 ListTile(
                   title: const Text('Pengarang'),
                   onTap: () {
