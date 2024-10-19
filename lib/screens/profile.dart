@@ -240,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           logout(context);
                         },
                         icon: const Icon(Icons.logout, color: Colors.white),
-                        label: const Text('Logout'),
+                        label: const Text('Logout', style: TextStyle(fontSize: 16, color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromARGB(255, 59, 52, 52),

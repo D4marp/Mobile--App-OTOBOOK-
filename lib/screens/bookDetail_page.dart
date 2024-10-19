@@ -291,11 +291,11 @@ class _BookdetailPageState extends State<BookdetailPage> {
                           }
                         });
                       },
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Edit Book'),
-                      style: ElevatedButton.styleFrom(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        label: const Text('Edit Book', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
+                          horizontal: 24, vertical: 12),
                         backgroundColor: Colors.blueAccent,
                         textStyle: const TextStyle(fontSize: 16),
                       ),
@@ -323,14 +323,14 @@ class _BookdetailPageState extends State<BookdetailPage> {
                             }
                           });
                         },
-                        icon: const Icon(Icons.arrow_forward_sharp),
-                        label: const Text('Add RPA'),
+                        icon: const Icon(Icons.arrow_forward_sharp, color: Colors.white),
+                        label: const Text('Add RPA', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                           backgroundColor:
-                              const Color.fromARGB(255, 249, 255, 68),
-                          textStyle: const TextStyle(fontSize: 16),
+                              Colors.blueAccent,
+                            textStyle: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ],

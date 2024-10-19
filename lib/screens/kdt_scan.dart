@@ -9,8 +9,11 @@ class KDTScannerScreen extends StatefulWidget {
 
 class _KDTScannerScreenState extends State<KDTScannerScreen> {
   final ImagePicker _picker = ImagePicker();
+  
+  // Field controllers
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
+  final TextEditingController _editorController = TextEditingController();
   final TextEditingController _publisherController = TextEditingController();
   final TextEditingController _publicationYearController = TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
@@ -18,6 +21,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
   final TextEditingController _physicalDescriptionController = TextEditingController();
   final TextEditingController _seriesController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _subjectHeadingIController = TextEditingController();
+  final TextEditingController _subjectHeadingIIController = TextEditingController();
+  final TextEditingController _bibliographyPageController = TextEditingController();
 
   bool _isLoading = false;
   String _extractedText = '';
@@ -47,8 +53,7 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
       print('Error scanning and extracting: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content:
-                Text('Failed to scan and extract text. Please try again.')),
+            content: Text('Failed to scan and extract text. Please try again.')),
       );
     } finally {
       setState(() {
@@ -90,7 +95,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
 
   void _parseKDTText(String text) {
     final lines = text.split('\n');
-    String? title, author, publisher, isbn, edition, physicalDescription, series, notes;
+    String? title, author, editor, publisher, isbn, edition, physicalDescription, series, notes;
+    String? subjectHeadingI, subjectHeadingII;
+    String? bibliographyPage;
     int? publicationYear;
 
     for (var line in lines) {
@@ -117,12 +124,19 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
         series = line.replaceFirst('Seri', '').trim();
       } else if (line.startsWith('Catatan')) {
         notes = line.replaceFirst('Catatan', '').trim();
+      } else if (line.startsWith('Bibliografi')) {
+        bibliographyPage = line.replaceFirst('Bibliografi : hlm.', '').trim();
+      } else if (line.startsWith('I.')) {
+        subjectHeadingI = line.replaceFirst('I.', '').trim(); // Tajuk judul
+      } else if (line.startsWith('II.')) {
+        subjectHeadingII = line.replaceFirst('II.', '').trim(); // Tajuk pengarang
       }
     }
 
     // Set parsed values to the text controllers
     _titleController.text = title ?? '';
     _authorController.text = author ?? '';
+    _editorController.text = editor ?? '';
     _publisherController.text = publisher ?? '';
     _publicationYearController.text = publicationYear?.toString() ?? '';
     _isbnController.text = isbn ?? '';
@@ -130,6 +144,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     _physicalDescriptionController.text = physicalDescription ?? '';
     _seriesController.text = series ?? '';
     _notesController.text = notes ?? '';
+    _bibliographyPageController.text = bibliographyPage ?? '';
+    _subjectHeadingIController.text = subjectHeadingI ?? '';
+    _subjectHeadingIIController.text = subjectHeadingII ?? '';
   }
 
   @override
@@ -174,6 +191,7 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
       children: [
         _buildField('Title', _titleController),
         _buildField('Author', _authorController),
+        _buildField('Editor', _editorController),
         _buildField('Publisher', _publisherController),
         _buildField('Publication Year', _publicationYearController),
         _buildField('ISBN', _isbnController),
@@ -181,6 +199,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
         _buildField('Physical Description', _physicalDescriptionController),
         _buildField('Series', _seriesController),
         _buildField('Notes', _notesController),
+        _buildField('Bibliography Page', _bibliographyPageController),
+        _buildField('Subject Heading I (Tajuk Judul)', _subjectHeadingIController),
+        _buildField('Subject Heading II (Tajuk Pengarang)', _subjectHeadingIIController),
       ],
     );
   }

@@ -47,7 +47,6 @@ class _SearchPageState extends State<SearchPage> {
               result['data'].map((i) => masterBook.fromJson(i)),
             );
           });
-          // print('Data ditemukan: ${result['data']}');
         } else {
           setState(() {
             _errorMessage = 'Data tidak ditemukan.';
@@ -76,7 +75,7 @@ class _SearchPageState extends State<SearchPage> {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      return data['path']; // Ambil path dari respon
+      return data['path'];
     } else {
       throw Exception('Failed to load cover');
     }
@@ -124,9 +123,10 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Form'),
-        automaticallyImplyLeading: false,
+        title: const Text('Search Book'),
+        backgroundColor: Colors.blueAccent,
         elevation: 0,
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -135,21 +135,24 @@ class _SearchPageState extends State<SearchPage> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Cari sesuatu...',
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Cari buku...',
+                prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                filled: true,
+                fillColor: Colors.grey[200],
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(15.0),
+                  borderSide: BorderSide.none,
                 ),
               ),
               onSubmitted: _onSearch,
             ),
             const SizedBox(height: 20),
             _isLoading
-                ? const CircularProgressIndicator()
+                ? const CircularProgressIndicator.adaptive()
                 : _errorMessage.isNotEmpty
-                    ? Text(_errorMessage, style: TextStyle(color: Colors.red))
+                    ? Text(_errorMessage, style: const TextStyle(color: Colors.red))
                     : _books.isEmpty
-                        ? const Text('Tidak ada buku ditemukan.')
+                        ? const Text('Tidak ada buku ditemukan.', style: TextStyle(fontSize: 16))
                         : Expanded(
                             child: ListView.builder(
                               itemCount: _books.length,
@@ -167,7 +170,11 @@ class _SearchPageState extends State<SearchPage> {
                                     );
                                   },
                                   child: Card(
-                                    margin: const EdgeInsets.all(8.0),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+                                    elevation: 5,
                                     child: Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Row(
@@ -175,18 +182,13 @@ class _SearchPageState extends State<SearchPage> {
                                           FutureBuilder<String>(
                                             future: fetchCoverPath(book.id),
                                             builder: (context, snapshot) {
-                                              if (snapshot.connectionState ==
-                                                  ConnectionState.waiting) {
-                                                return const CircularProgressIndicator();
-                                              } else if (snapshot.hasError) {
-                                                return Image.asset(
-                                                  'assets/placeholder.jpg',
+                                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                                return const SizedBox(
                                                   width: 100,
                                                   height: 150,
-                                                  fit: BoxFit.cover,
+                                                  child: Center(child: CircularProgressIndicator()),
                                                 );
-                                              } else if (!snapshot.hasData ||
-                                                  snapshot.data == null) {
+                                              } else if (snapshot.hasError || !snapshot.hasData) {
                                                 return Image.asset(
                                                   'assets/placeholder.jpg',
                                                   width: 100,
@@ -194,24 +196,15 @@ class _SearchPageState extends State<SearchPage> {
                                                   fit: BoxFit.cover,
                                                 );
                                               } else {
-                                                final coverPath =
-                                                    snapshot.data!;
-                                                final coverUrl =
-                                                    '${GetData().Url}$coverPath';
-                                                return Image.network(
-                                                  coverUrl,
-                                                  width: 100,
-                                                  height: 150,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error,
-                                                      stackTrace) {
-                                                    return Image.asset(
-                                                      'assets/placeholder.jpg',
-                                                      width: 100,
-                                                      height: 150,
-                                                      fit: BoxFit.cover,
-                                                    );
-                                                  },
+                                                final coverUrl = '${GetData().Url}${snapshot.data!}';
+                                                return ClipRRect(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  child: Image.network(
+                                                    coverUrl,
+                                                    width: 100,
+                                                    height: 150,
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 );
                                               }
                                             },
@@ -219,8 +212,7 @@ class _SearchPageState extends State<SearchPage> {
                                           const SizedBox(width: 16),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   book.judul,
@@ -241,58 +233,40 @@ class _SearchPageState extends State<SearchPage> {
                                             ),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.more_vert),
+                                            icon: const Icon(Icons.more_vert, color: Colors.blueAccent),
                                             onPressed: () {
                                               showModalBottomSheet(
                                                 context: context,
-                                                builder:
-                                                    (BuildContext context) {
+                                                builder: (BuildContext context) {
                                                   return Wrap(
                                                     children: <Widget>[
                                                       ListTile(
-                                                        leading: const Icon(
-                                                            Icons.image),
-                                                        title: const Text(
-                                                            'Add Cover'),
+                                                        leading: const Icon(Icons.image, color: Colors.teal),
+                                                        title: const Text('Add Cover'),
                                                         onTap: () {
-                                                          Navigator.pop(
-                                                              context);
+                                                          Navigator.pop(context);
                                                           Navigator.push(
                                                             context,
                                                             MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  CoverScanner(
-                                                                      id: book
-                                                                          .id),
+                                                              builder: (context) => CoverScanner(id: book.id),
                                                             ),
                                                           ).then((result) {
-                                                            if (result ==
-                                                                true) {
-                                                              // Refresh the book list when a cover is added
+                                                            if (result == true) {
                                                               setState(() {
-                                                                _onSearch(
-                                                                    _searchController
-                                                                        .text);
+                                                                _onSearch(_searchController.text);
                                                               });
                                                             }
                                                           });
                                                         },
                                                       ),
                                                       ListTile(
-                                                        leading: const Icon(
-                                                            Icons.delete),
-                                                        title: const Text(
-                                                            'Delete'),
+                                                        leading: const Icon(Icons.delete, color: Colors.red),
+                                                        title: const Text('Delete'),
                                                         onTap: () async {
-                                                          Navigator.pop(
-                                                              context);
-                                                          await _deleteBook(
-                                                              context, book.id);
-                                                          // Refresh the book list after deletion
+                                                          Navigator.pop(context);
+                                                          await _deleteBook(context, book.id);
                                                           setState(() {
-                                                            _onSearch(
-                                                                _searchController
-                                                                    .text);
+                                                            _onSearch(_searchController.text);
                                                           });
                                                         },
                                                       ),

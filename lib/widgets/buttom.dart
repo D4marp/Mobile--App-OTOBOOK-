@@ -1,38 +1,29 @@
 import 'package:flutter/material.dart';
 // Import your actual page files
-// Adjust the import path as needed
-import 'package:Otobook/screens/verso_scan.dart'; // Adjust the import path as needed
-import 'package:Otobook/screens/kdt_scan.dart'; // Adjust the import path as needed
-import 'package:Otobook/screens/daftar_isi_scan.dart'; // Adjust the import path as needed
+import 'package:Otobook/screens/verso_scan.dart';
+import 'package:Otobook/screens/kdt_scan.dart';
+import 'package:Otobook/screens/daftar_isi_scan.dart';
+import 'package:Otobook/screens/tajuk_subject.dart';
 
 class IconRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 369,
-      height: 103,
-      padding:
-          const EdgeInsets.symmetric(horizontal: 22), // Padding for spacing
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment:
-            MainAxisAlignment.spaceBetween, // Evenly spaces items
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // buildIconColumn(context, 'Cover', Icons.book, Color(0xFF4894FE), CoverScannerScreen()),
-          buildIconColumn(context, 'Verso', Icons.library_books,
-              Color(0xFF4894FE), VersoScanner()),
-          buildIconColumn(context, 'KDT', Icons.description, Color(0xFF4894FE),
-              KDTScannerScreen()),
-          buildIconColumn(context, 'Daftar Isi', Icons.list, Color(0xFF4894FE),
-              DaftarIsiScanScreen()),
+          buildIconColumn(
+              context, 'Verso', Icons.library_books, Colors.blue, VersoScanner()),
+          buildIconColumn(context, 'KDT', Icons.description, Colors.blue, KDTScannerScreen()),
+          buildIconColumn(context, 'Daftar Isi', Icons.list, Colors.blue, DaftarIsiScanScreen()),
+          buildIconColumn(context, 'Tajuk Subjek', Icons.add_box, Colors.blue, TajukSubject()),
         ],
       ),
     );
   }
 
-  Widget buildIconColumn(BuildContext context, String text, IconData icon,
-      Color color, Widget page) {
+  Widget buildIconColumn(BuildContext context, String text, IconData icon, Color color, Widget page) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -41,40 +32,37 @@ class IconRowWidget extends StatelessWidget {
         );
       },
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(24),
-            decoration: ShapeDecoration(
-              color: Color(0xFFFAFAFA),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color.withOpacity(0.8), color],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              shadows: [
+              shape: BoxShape.circle,
+              boxShadow: [
                 BoxShadow(
-                  color: Color(0x3F000000),
-                  blurRadius: 4,
+                  color: color.withOpacity(0.4),
+                  blurRadius: 8,
                   offset: Offset(0, 4),
-                  spreadRadius: 0,
                 ),
               ],
             ),
             child: Icon(
               icon,
-              size: 24,
-              color: color, // Applying the color
+              size: 32,
+              color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             text,
             style: TextStyle(
-              color: Color(0xFF8696BB),
-              fontSize: 15,
-              fontFamily: 'Poppins',
-              height: 1.2,
+              color: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

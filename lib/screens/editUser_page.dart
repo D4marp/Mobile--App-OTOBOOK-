@@ -27,7 +27,6 @@ class _EdituserPageState extends State<EdituserPage> {
     super.initState();
     _usernameController = TextEditingController();
     _emailController = TextEditingController();
-
     _fetchUserDetails();
   }
 
@@ -66,14 +65,12 @@ class _EdituserPageState extends State<EdituserPage> {
       final uri = Uri.parse('${GetData().editUserByIdUrl}/${widget.id}');
       final request = http.MultipartRequest('PUT', uri);
 
-      // Add text fields
       request.fields['username'] = _usernameController.text;
       request.fields['email'] = _emailController.text;
 
-      // Add the profile image if it exists
       if (_profileImageFile != null) {
         request.files.add(await http.MultipartFile.fromPath(
-          'file', // The field name expected by the server
+          'file', 
           _profileImageFile!.path,
         ));
       }
@@ -104,24 +101,29 @@ class _EdituserPageState extends State<EdituserPage> {
     return showModalBottomSheet<XFile?>(
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
-          height: 150,
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: const Icon(Icons.camera_alt),
+                leading: const Icon(Icons.camera_alt, color: Colors.black87),
                 title: const Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.camera),
+                  );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library),
+                leading: const Icon(Icons.photo_library, color: Colors.black87),
                 title: const Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.gallery),
+                  );
                 },
               ),
             ],
@@ -151,8 +153,7 @@ class _EdituserPageState extends State<EdituserPage> {
     } catch (e) {
       print('Error picking profile image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Failed to pick profile image. Please try again.')),
+        const SnackBar(content: Text('Failed to pick profile image.')),
       );
     } finally {
       setState(() {
@@ -166,6 +167,10 @@ class _EdituserPageState extends State<EdituserPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit User'),
+        elevation: 1,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -173,48 +178,75 @@ class _EdituserPageState extends State<EdituserPage> {
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Profile Image Display
-                    GestureDetector(
-                      onTap: _pickProfileImage,
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundImage: _profileImageFile != null
-                            ? FileImage(_profileImageFile!)
-                            : _profileImageUrl != null
-                                ? NetworkImage(_profileImageUrl!)
-                                : const AssetImage(
-                                        'assets/profile_placeholder.jpg')
-                                    as ImageProvider,
-                        backgroundColor: const Color.fromARGB(255, 82, 64, 64),
+                    Center(
+                      child: GestureDetector(
+                        onTap: _pickProfileImage,
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundImage: _profileImageFile != null
+                              ? FileImage(_profileImageFile!)
+                              : _profileImageUrl != null
+                                  ? NetworkImage(_profileImageUrl!)
+                                  : const AssetImage(
+                                          'assets/profile_placeholder.jpg')
+                                      as ImageProvider,
+                          backgroundColor: const Color(0xFFe0e0e0),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-
-                    // Username Input
+                    const SizedBox(height: 24.0),
+                    Text(
+                      'Username',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8.0),
                     TextField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'Enter username',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-
-                    // Email Input
+                    const SizedBox(height: 24.0),
+                    Text(
+                      'Email',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8.0),
                     TextField(
                       controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'Enter email',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-
-                    // Update Button
-                    ElevatedButton(
-                      onPressed: _updateUser,
-                      child: const Text('Update User'),
+                    const SizedBox(height: 40.0),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          backgroundColor: Colors.black87,
+                        ),
+                        onPressed: _updateUser,
+                        child: const Text(
+                          'Update User',
+                          style: TextStyle(fontSize: 16.0, color: Colors.white),
+                        ),
+                      ),
                     ),
                   ],
                 ),
