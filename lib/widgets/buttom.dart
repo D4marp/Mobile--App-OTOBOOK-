@@ -9,14 +9,14 @@ class IconRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           buildIconColumn(
               context, 'Verso', Icons.library_books, Colors.blue, VersoScanner()),
           buildIconColumn(context, 'KDT', Icons.description, Colors.blue, KDTScannerScreen()),
-          buildIconColumn(context, 'Daftar Isi', Icons.list, Colors.blue, DaftarIsiScanScreen()),
+         
           buildIconColumn(context, 'Tajuk Subjek', Icons.add_box, Colors.blue, TajukSubject()),
         ],
       ),
