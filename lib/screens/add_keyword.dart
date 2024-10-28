@@ -23,6 +23,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   late TextEditingController _sinopsisController;
   late TextEditingController _masterBookIdController;
   final TextEditingController _keywordController = TextEditingController();
+  final TextEditingController _noClassController = TextEditingController();
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
         body: jsonEncode(<String, String>{
           'sinopsis': _sinopsisController.text,
           'keyword': _keywordController.text,
+          'no_class': _noClassController.text,
           'masterBookId': _masterBookIdController.text,
         }));
 
@@ -97,25 +99,30 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
       print('API Response: $response'); // Log API response
 
       if (result.statusCode == 200) {
-        if (response.containsKey('keywords')) {
+        if (response.containsKey('subjek') &&
+            response.containsKey('deweyNoClass')) {
           setState(() {
-            _keywordController.text = response['keywords'];
+            _keywordController.text = response['subjek'];
+            _noClassController.text = response['deweyNoClass'];
           });
         } else {
           print('Keywords not found in response'); // Debugging
           setState(() {
             _keywordController.text = 'No keywords found';
+            _noClassController.text = 'No Dewey Decimal Classification found';
           });
         }
       } else {
         setState(() {
-          _keywordController.text = 'Gagal mendapatkan kata kunci';
+          _keywordController.text = 'Data tidak ditemukan';
+          _noClassController.text = 'Data tidak ditemukan';
         });
       }
     } catch (e) {
       print('Error fetching keywords: $e'); // Handle errors
       setState(() {
         _keywordController.text = 'Gagal mendapatkan kata kunci';
+        _noClassController.text = 'Gagal mendapatkan klasifikasi Dewey';
       });
     }
   }
@@ -180,6 +187,8 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
                     _buildTextArea(_sinopsisController, 'Sinopsis'),
                     const SizedBox(height: 16),
                     _buildTextArea(_keywordController, 'Keyword'),
+                    const SizedBox(height: 16),
+                    _buildTextArea(_noClassController, 'DeweyNoClass'),
                     const SizedBox(height: 16.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

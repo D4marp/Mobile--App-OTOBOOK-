@@ -1,9 +1,9 @@
+import 'package:Otobook/screens/klasifikasiBuku.dart';
 import 'package:flutter/material.dart';
 // Import your actual page files
 import 'package:Otobook/screens/verso_scan.dart';
 import 'package:Otobook/screens/kdt_scan.dart';
-import 'package:Otobook/screens/daftar_isi_scan.dart';
-import 'package:Otobook/screens/tajuk_subject.dart';
+// import 'package:Otobook/screens/tajuk_subject.dart';
 
 class IconRowWidget extends StatelessWidget {
   @override
@@ -13,17 +13,19 @@ class IconRowWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          buildIconColumn(
-              context, 'Verso', Icons.library_books, Colors.blue, VersoScanner()),
-          buildIconColumn(context, 'KDT', Icons.description, Colors.blue, KDTScannerScreen()),
-         
-          buildIconColumn(context, 'Tajuk Subjek', Icons.add_box, Colors.blue, TajukSubject()),
+          buildIconColumn(context, 'Verso', Icons.library_books, Colors.blue,
+              VersoScanner()),
+          buildIconColumn(context, 'KDT', Icons.description, Colors.blue,
+              KDTScannerScreen()),
+          buildIconColumn(context, 'Tajuk Subjek', Icons.subject, Colors.blue,
+              Klasifikasibuku()),
         ],
       ),
     );
   }
 
-  Widget buildIconColumn(BuildContext context, String text, IconData icon, Color color, Widget page) {
+  Widget buildIconColumn(BuildContext context, String text, IconData icon,
+      Color color, Widget page) {
     return GestureDetector(
       onTap: () {
         Navigator.push(

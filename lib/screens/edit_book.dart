@@ -25,6 +25,7 @@ class _EditbookPageState extends State<EditbookPage> {
   late TextEditingController _ilustratorController;
   late TextEditingController _sinopsisController;
   late TextEditingController _keywordController;
+  late TextEditingController _noClassController;
 
   bool _isLoading = false;
 
@@ -42,6 +43,7 @@ class _EditbookPageState extends State<EditbookPage> {
     _ilustratorController = TextEditingController();
     _sinopsisController = TextEditingController();
     _keywordController = TextEditingController();
+    _noClassController = TextEditingController();
     _fetchBookDetails();
   }
 
@@ -68,6 +70,7 @@ class _EditbookPageState extends State<EditbookPage> {
         _ilustratorController.text = book.ilustrator ?? '';
         _sinopsisController.text = book.sinopsis ?? '';
         _keywordController.text = book.keyword ?? '';
+        _noClassController.text = book.noClass ?? '';
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to fetch book details')),
@@ -101,6 +104,7 @@ class _EditbookPageState extends State<EditbookPage> {
       'ilustrator': _ilustratorController.text,
       'sinopsis': _sinopsisController.text,
       'keyword': _keywordController.text,
+      'no_class': _noClassController.text,
     };
 
     try {
@@ -151,6 +155,7 @@ class _EditbookPageState extends State<EditbookPage> {
     _ilustratorController.dispose();
     _sinopsisController.dispose();
     _keywordController.dispose();
+    _noClassController.dispose();
     super.dispose();
   }
 
@@ -200,6 +205,8 @@ class _EditbookPageState extends State<EditbookPage> {
                             _buildTextArea(_sinopsisController, 'Sinopsis'),
                             const SizedBox(height: 16),
                             _buildTextArea(_keywordController, 'Keyword'),
+                            const SizedBox(height: 16),
+                            _buildTextArea(_noClassController, 'DeweyNoClass'),
                           ],
                         ),
                       ),

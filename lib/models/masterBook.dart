@@ -11,6 +11,7 @@ class masterBook {
   final String? ilustrator;
   final String? sinopsis;
   final String? keyword;
+  final String? noClass;
 
   masterBook({
     required this.id,
@@ -25,6 +26,7 @@ class masterBook {
     this.ilustrator,
     this.sinopsis,
     this.keyword,
+    this.noClass,
   });
 
   factory masterBook.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class masterBook {
       ilustrator: json['ilustrator'] ?? 'Unknown Illustrator',
       sinopsis: json['sinopsis'] ?? 'No synopsis available',
       keyword: json['keyword'] ?? 'No keyword available',
+      noClass: json['no_class'] ?? 'Unknown Classification Number',
     );
   }
 
@@ -58,6 +61,7 @@ class masterBook {
       'ilustrator': ilustrator,
       'sinopsis': sinopsis,
       'keyword': keyword,
+      'no_class': noClass,
     };
   }
 }
