@@ -4,13 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetData {
-  final String _apiUrl = 'http://103.106.72.182:8770/api/';
+  final String _apiUrl = 'http://192.168.1.4:5000/api/';
   Future<String?> _userId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
   }
 
-  String get Url => 'http://103.106.72.182:8770';
+  String get Url => 'http://192.168.1.4:5000';
 
   // login user
   String get loginUrl => '${_apiUrl}login';
@@ -60,10 +60,26 @@ class GetData {
   // edit sinopsis and book
   String get editBookSinopsisUrl => '${_apiUrl}editBookSinopsis';
 
+  // add klasifikasi book
+  String get addKlasifikasiUrl => '${_apiUrl}addKlasfikasi';
+
   // search book
   String get searchBookUrl => '${_apiUrl}searchBuku';
-  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
-  static const String sinopsisUrl ='http://103.106.72.182:8770/api/getSinopsis';
+
+  // search klasifikasi
+  String get searchKlasifikasiUrl => '${_apiUrl}searchKlasifikasi';
+
+  // get klassifikasi by id
+  String get getKlasifikasiByIdUrl => '${_apiUrl}getKlasifikasiBuku';
+
+  // Update klasifikasi
+  String get updateKlasifikasiUrl => '${_apiUrl}editKlasifikasi';
+
+  // Delete klasifikasi
+  String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
+
+  static const String baseUrl = 'http://192.168.1.4:5000/api/getBuku';
+  static const String sinopsisUrl = 'http://192.168.1.4:5000/api/getSinopsis';
 
   static Future<List<masterBook>> getBooks() async {
     try {
@@ -114,6 +130,7 @@ class GetData {
             ...bookData,
             'sinopsis': sinopsisData['sinopsis'],
             'keyword': sinopsisData['keyword'],
+            'no_class': sinopsisData['no_class'],
           });
         } else {
           // If sinopsis is not found, return book data only

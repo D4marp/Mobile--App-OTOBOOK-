@@ -28,6 +28,8 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
   }
 
   Future<void> _scanISBN() async {
+    if (_isScanning) return;
+
     setState(() {
       _isScanning = true;
       _errorMessage = '';
@@ -39,17 +41,27 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
         final inputImage = InputImage.fromFilePath(pickedFile.path);
         final barcodes = await _barcodeScanner.processImage(inputImage);
 
-        for (Barcode barcode in barcodes) {
-          if (barcode.type == BarcodeType.isbn) {
-            final isbn = barcode.rawValue ?? '';
-            await _searchBookByISBN(isbn);
-            break;
+        if (barcodes.isEmpty) {
+          setState(() {
+            _errorMessage = 'Tidak ada barcode ISBN yang ditemukan';
+          });
+        } else {
+          for (Barcode barcode in barcodes) {
+            if (barcode.type == BarcodeType.isbn) {
+              final isbn = barcode.rawValue ?? '';
+              await _searchBookByISBN(isbn);
+              break;
+            } else {
+              setState(() {
+                _errorMessage = 'Kode yang ditemukan bukan ISBN';
+              });
+            }
           }
         }
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to scan ISBN: $e';
+        _errorMessage = 'Gagal memindai ISBN: $e';
       });
     } finally {
       setState(() {
@@ -78,17 +90,17 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
           });
         } else {
           setState(() {
-            _errorMessage = 'No book found with ISBN: $isbn';
+            _errorMessage = 'Tidak ada buku ditemukan dengan ISBN: $isbn';
           });
         }
       } else {
         setState(() {
-          _errorMessage = 'Failed to search book. Status code: ${response.statusCode}';
+          _errorMessage = 'Gagal mencari buku. Status code: ${response.statusCode}';
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error searching book: ${e.toString()}';
+        _errorMessage = 'Kesalahan saat mencari buku: ${e.toString()}';
       });
     } finally {
       setState(() {
@@ -101,7 +113,7 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Book ISBN'),
+        title: const Text('Pindai ISBN Buku'),
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
@@ -110,30 +122,31 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
           children: [
             ElevatedButton(
               onPressed: _isScanning ? null : _scanISBN,
-              child: _isScanning ? const CircularProgressIndicator() : const Text('Scan ISBN'),
+              child: _isScanning ? const CircularProgressIndicator() : const Text('Pindai ISBN'),
             ),
             const SizedBox(height: 20),
-            _isLoading
-                ? const CircularProgressIndicator.adaptive()
-                : _errorMessage.isNotEmpty
-                    ? Text(_errorMessage, style: const TextStyle(color: Colors.red))
-                    : _books.isEmpty
-                        ? const Text('Scan ISBN to find book details.', style: TextStyle(fontSize: 16))
-                        : Expanded(
-                            child: ListView.builder(
-                              itemCount: _books.length,
-                              itemBuilder: (context, index) {
-                                final book = _books[index];
-                                return ListTile(
-                                  title: Text(book.judul),
-                                  subtitle: Text('Author: ${book.pengarang}'),
-                                  onTap: () {
-                                    // Navigate to book details or any other action
-                                  },
-                                );
-                              },
-                            ),
-                          ),
+            if (_isLoading)
+              const CircularProgressIndicator.adaptive()
+            else if (_errorMessage.isNotEmpty)
+              Text(_errorMessage, style: const TextStyle(color: Colors.red))
+            else if (_books.isEmpty)
+              const Text('Pindai ISBN untuk mencari detail buku.', style: TextStyle(fontSize: 16))
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _books.length,
+                  itemBuilder: (context, index) {
+                    final book = _books[index];
+                    return ListTile(
+                      title: Text(book.judul),
+                      subtitle: Text('Pengarang: ${book.pengarang}'),
+                      onTap: () {
+                        // Tindakan ketika buku dipilih
+                      },
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

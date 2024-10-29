@@ -205,25 +205,44 @@ class _BookdetailPageState extends State<BookdetailPage> {
                                   color: Colors.black87,
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              if (book.keyword != null) ...[
-                                const Text(
-                                  'Keyword:',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.black87,
-                                  ),
+                            ],
+                            const SizedBox(height: 8),
+                            if (book.keyword != null) ...[
+                              const Text(
+                                'Keyword:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.black87,
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  book.keyword!,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black87,
-                                  ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                book.keyword!,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
                                 ),
-                              ],
+                              ),
+                            ],
+                            const SizedBox(height: 8),
+                            if (book.noClass != null) ...[
+                              const Text(
+                                'DeweyNoClass:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                book.noClass!,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
                             ],
                           ],
                         ),
@@ -291,11 +310,12 @@ class _BookdetailPageState extends State<BookdetailPage> {
                           }
                         });
                       },
-                        icon: const Icon(Icons.edit, color: Colors.white),
-                        label: const Text('Edit Book', style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                      label: const Text('Edit Book',
+                          style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
+                            horizontal: 24, vertical: 12),
                         backgroundColor: Colors.blueAccent,
                         textStyle: const TextStyle(fontSize: 16),
                       ),
@@ -323,14 +343,15 @@ class _BookdetailPageState extends State<BookdetailPage> {
                             }
                           });
                         },
-                        icon: const Icon(Icons.arrow_forward_sharp, color: Colors.white),
-                        label: const Text('Add RPA', style: TextStyle(color: Colors.white)),
+                        icon: const Icon(Icons.arrow_forward_sharp,
+                            color: Colors.white),
+                        label: const Text('Add RPA',
+                            style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
-                          backgroundColor:
-                              Colors.blueAccent,
-                            textStyle: const TextStyle(fontSize: 16),
+                          backgroundColor: Colors.blueAccent,
+                          textStyle: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ],

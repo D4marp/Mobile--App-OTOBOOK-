@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Import your actual page files
 import 'package:Otobook/screens/verso_scan.dart';
 import 'package:Otobook/screens/kdt_scan.dart';
+
 import 'package:Otobook/screens/tajuk_subject.dart';
 
 class IconRowWidget extends StatelessWidget {
@@ -16,14 +17,15 @@ class IconRowWidget extends StatelessWidget {
           buildIconColumn(
               context, 'Verso', Icons.library_books, Colors.blue, VersoScanner()),
           buildIconColumn(context, 'KDT', Icons.description, Colors.blue, KDTScannerScreen()),
-          buildIconColumn(context, 'ISBN', Icons.book_online, Colors.blue, ISBNScanPage()),
-          buildIconColumn(context, 'Tajuk Subjek', Icons.add_box, Colors.blue, TajukSubject()),
+         buildIconColumn(context, 'ISBN', Icons.description, Colors.blue, ISBNScanPage()),
+          buildIconColumn(context, 'Subjek', Icons.add_box, Colors.blue, TajukSubject()),
         ],
       ),
     );
   }
 
-  Widget buildIconColumn(BuildContext context, String text, IconData icon, Color color, Widget page) {
+  Widget buildIconColumn(BuildContext context, String text, IconData icon,
+      Color color, Widget page) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
