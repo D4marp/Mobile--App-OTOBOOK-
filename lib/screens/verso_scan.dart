@@ -190,18 +190,24 @@ class _VersoScannerState extends State<VersoScanner> {
                     Navigator.pop(context);
                   },
                 ),
-                ListTile(
-                  title: const Text('ISBN'),
-                  onTap: () {
-                    setState(() {
-                      _isbnController.text = _isbnController.text.isEmpty
-                          ? selectedText
-                          : '${_isbnController.text}, $selectedText';
-                      FocusScope.of(context).requestFocus(_isbnFocusNode);
-                    });
-                    Navigator.pop(context);
-                  },
-                ),
+               ListTile(
+  title: const Text('ISBN'),
+  onTap: () {
+    setState(() {
+      // Menghapus teks "ISBN" atau "ISBN :" dan hanya mengambil angka dan tanda hubung
+      String formattedText = selectedText
+          .replaceAll(RegExp(r'ISBN\s*:?'), '')
+          .replaceAll(RegExp(r'[^0-9-]'), '');
+
+      _isbnController.text = _isbnController.text.isEmpty
+          ? formattedText
+          : '${_isbnController.text}, $formattedText';
+      FocusScope.of(context).requestFocus(_isbnFocusNode);
+    });
+    Navigator.pop(context);
+  },
+),
+
                 ListTile(
                   title: const Text('Kota'),
                   onTap: () {

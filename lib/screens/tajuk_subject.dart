@@ -126,4 +126,37 @@ class _TajukSubjectState extends State<TajukSubject> {
       ),
     );
   }
+<<<<<<< HEAD
 }
+=======
+
+  // Widget _buildDataList() {
+  //   return ListView.builder(
+  //     itemCount: _data.length,
+  //     itemBuilder: (context, index) {
+  //       return Card(
+  //         margin: const EdgeInsets.symmetric(vertical: 6),
+  //         elevation: 3,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(10),
+  //         ),
+  //         child: ListTile(
+  //           leading: Icon(Icons.label, color: Colors.blueAccent),
+  //           title: Text(
+  //             _data[index][0],
+  //             style: TextStyle(fontWeight: FontWeight.w600),
+  //           ),
+  //           subtitle: Text('Nomor DDC: ${_data[index][1]}'),
+  //           trailing: Icon(Icons.delete, color: Colors.redAccent),
+  //           onTap: () {
+  //             setState(() {
+  //               _data.removeAt(index);
+  //             });
+  //           },
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+}
+>>>>>>> 02746ab56718b1d68f2280306f6ca56dac209211
