@@ -193,7 +193,7 @@ class _EditklasifikasibukuState extends State<Editklasifikasibuku> {
                             _buildTextArea(_noClassController, 'DeweyNoClass'),
                             const SizedBox(height: 16),
                             _buildTextArea(
-                                _narasiController, 'Narasi Klasifikasi'),
+                                _narasiController, 'Uraian Klasifikasi'),
                             const SizedBox(height: 16),
                             _buildTextArea(_subjectController, 'Subject'),
                           ],

@@ -91,7 +91,7 @@ class _TajukSubjectState extends State<TajukSubject> {
             SizedBox(height: 16),
             _buildInputField('DeweyNoClass', _nomorController),
             SizedBox(height: 16),
-            _buildInputField('Narasi_klasifikasi', _narasiController),
+            _buildInputField('Uraian_klasifikasi', _narasiController),
             SizedBox(height: 16),
             _buildInputField('Subjek', _tajukController),
             SizedBox(height: 16),
@@ -107,24 +107,6 @@ class _TajukSubjectState extends State<TajukSubject> {
                 child: Text('Tambahkan', style: TextStyle(fontSize: 16)),
               ),
             ),
-            // SizedBox(height: 16),
-            // Expanded(
-            //   child: _buildDataList(),
-            // ),
-            // SizedBox(height: 16),
-            // Center(
-            //   child: ElevatedButton.icon(
-            //     style: ElevatedButton.styleFrom(
-            //       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(10),
-            //       ),
-            //     ),
-            //     icon: Icon(Icons.save),
-            //     onPressed: _saveCSV,
-            //     label: Text('Simpan ke CSV', style: TextStyle(fontSize: 16)),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -144,33 +126,4 @@ class _TajukSubjectState extends State<TajukSubject> {
       ),
     );
   }
-
-  // Widget _buildDataList() {
-  //   return ListView.builder(
-  //     itemCount: _data.length,
-  //     itemBuilder: (context, index) {
-  //       return Card(
-  //         margin: const EdgeInsets.symmetric(vertical: 6),
-  //         elevation: 3,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(10),
-  //         ),
-  //         child: ListTile(
-  //           leading: Icon(Icons.label, color: Colors.blueAccent),
-  //           title: Text(
-  //             _data[index][0],
-  //             style: TextStyle(fontWeight: FontWeight.w600),
-  //           ),
-  //           subtitle: Text('Nomor DDC: ${_data[index][1]}'),
-  //           trailing: Icon(Icons.delete, color: Colors.redAccent),
-  //           onTap: () {
-  //             setState(() {
-  //               _data.removeAt(index);
-  //             });
-  //           },
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 }

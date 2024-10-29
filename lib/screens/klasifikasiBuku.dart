@@ -117,7 +117,7 @@ class _KlasifikasibukuState extends State<Klasifikasibuku> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            'Narasi: ${book.narasiKlasifikasi}'), // Menampilkan narasi_klasifikasi
+                                            'Uraian Klasifikasi: ${book.narasiKlasifikasi}'), // Menampilkan narasi_klasifikasi
                                         Text(
                                             'Subject: ${book.subject ?? 'Tidak ada subject'}'), // Menampilkan subject atau pesan default
                                       ],
