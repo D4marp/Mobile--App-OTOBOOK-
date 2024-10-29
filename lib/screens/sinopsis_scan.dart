@@ -2,7 +2,6 @@ import 'package:Otobook/models/sinopsisBook.dart';
 import 'package:Otobook/screens/add_keyword.dart';
 import 'package:Otobook/services/ocr_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SinopsisScanner extends StatefulWidget {

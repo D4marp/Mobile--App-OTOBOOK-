@@ -194,9 +194,12 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('ISBN'),
                   onTap: () {
                     setState(() {
+                      // Mengambil hanya angka dan tanda hubung dari teks yang dipilih
+                      String formattedText = selectedText.replaceAll(RegExp(r'[^0-9-]'), '');
+
                       _isbnController.text = _isbnController.text.isEmpty
-                          ? selectedText
-                          : '${_isbnController.text}, $selectedText';
+                          ? formattedText
+                          : '${_isbnController.text}, $formattedText';
                       FocusScope.of(context).requestFocus(_isbnFocusNode);
                     });
                     Navigator.pop(context);

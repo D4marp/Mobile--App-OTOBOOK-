@@ -9,6 +9,7 @@ class TajukSubject extends StatefulWidget {
 }
 
 class _TajukSubjectState extends State<TajukSubject> {
+  final _deweyNoClass = TextEditingController();
   final _tajukController = TextEditingController();
   final _nomorController = TextEditingController();
   List<List<String>> _data = [];
@@ -17,7 +18,8 @@ class _TajukSubjectState extends State<TajukSubject> {
   void _addTajuk() {
     if (_tajukController.text.isNotEmpty && _nomorController.text.isNotEmpty) {
       setState(() {
-        _data.add([_tajukController.text, _nomorController.text]);
+        _data.add([_tajukController.text, _nomorController.text, _deweyNoClass.text]);
+        _deweyNoClass.clear();
         _tajukController.clear();
         _nomorController.clear();
       });
@@ -58,6 +60,8 @@ class _TajukSubjectState extends State<TajukSubject> {
                 color: Colors.blueAccent,
               ),
             ),
+            SizedBox(height: 16),
+            _buildInputField('DDC Class Number', _deweyNoClass),
             SizedBox(height: 16),
             _buildInputField('Tajuk Subjek', _tajukController),
             SizedBox(height: 16),
