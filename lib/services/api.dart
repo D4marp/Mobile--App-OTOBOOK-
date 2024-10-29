@@ -4,13 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetData {
-  final String _apiUrl = 'http://192.168.1.4:5000/api/';
+  final String _apiUrl = 'http://103.106.72.182:8770/api/';
   Future<String?> _userId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
   }
 
-  String get Url => 'http://192.168.1.4:5000';
+  String get Url => 'http://103.106.72.182:8770';
 
   // login user
   String get loginUrl => '${_apiUrl}login';
