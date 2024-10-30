@@ -78,14 +78,9 @@ class GetData {
   // Delete klasifikasi
   String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
 
-<<<<<<< HEAD
   static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
   static const String sinopsisUrl =
       'http://103.106.72.182:8770/api/getSinopsis';
-=======
-  static const String baseUrl = 'http://103.106.72.182:8770/api//getBuku';
-  static const String sinopsisUrl = 'http://103.106.72.182:8770/api//getSinopsis';
->>>>>>> 02746ab56718b1d68f2280306f6ca56dac209211
 
   static Future<List<masterBook>> getBooks() async {
     try {
