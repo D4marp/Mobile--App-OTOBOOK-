@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:Otobook/screens/booksearch.dart'; // Pastikan path ini sesuai dengan lokasi Booksearch
 
 class ISBNScanPage extends StatefulWidget {
   const ISBNScanPage({Key? key}) : super(key: key);
@@ -122,15 +123,23 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
           children: [
             ElevatedButton(
               onPressed: _isScanning ? null : _scanISBN,
-              child: _isScanning ? const CircularProgressIndicator() : const Text('Pindai ISBN'),
+              child: _isScanning
+                  ? const CircularProgressIndicator()
+                  : const Text('Pindai ISBN'),
             ),
             const SizedBox(height: 20),
             if (_isLoading)
               const CircularProgressIndicator.adaptive()
             else if (_errorMessage.isNotEmpty)
-              Text(_errorMessage, style: const TextStyle(color: Colors.red))
+              Text(
+                _errorMessage,
+                style: const TextStyle(color: Colors.red),
+              )
             else if (_books.isEmpty)
-              const Text('Pindai ISBN untuk mencari detail buku.', style: TextStyle(fontSize: 16))
+              const Text(
+                'Pindai ISBN untuk mencari detail buku.',
+                style: TextStyle(fontSize: 16),
+              )
             else
               Expanded(
                 child: ListView.builder(
@@ -141,7 +150,12 @@ class _ISBNScanPageState extends State<ISBNScanPage> {
                       title: Text(book.judul),
                       subtitle: Text('Pengarang: ${book.pengarang}'),
                       onTap: () {
-                        // Tindakan ketika buku dipilih
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Booksearch(bookId: book.id),
+                          ),
+                        );
                       },
                     );
                   },
