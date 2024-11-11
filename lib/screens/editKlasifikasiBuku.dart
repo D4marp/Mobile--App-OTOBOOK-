@@ -66,7 +66,7 @@ class _EditklasifikasibukuState extends State<Editklasifikasibuku> {
 
     final updateKlasifikasi = {
       'deweyNoClass': _noClassController.text,
-      'narasiKlasifikasi': _narasiController.text,
+      'narasi_klasifikasi': _narasiController.text,
       'subject': _subjectController.text,
     };
     try {
