@@ -231,6 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+
   Widget _buildPageIndicator() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
