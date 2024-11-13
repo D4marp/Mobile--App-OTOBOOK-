@@ -82,6 +82,49 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   }
 
   Future<void> _keyword({required String sinopsis}) async {
+    // Uri url = Uri.parse(GetData().getKlasifikasiUrl);
+    // try {
+    //   final result = await http.post(
+    //     url,
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: jsonEncode(<String, String>{
+    //       'sinopsis': sinopsis,
+    //     }),
+    //   );
+
+    //   final response = jsonDecode(result.body);
+
+    //   print('API Response: $response'); // Log API response
+
+    //   if (result.statusCode == 200) {
+    //     if (response.containsKey('subjek') &&
+    //         response.containsKey('deweyNoClass')) {
+    //       setState(() {
+    //         _keywordController.text = response['subjek'];
+    //         _noClassController.text = response['deweyNoClass'];
+    //       });
+    //     } else {
+    //       print('Keywords not found in response'); // Debugging
+    //       setState(() {
+    //         _keywordController.text = 'No keywords found';
+    //         _noClassController.text = 'No Dewey Decimal Classification found';
+    //       });
+    //     }
+    //   } else {
+    //     setState(() {
+    //       _keywordController.text = 'Data tidak ditemukan';
+    //       _noClassController.text = 'Data tidak ditemukan';
+    //     });
+    //   }
+    // } catch (e) {
+    //   print('Error fetching keywords: $e'); // Handle errors
+    //   setState(() {
+    //     _keywordController.text = 'Gagal mendapatkan kata kunci';
+    //     _noClassController.text = 'Gagal mendapatkan klasifikasi Dewey';
+    //   });
+    // }
     Uri url = Uri.parse(GetData().getKlasifikasiUrl);
     try {
       final result = await http.post(
@@ -94,25 +137,23 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
         }),
       );
 
+      // print('Status Code: ${result.statusCode}'); // Log status code
+      // print('Raw Response Body: ${result.body}'); // Log raw response body
+
       final response = jsonDecode(result.body);
 
-      print('API Response: $response'); // Log API response
-
       if (result.statusCode == 200) {
-        if (response.containsKey('subjek') &&
-            response.containsKey('deweyNoClass')) {
-          setState(() {
-            _keywordController.text = response['subjek'];
-            _noClassController.text = response['deweyNoClass'];
-          });
-        } else {
-          print('Keywords not found in response'); // Debugging
-          setState(() {
-            _keywordController.text = 'No keywords found';
-            _noClassController.text = 'No Dewey Decimal Classification found';
-          });
-        }
+        // print('Parsed Response: $response'); // Log parsed response
+
+        // Cek apakah "deweyNoClass" ada dan atur ke controller, atau tampilkan pesan default
+        setState(() {
+          _noClassController.text = response['deweyNoClass'] ??
+              'Dewey Decimal Classification tidak ada di database';
+          _keywordController.text =
+              response['subjek'] ?? 'Subjek tidak ada di database';
+        });
       } else {
+        print('Error: Received non-200 status code');
         setState(() {
           _keywordController.text = 'Data tidak ditemukan';
           _noClassController.text = 'Data tidak ditemukan';
