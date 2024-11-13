@@ -48,12 +48,8 @@
 	<key>UIStatusBarHidden</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
-	<string>We need access to the camera to scan documents and recognize text.</string>
+	<string>App membutuhkan akses kamera untuk mengambil foto.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to the photo library to recognize text from images.</string>
-	<key>NSCameraUsageDescription</key>
-    <string>App membutuhkan akses kamera untuk mengambil foto.</string>
-
-
 </dict>
 </plist>

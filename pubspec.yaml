@@ -47,7 +47,6 @@ flutter_native_splash:
   web: true
 
 flutter_launcher_icons:
-android: true
 ios: true
 image:
   "assets/icon/icon.png"
