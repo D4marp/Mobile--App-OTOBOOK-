@@ -33,13 +33,15 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       String token = data['access_token'];
+      String refresh_token = data['refresh_token'];
       String id = data['id'].toString();
 
       // Simpan token menggunakan SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
       await prefs.setString('id', id);
-      
+      await prefs.setString('refresh_token', refresh_token);
+
       // Arahkan ke halaman home atau yang sesuai
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -144,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Align(
                     alignment: Alignment.centerRight,
-                    
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(

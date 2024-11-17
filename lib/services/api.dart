@@ -10,7 +10,21 @@ class GetData {
     return prefs.getString('id');
   }
 
+<<<<<<< HEAD
   String get Url => 'http://192.168.9.214:5000';
+=======
+  Future<String?> _token() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  Future<String?> _refreshToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refresh_token');
+  }
+
+  String get Url => 'http://103.106.72.182:8770';
+>>>>>>> 7f1d7f99f4f2f772ddc210b67374ab32cc75d717
 
   // login user
   String get loginUrl => '${_apiUrl}login';
@@ -78,18 +92,74 @@ class GetData {
   // Delete klasifikasi
   String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
 
+<<<<<<< HEAD
   static const String baseUrl = 'http://192.168.9.214:5000/api/getBuku';
   static const String sinopsisUrl = 'http://192.168.9.214:5000/api/getSinopsis';
+=======
+  // mendapatkan access tokenbaru
+  Future<String?> refreshAccessToken() async {
+    final response = await http.post(
+      Uri.parse('${Url}/refresh'),
+      headers: {'Authorization': 'Bearer ${await _refreshToken()}'},
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final newAccessToken = data['access_token'];
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', newAccessToken);
+    } else {
+      throw Exception(
+          'Failed to refresh token. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<String?> _accessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
+  static const String sinopsisUrl =
+      'http://103.106.72.182:8770/api/getSinopsis';
+>>>>>>> 7f1d7f99f4f2f772ddc210b67374ab32cc75d717
 
   static Future<List<masterBook>> getBooks() async {
     try {
       String? userId = await GetData()._userId();
+      String? token = await GetData()._token();
 
       if (userId == null) {
         throw Exception('User ID not found.');
       }
+      // print(GetData()._token());
 
-      final response = await http.get(Uri.parse('$baseUrl?userId=$userId'));
+      final response = await http.get(Uri.parse('$baseUrl?userId=$userId'),
+          headers: {'Authorization': 'Bearer $token'});
+
+      if (response.statusCode == 401) {
+        print(GetData()._accessToken());
+        await GetData().refreshAccessToken();
+        final newToken = await GetData()._accessToken();
+        final newResponse = await http.get(Uri.parse('$baseUrl?userId=$userId'),
+            headers: {'Authorization': 'Bearer $newToken'});
+
+        if (newResponse.statusCode == 200) {
+          final body = newResponse.body;
+          final result = jsonDecode(body);
+
+          if (result['data'] != null) {
+            List<masterBook> books = List<masterBook>.from(
+                result['data'].map((i) => masterBook.fromJson(i)));
+            return books;
+          } else {
+            throw Exception('Data not found in the response.');
+          }
+        } else {
+          throw Exception(
+              'Failed to load books. Status code: ${newResponse.statusCode}');
+        }
+      }
 
       if (response.statusCode == 200) {
         final body = response.body;
@@ -113,15 +183,19 @@ class GetData {
 
   // Fetch data sinopsis by ID
   static Future<masterBook> getBookWithSinopsis(int id) async {
+    String? token = await GetData()._token();
     try {
+      // print(token);
       // Fetch book data
-      final bookResponse = await http.get(Uri.parse('$baseUrl/$id'));
+      final bookResponse = await http.get(Uri.parse('$baseUrl/$id'),
+          headers: {'Authorization': 'Bearer $token'});
 
       if (bookResponse.statusCode == 200) {
         final bookData = jsonDecode(bookResponse.body);
 
         // Fetch sinopsis data
-        final sinopsisResponse = await http.get(Uri.parse('$sinopsisUrl/$id'));
+        final sinopsisResponse = await http.get(Uri.parse('$sinopsisUrl/$id'),
+            headers: {'Authorization': 'Bearer $token'});
 
         if (sinopsisResponse.statusCode == 200) {
           final sinopsisData = jsonDecode(sinopsisResponse.body);
