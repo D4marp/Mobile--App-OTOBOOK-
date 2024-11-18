@@ -70,7 +70,7 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Run Automasi"),
+        title: Text("Jalankan Automasi"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
