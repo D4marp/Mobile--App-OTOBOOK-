@@ -14,7 +14,13 @@ class IpSettingsPage extends StatefulWidget {
 }
 
 class _IpSettingsPageState extends State<IpSettingsPage> {
+  bool _isLoading = false;
+
   void _runAutomation() async {
+    setState(() {
+      _isLoading = true; // Mulai pemuatan
+    });
+
     Uri url = Uri.parse(
         '${GetData().runAutomationUrl}/${widget.bookId}'); // Mengambil bookId dari widget
     try {
@@ -53,6 +59,10 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
     } catch (error) {
       Navigator.pop(
           context, 'Failed to connect to the server: server not found');
+    } finally {
+      setState(() {
+        _isLoading = false; // Selesai pemuatan
+      });
     }
   }
 
@@ -60,7 +70,7 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trigger Automasi"),
+        title: Text("Jalankan Automasi"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,13 +78,15 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
           children: <Widget>[
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                _runAutomation(); // Jalankan automasi setelah IP dipilih
-              },
+              onPressed: _isLoading ? null : _runAutomation,
               child: Text(
                 'Simpan IP dan Jalankan Automasi untuk Book ID: ${widget.bookId}',
               ),
             ),
+            if (_isLoading)
+              Center(
+                child: CircularProgressIndicator(),
+              ),
           ],
         ),
       ),

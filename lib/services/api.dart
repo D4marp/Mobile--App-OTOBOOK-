@@ -10,6 +10,7 @@ class GetData {
     return prefs.getString('id');
   }
 
+  String get Url => 'http://103.106.72.182:8770';
   Future<String?> _token() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -19,8 +20,6 @@ class GetData {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('refresh_token');
   }
-
-  String get Url => 'http://103.106.72.182:8770';
 
   // login user
   String get loginUrl => '${_apiUrl}login';
@@ -88,6 +87,8 @@ class GetData {
   // Delete klasifikasi
   String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
 
+  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
+  static const String sinopsisUrl = 'http://103.106.72.182:8770/api/getSinopsis';
   // mendapatkan access tokenbaru
   Future<String?> refreshAccessToken() async {
     final response = await http.post(
@@ -110,10 +111,6 @@ class GetData {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token');
   }
-
-  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
-  static const String sinopsisUrl =
-      'http://103.106.72.182:8770/api/getSinopsis';
 
   static Future<List<masterBook>> getBooks() async {
     try {
