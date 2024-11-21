@@ -51,5 +51,7 @@
 	<string>App membutuhkan akses kamera untuk mengambil foto.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to the photo library to recognize text from images.</string>
+	<key>MinimumOSVersion</key>
+	<string>15.5</string>
 </dict>
 </plist>

@@ -47,15 +47,13 @@ class _VersoScannerState extends State<VersoScanner> {
   final TextEditingController _editorController = TextEditingController();
   final TextEditingController _ilustratorController = TextEditingController();
 
-     
-   String formatAsTitle(String text) {
-  // Memastikan teks tidak kosong
-  if (text.isEmpty) return '';
+  String formatAsTitle(String text) {
+    // Memastikan teks tidak kosong
+    if (text.isEmpty) return '';
 
-  // Mengubah huruf pertama dari teks menjadi huruf besar, dan sisanya huruf kecil
-  return text[0].toUpperCase() + text.substring(1).toLowerCase();
-}
-
+    // Mengubah huruf pertama dari teks menjadi huruf besar, dan sisanya huruf kecil
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  }
 
   Future<XFile?> _showImageSourceSelector() async {
     return showModalBottomSheet<XFile?>(
@@ -132,25 +130,23 @@ class _VersoScannerState extends State<VersoScanner> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                 ListTile(
-  title: const Text('Judul'),
-  onTap: () {
-    setState(() {
-      // Mengubah teks hasil ekstraksi menggunakan formatAsTitle
-      String formattedText = formatAsTitle(selectedText);
+                ListTile(
+                  title: const Text('Judul'),
+                  onTap: () {
+                    setState(() {
+                      // Mengubah teks hasil ekstraksi menggunakan formatAsTitle
+                      String formattedText = formatAsTitle(selectedText);
 
-      // Gabungkan teks yang sudah ada dengan yang baru
-      _judulController.text = _judulController.text.isEmpty
-          ? formattedText
-          : '${_judulController.text}, $formattedText';
+                      // Gabungkan teks yang sudah ada dengan yang baru
+                      _judulController.text = _judulController.text.isEmpty
+                          ? formattedText
+                          : '${_judulController.text}, $formattedText';
 
-      FocusScope.of(context).requestFocus(_judulFocusNode);
-    });
-    Navigator.pop(context);
-  },
-),
-
-
+                      FocusScope.of(context).requestFocus(_judulFocusNode);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
                 ListTile(
                   title: const Text('Pengarang'),
                   onTap: () {
@@ -190,29 +186,41 @@ class _VersoScannerState extends State<VersoScanner> {
                     Navigator.pop(context);
                   },
                 ),
-               ListTile(
-  title: const Text('ISBN'),
-  onTap: () {
-    setState(() {
-      // Menghapus teks "ISBN" atau "ISBN :" dan hanya mengambil angka dan tanda hubung
-      String formattedText = selectedText
-          .replaceAll(RegExp(r'ISBN\s*:?'), '')
-          .replaceAll(RegExp(r'[^0-9-]'), '');
+                ListTile(
+                  title: const Text('ISBN'),
+                  onTap: () {
+                    setState(() {
+                      // Menghapus teks "ISBN" atau "ISBN :" dan hanya mengambil angka dan tanda hubung
+                      String formattedText = selectedText
+                          .replaceAll(RegExp(r'ISBN\s*:?'), '')
+                          .replaceAll(RegExp(r'[^0-9-]'), '');
 
-      _isbnController.text = _isbnController.text.isEmpty
-          ? formattedText
-          : '${_isbnController.text}, $formattedText';
-      FocusScope.of(context).requestFocus(_isbnFocusNode);
-    });
-    Navigator.pop(context);
-  },
-),
-
+                      _isbnController.text = _isbnController.text.isEmpty
+                          ? formattedText
+                          : '${_isbnController.text}, $formattedText';
+                      FocusScope.of(context).requestFocus(_isbnFocusNode);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
                 ListTile(
                   title: const Text('Kota'),
                   onTap: () {
                     setState(() {
-                      _kotaController.text = selectedText;
+                      // Regex untuk mendeteksi pola nama kota (kata dengan huruf kapital di awal)
+                      final cityPattern =
+                          RegExp(r'\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b');
+
+                      // Cari kecocokan pertama yang dianggap sebagai kota
+                      final match = cityPattern.firstMatch(selectedText);
+
+                      // Jika ada kecocokan, ambil nama kotanya
+                      final cityName = match?.group(0) ?? 'Tidak ditemukan';
+
+                      // Isi ke dalam field kota, mengganti teks sebelumnya
+                      _kotaController.text = cityName;
+
+                      // Pindahkan fokus ke field kota
                       FocusScope.of(context).requestFocus(_kotaFocusNode);
                     });
                     Navigator.pop(context);
@@ -232,7 +240,22 @@ class _VersoScannerState extends State<VersoScanner> {
                   title: const Text('Editor'),
                   onTap: () {
                     setState(() {
-                      _editorController.text = selectedText;
+                      // Regex untuk mendeteksi nama (dua kata dengan huruf kapital di awal)
+                      final namePattern =
+                          RegExp(r'\b[A-Z][a-z]+\s[A-Z][a-z]+\b');
+
+                      // Ambil semua nama yang cocok dalam teks
+                      final matches = namePattern.allMatches(selectedText);
+
+                      // Gabungkan semua nama menjadi satu string, dipisahkan oleh koma
+                      final extractedNames =
+                          matches.map((m) => m.group(0)).join(', ');
+
+                      // Tambahkan ke dalam field editor, gabungkan jika sudah ada teks
+                      _editorController.text = _editorController.text.isEmpty
+                          ? extractedNames
+                          : '${_editorController.text}, $extractedNames';
+
                       FocusScope.of(context).requestFocus(_editorFocusNode);
                     });
                     Navigator.pop(context);

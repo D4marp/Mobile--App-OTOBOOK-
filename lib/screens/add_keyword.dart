@@ -243,13 +243,23 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
                         ),
                         ElevatedButton.icon(
                           onPressed: () async {
-                            _saveKeyword(masterBookId);
+                            if (_keywordController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Keyword harus diisi sebelum menyimpan!'),
+                                  backgroundColor: Colors.blueAccent,
+                                ),
+                              );
+                            } else {
+                              _saveKeyword(masterBookId);
+                            }
                           },
                           icon: const Icon(Icons.save),
                           label: const Text('Save'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                                255, 26, 240, 3), // Warna tombol hapus
+                            backgroundColor:
+                                Colors.blueAccent, // Warna tombol simpan
                           ),
                         ),
                       ],
