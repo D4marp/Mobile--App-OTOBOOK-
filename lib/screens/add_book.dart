@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:Otobook/navigation.dart';
+import 'package:Otobook/widgets/navigation.dart';
 import 'package:http/http.dart' as http;
 import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';

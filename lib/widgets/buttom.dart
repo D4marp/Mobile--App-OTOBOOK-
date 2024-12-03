@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:Otobook/screens/verso_scan.dart';
 import 'package:Otobook/screens/kdt_scan.dart';
 
-
-
 class IconRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-import 'package:Otobook/navigation.dart';
+import 'package:Otobook/widgets/navigation.dart';
 import 'package:Otobook/services/login_or_register.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
