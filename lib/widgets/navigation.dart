@@ -2,7 +2,7 @@ import 'package:Otobook/screens/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:Otobook/screens/profile.dart';
 import 'package:Otobook/screens/list_book.dart';
-import 'screens/home.dart';
+import '../screens/home.dart';
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
@@ -18,7 +18,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     HomeScreen(),
     SearchPage(),
     GetBooksPage(),
-    ProfilePage(),
+    ProfilePage(),  
   ];
 
   void _onItemTapped(int index) {
