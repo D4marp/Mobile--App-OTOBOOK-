@@ -3,6 +3,8 @@ import 'package:Otobook/models/masterBook.dart';
 import 'package:Otobook/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Otobook/screens/IpSettingPage.dart';
 
 class Booksearch extends StatefulWidget {
   final int bookId;
@@ -14,6 +16,7 @@ class Booksearch extends StatefulWidget {
 
 class _BooksearchState extends State<Booksearch> {
   int get bookId => widget.bookId;
+  String? rpaResponse;
 
   Future<String> fetchCoverPath(int masterBukuId) async {
     final response =
@@ -28,12 +31,26 @@ class _BooksearchState extends State<Booksearch> {
     }
   }
 
+  Future<void> _getRpaResponse() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? response = prefs.getString('rpa_response_${widget.bookId}');
+    setState(() {
+      rpaResponse = response; // Simpan pesan respon
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getRpaResponse(); // Ambil pesan respon saat inisialisasi
+  }
+
   // @override
   // void initState() {
   //   print("id Buku :${bookId} ");
   //   super.initState();
   // }
-
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<String>(
@@ -210,6 +227,25 @@ class _BooksearchState extends State<Booksearch> {
                                   ),
                                 ),
                               ],
+                              const SizedBox(height: 8),
+                              if (book.noClass != null) ...[
+                                const Text(
+                                  'DeweyNoClass:',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  book.noClass!,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ],
                           ],
                         ),
@@ -219,6 +255,53 @@ class _BooksearchState extends State<Booksearch> {
                 ),
               ),
             ],
+          );
+        },
+      ),
+      bottomNavigationBar: FutureBuilder<masterBook>(
+        future: GetData.getBookWithSinopsis(widget.bookId),
+        builder: (context, snapshot) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (rpaResponse == null || rpaResponse!.contains('Error')) ...[
+                  // Tombol Add RPA hanya ditampilkan jika rpaResponse null
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              IpSettingsPage(bookId: widget.bookId),
+                        ),
+                      ).then((result) {
+                        if (result != null) {
+                          setState(() {
+                            rpaResponse = result;
+                          });
+                          SharedPreferences.getInstance().then((prefs) {
+                            prefs.setString(
+                                'rpa_response_${widget.bookId}', result);
+                          });
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.arrow_forward_sharp,
+                        color: Colors.white),
+                    label: const Text('Add RPA',
+                        style: TextStyle(color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      backgroundColor: Colors.blueAccent,
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           );
         },
       ),

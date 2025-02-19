@@ -14,23 +14,52 @@ class IpSettingsPage extends StatefulWidget {
 }
 
 class _IpSettingsPageState extends State<IpSettingsPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  List<String> _ipAddressList = [];
+  String? _selectedIp;
+  String? _selectedKodeWilayah;
+  final List<String> _kodeWilayahList = [
+    'JIPDSUR - DISPERPUSIP Jawa Timur',
+    'JIPKPBK - UPT Perpustakaan Kota Blitar',
+    'JIPUBAN - DISPERPUSIP Bangkalan',
+    'JIPUBAT - DISPERPUSIP Kota Batu',
+    'JIPUBAY - DISPERPUSIP Banyuwangi'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _ipAddressList = [
+      '103.106.72.182:8772 (public server)',
+      '127.0.0.1 (localhost)',
+      '192.168.1.3 (ip random)',
+      '10.0.0.1 (ip random)',
+      '10.0.0.2 (ip random)'
+    ];
+  }
 
   void _runAutomation() async {
     setState(() {
-      _isLoading = true; // Mulai pemuatan
+      _isLoading = true;
     });
 
-    Uri url = Uri.parse(
-        '${GetData().runAutomationUrl}/${widget.bookId}'); // Mengambil bookId dari widget
     try {
+      final username = _usernameController.text;
+      final password = _passwordController.text;
+      final ipMatch = RegExp(r'(\d+\.\d+\.\d+\.\d+(?::\d+)?)')
+          .firstMatch(_selectedIp ?? '');
+      final extractedIp = ipMatch?.group(0) ?? '';
+      Uri url = Uri.parse('${GetData().runAutomationUrl}/${widget.bookId}');
       final response = await http.post(
         url,
         body: json.encode({
           'bookId': widget.bookId,
-          // 'ipAddress': selectedIp,
-          // 'username': username,
-          // 'password': password,
+          'kodeWilayah': _selectedKodeWilayah,
+          'ipAddress': extractedIp,
+          'username': username,
+          'password': password,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -70,17 +99,88 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Jalankan Automasi"),
+        title: Text("Halaman Kontrol Alih Data Elektronis"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Username',
+              ),
+            ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Password',
+              ),
+            ),
+            SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: _selectedKodeWilayah,
+              hint: Text('Pilih Kode Wilayah'),
+              items: _kodeWilayahList.map((kode) {
+                final kodeWilayah = kode.split(' - ')[0]; // Ambil hanya kode
+                return DropdownMenuItem(
+                  value: kodeWilayah, // Simpan kode saja sebagai value
+                  child: Text(kode), // Tampilkan kode + deskripsi
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedKodeWilayah = value;
+                });
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Kode Wilayah',
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Pilih IP Address:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+              child: _ipAddressList.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: _ipAddressList.length,
+                      itemBuilder: (context, index) {
+                        final ip = _ipAddressList[index];
+                        return RadioListTile<String>(
+                          title: Text(ip),
+                          value: ip,
+                          groupValue: _selectedIp,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedIp = value;
+                            });
+                          },
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Text(
+                        'Belum ada IP Address yang ditambahkan.',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _isLoading ? null : _runAutomation,
+              onPressed: (_isLoading ||
+                      _selectedIp == null ||
+                      _selectedKodeWilayah == null)
+                  ? null
+                  : _runAutomation,
               child: Text(
-                'Simpan IP dan Jalankan Automasi untuk Book ID: ${widget.bookId}',
+                'Alih Data Elektronis untuk Book ID: ${widget.bookId}',
               ),
             ),
             if (_isLoading)
