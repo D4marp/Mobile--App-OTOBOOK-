@@ -66,6 +66,8 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
         },
       );
 
+      final responseData = json.decode(response.body);
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData['message']);
@@ -80,10 +82,15 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
         );
         Navigator.pop(context, responseData['message']);
       } else {
+        // Jika gagal, tampilkan stdout_log atau pesan error lainnya
+        String errorMessage = responseData['stdout'] ??
+            responseData['error'] ??
+            "Terjadi kesalahan dalam eksekusi RPA";
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: terdapat enter pada data')),
+          SnackBar(content: Text('Error: $errorMessage')),
         );
-        Navigator.pop(context, 'Error: terdapat enter pada data');
+        Navigator.pop(context, 'Error: $errorMessage');
       }
     } catch (error) {
       Navigator.pop(
