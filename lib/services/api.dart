@@ -4,13 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetData {
-  final String _apiUrl = 'http://192.168.9.207:5000/api/';
+  final String _apiUrl = 'http://118.97.240.83:5039/api/';
   Future<String?> _userId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
   }
 
-  String get Url => 'http://192.168.9.207:5000';
+  String get Url => 'http://118.97.240.83:5039';
   Future<String?> _token() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -87,8 +87,8 @@ class GetData {
   // Delete klasifikasi
   String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
 
-  static const String baseUrl = 'http://192.168.9.207:5000/api/getBuku';
-  static const String sinopsisUrl = 'http://192.168.9.207:5000/api/getSinopsis';
+  static const String baseUrl = 'http://118.97.240.83:5039/api/getBuku';
+  static const String sinopsisUrl = 'http://118.97.240.83:5039/api/getSinopsis';
   // mendapatkan access tokenbaru
   Future<String?> refreshAccessToken() async {
     final response = await http.post(

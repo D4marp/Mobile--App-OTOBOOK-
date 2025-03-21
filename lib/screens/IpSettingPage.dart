@@ -34,7 +34,7 @@ class _IpSettingsPageState extends State<IpSettingsPage> {
     _ipAddressList = [
       '103.106.72.182:8772 (public server)',
       '127.0.0.1 (localhost)',
-      '192.168.1.3 (ip random)',
+      '192.168.1.226 (ip jatim)',
       '10.0.0.1 (ip random)',
       '10.0.0.2 (ip random)'
     ];

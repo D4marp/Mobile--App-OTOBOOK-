@@ -4,8 +4,7 @@ description: "A new Flutter project."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -35,7 +34,6 @@ dependencies:
   google_mlkit_barcode_scanning: ^0.12.1
   camera: ^0.11.0+2
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,10 +47,8 @@ flutter_native_splash:
 
 flutter_launcher_icons:
 ios: true
-image:
-  "assets/icon/icon.png"
+image: "assets/icon/icon.png"
 
- 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -88,5 +84,3 @@ flutter:
     - assets/placeholder.jpg
     - assets/profile_placeholder.jpg
     - assets/Splash_oto.png
-    
-  
