@@ -82,7 +82,6 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   }
 
   Future<void> _keyword({required String sinopsis}) async {
-    
     Uri url = Uri.parse(GetData().getKlasifikasiUrl);
     try {
       final result = await http.post(
@@ -95,16 +94,14 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
         }),
       );
 
-
       final response = jsonDecode(result.body);
 
       if (result.statusCode == 200) {
-      
         setState(() {
           _noClassController.text = response['deweyNoClass'] ??
               'Dewey Decimal Classification tidak ada di database';
           _keywordController.text =
-              response['subjek'] ?? 'Subjek tidak ada di database';
+              response['subject'] ?? 'Subjek tidak ada di database';
         });
       } else {
         print('Error: Received non-200 status code');
