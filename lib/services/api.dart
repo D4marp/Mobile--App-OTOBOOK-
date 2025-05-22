@@ -4,13 +4,14 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetData {
-  final String _apiUrl = 'http://118.97.240.83:5039/api/';
+  final String _apiUrl = 'http://103.106.72.182:8770/api/';
   Future<String?> _userId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
   }
 
-  String get Url => 'http://118.97.240.83:5039';
+  String get Url => 'http://103.106.72.182:8770';
+
   Future<String?> _token() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -21,6 +22,7 @@ class GetData {
     return prefs.getString('refresh_token');
   }
 
+  String get downloadExcelUrl => '${_apiUrl}download';
   // login user
   String get loginUrl => '${_apiUrl}login';
 
@@ -87,8 +89,16 @@ class GetData {
   // Delete klasifikasi
   String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
 
-  static const String baseUrl = 'http://118.97.240.83:5039/api/getBuku';
-  static const String sinopsisUrl = 'http://118.97.240.83:5039/api/getSinopsis';
+  // get all books
+  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
+  // get all books diproses
+  static const String bookProses = 'http://103.106.72.182:8770/api/BukuDiolah';
+  // get all books diproses
+  static const String bookDisumbangkan =
+      'http://103.106.72.182:8770/api/BukuDisumbangkan';
+  // get all books sinopsis
+  static const String sinopsisUrl =
+      'http://103.106.72.182:8770/api/getSinopsis';
   // mendapatkan access tokenbaru
   Future<String?> refreshAccessToken() async {
     final response = await http.post(
@@ -103,9 +113,9 @@ class GetData {
       await prefs.setString('access_token', newAccessToken);
     } else {
       throw Exception(
-          'Failed to refresh token. Status code: ${response.statusCode}');
+        'Failed to refresh token. Status code: ${response.statusCode}',
+      );
     }
-    return null;
   }
 
   Future<String?> _accessToken() async {
@@ -113,6 +123,7 @@ class GetData {
     return prefs.getString('access_token');
   }
 
+  // get all books
   static Future<List<masterBook>> getBooks() async {
     try {
       String? userId = await GetData()._userId();
@@ -123,15 +134,19 @@ class GetData {
       }
       // print(GetData()._token());
 
-      final response = await http.get(Uri.parse('$baseUrl?userId=$userId'),
-          headers: {'Authorization': 'Bearer $token'});
+      final response = await http.get(
+        Uri.parse('$baseUrl?userId=$userId'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
       if (response.statusCode == 401) {
         print(GetData()._accessToken());
         await GetData().refreshAccessToken();
         final newToken = await GetData()._accessToken();
-        final newResponse = await http.get(Uri.parse('$baseUrl?userId=$userId'),
-            headers: {'Authorization': 'Bearer $newToken'});
+        final newResponse = await http.get(
+          Uri.parse('$baseUrl?userId=$userId'),
+          headers: {'Authorization': 'Bearer $newToken'},
+        );
 
         if (newResponse.statusCode == 200) {
           final body = newResponse.body;
@@ -139,14 +154,16 @@ class GetData {
 
           if (result['data'] != null) {
             List<masterBook> books = List<masterBook>.from(
-                result['data'].map((i) => masterBook.fromJson(i)));
+              result['data'].map((i) => masterBook.fromJson(i)),
+            );
             return books;
           } else {
             throw Exception('Data not found in the response.');
           }
         } else {
           throw Exception(
-              'Failed to load books. Status code: ${newResponse.statusCode}');
+            'Failed to load books. Status code: ${newResponse.statusCode}',
+          );
         }
       }
 
@@ -156,14 +173,148 @@ class GetData {
 
         if (result['data'] != null) {
           List<masterBook> books = List<masterBook>.from(
-              result['data'].map((i) => masterBook.fromJson(i)));
+            result['data'].map((i) => masterBook.fromJson(i)),
+          );
           return books;
         } else {
           throw Exception('Data not found in the response.');
         }
       } else {
         throw Exception(
-            'Failed to load books. Status code: ${response.statusCode}');
+          'Failed to load books. Status code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error fetching books: ${e.toString()}');
+    }
+  }
+
+  // get all books diperosos
+  static Future<List<masterBook>> getBooksProses() async {
+    try {
+      String? userId = await GetData()._userId();
+      String? token = await GetData()._token();
+
+      if (userId == null) {
+        throw Exception('User ID not found.');
+      }
+      // print(GetData()._token());
+
+      final response = await http.get(
+        Uri.parse('$bookProses?userId=$userId'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 401) {
+        print(GetData()._accessToken());
+        await GetData().refreshAccessToken();
+        final newToken = await GetData()._accessToken();
+        final newResponse = await http.get(
+          Uri.parse('$bookProses?userId=$userId'),
+          headers: {'Authorization': 'Bearer $newToken'},
+        );
+
+        if (newResponse.statusCode == 200) {
+          final body = newResponse.body;
+          final result = jsonDecode(body);
+
+          if (result['data'] != null) {
+            List<masterBook> books = List<masterBook>.from(
+              result['data'].map((i) => masterBook.fromJson(i)),
+            );
+            return books;
+          } else {
+            throw Exception('Data not found in the response.');
+          }
+        } else {
+          throw Exception(
+            'Failed to load books. Status code: ${newResponse.statusCode}',
+          );
+        }
+      }
+
+      if (response.statusCode == 200) {
+        final body = response.body;
+        final result = jsonDecode(body);
+
+        if (result['data'] != null) {
+          List<masterBook> books = List<masterBook>.from(
+            result['data'].map((i) => masterBook.fromJson(i)),
+          );
+          return books;
+        } else {
+          throw Exception('Data not found in the response.');
+        }
+      } else {
+        throw Exception(
+          'Failed to load books. Status code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error fetching books: ${e.toString()}');
+    }
+  }
+
+  // get all books disumbangkan
+  static Future<List<masterBook>> getBooksDisumbangkan() async {
+    try {
+      String? userId = await GetData()._userId();
+      String? token = await GetData()._token();
+
+      if (userId == null) {
+        throw Exception('User ID not found.');
+      }
+      // print(GetData()._token());
+
+      final response = await http.get(
+        Uri.parse('$bookDisumbangkan?userId=$userId'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 401) {
+        print(GetData()._accessToken());
+        await GetData().refreshAccessToken();
+        final newToken = await GetData()._accessToken();
+        final newResponse = await http.get(
+          Uri.parse('$bookDisumbangkan?userId=$userId'),
+          headers: {'Authorization': 'Bearer $newToken'},
+        );
+
+        if (newResponse.statusCode == 200) {
+          final body = newResponse.body;
+          final result = jsonDecode(body);
+
+          if (result['data'] != null) {
+            List<masterBook> books = List<masterBook>.from(
+              result['data'].map((i) => masterBook.fromJson(i)),
+            );
+            return books;
+          } else {
+            throw Exception('Data not found in the response.');
+          }
+        } else {
+          throw Exception(
+            'Failed to load books. Status code: ${newResponse.statusCode}',
+          );
+        }
+      }
+
+      if (response.statusCode == 200) {
+        final body = response.body;
+        final result = jsonDecode(body);
+
+        if (result['data'] != null) {
+          List<masterBook> books = List<masterBook>.from(
+            result['data'].map((i) => masterBook.fromJson(i)),
+          );
+          return books;
+        } else {
+          throw Exception('Data not found in the response.');
+        }
+      } else {
+        throw Exception(
+          'Failed to load books. Status code: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching books: ${e.toString()}');
@@ -176,15 +327,19 @@ class GetData {
     try {
       // print(token);
       // Fetch book data
-      final bookResponse = await http.get(Uri.parse('$baseUrl/$id'),
-          headers: {'Authorization': 'Bearer $token'});
+      final bookResponse = await http.get(
+        Uri.parse('$baseUrl/$id'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
       if (bookResponse.statusCode == 200) {
         final bookData = jsonDecode(bookResponse.body);
 
         // Fetch sinopsis data
-        final sinopsisResponse = await http.get(Uri.parse('$sinopsisUrl/$id'),
-            headers: {'Authorization': 'Bearer $token'});
+        final sinopsisResponse = await http.get(
+          Uri.parse('$sinopsisUrl/$id'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
 
         if (sinopsisResponse.statusCode == 200) {
           final sinopsisData = jsonDecode(sinopsisResponse.body);
@@ -201,7 +356,8 @@ class GetData {
         }
       } else {
         throw Exception(
-            'Failed to load book data. Status code: ${bookResponse.statusCode}');
+          'Failed to load book data. Status code: ${bookResponse.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching book and sinopsis: ${e.toString()}');

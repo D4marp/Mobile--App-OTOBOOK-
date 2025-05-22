@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;  
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:otobook/models/master_book_response_model.dart';
 import 'package:otobook/screen/splash/start_screen.dart';
@@ -27,6 +27,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
   late TextEditingController _tahunController;
   late TextEditingController _editorController;
   late TextEditingController _ilustratorController;
+  String? selectedValue; // Pilihan awal
+  List<String> items = ['Diolah', 'Disumbangkan'];
 
   @override
   void initState() {
@@ -39,8 +41,9 @@ class _AddBookScreenState extends State<AddBookScreen> {
     _kotaController = TextEditingController(text: _masterBook.kota);
     _tahunController = TextEditingController(text: _masterBook.tahun);
     _editorController = TextEditingController(text: _masterBook.editor);
-    _ilustratorController =
-        TextEditingController(text: _masterBook.ilustrator ?? '');
+    _ilustratorController = TextEditingController(
+      text: _masterBook.ilustrator ?? '',
+    );
     super.initState();
   }
 
@@ -68,9 +71,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
     Uri url = Uri.parse(GetData().addBookUrl + userId!);
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode(<String, String>{
         'judul': _judulController.text,
         'isbn': _isbnController.text,
@@ -81,6 +82,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
         'tahun': _tahunController.text,
         'editor': _editorController.text,
         'ilustrator': _ilustratorController.text,
+        'kategori': selectedValue ?? '',
       }),
     );
     final responseBody = jsonDecode(response.body);
@@ -93,9 +95,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
       );
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => const NavigationMenu(),
-        ),
+        MaterialPageRoute(builder: (context) => const NavigationMenu()),
         (Route<dynamic> route) => false,
       );
     } else {
@@ -159,10 +159,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        'assets/logo_oto.PNG',
-                        height: 40,
-                      ),
+                      child: Image.asset('assets/logo_oto.PNG', height: 40),
                     ),
                   ),
                 ),
@@ -195,6 +192,31 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     const SizedBox(height: 16.0),
                     _buildTextArea(_ilustratorController, 'Ilustrator'),
                     const SizedBox(height: 16.0),
+                    DropdownButtonFormField<String>(
+                      items:
+                          items
+                              .map(
+                                (item) => DropdownMenuItem(
+                                  value: item,
+                                  child: Text(item),
+                                ),
+                              )
+                              .toList(),
+                      value: selectedValue,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedValue = newValue;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'kategori',
+                        border: OutlineInputBorder(),
+                        labelStyle: const TextStyle(fontSize: 18),
+                      ),
+                      // Optional: style for dropdown text
+                      style: const TextStyle(fontSize: 18, color: Colors.black),
+                    ),
+                    const SizedBox(height: 16.0),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
@@ -209,7 +231,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

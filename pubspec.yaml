@@ -48,6 +48,7 @@ dependencies:
   cunning_document_scanner: ^1.2.3
   mobile_scanner: ^6.0.8
   font_awesome_flutter: ^10.8.0
+  open_file: ^3.5.10
 
 dev_dependencies:
   flutter_test:

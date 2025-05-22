@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
@@ -12,7 +11,7 @@ import 'package:otobook/widget/navigation_menu.dart';
 class AddKeywordPages extends StatefulWidget {
   final Sinopsisbook sinopsisBookData;
   const AddKeywordPages({Key? key, required this.sinopsisBookData})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<AddKeywordPages> createState() => _AddKeywordPagesState();
@@ -30,8 +29,9 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   void initState() {
     _sinopsisBook = widget.sinopsisBookData;
     _sinopsisController = TextEditingController(text: _sinopsisBook.sinopsis);
-    _masterBookIdController =
-        TextEditingController(text: _sinopsisBook.masterBookId.toString());
+    _masterBookIdController = TextEditingController(
+      text: _sinopsisBook.masterBookId.toString(),
+    );
     super.initState();
   }
 
@@ -46,16 +46,16 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
 
   Future<Map<String, dynamic>> _saveKeyword(int id) async {
     Uri url = Uri.parse(GetData().addSinopsisUrl + id.toString());
-    final response = await http.post(url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'sinopsis': _sinopsisController.text,
-          'keyword': _keywordController.text,
-          'no_class': _noClassController.text,
-          'masterBookId': _masterBookIdController.text,
-        }));
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{
+        'sinopsis': _sinopsisController.text,
+        'keyword': _keywordController.text,
+        'no_class': _noClassController.text,
+        'masterBookId': _masterBookIdController.text,
+      }),
+    );
 
     final responseBody = jsonDecode(response.body);
 
@@ -67,9 +67,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
       );
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => const NavigationMenu(),
-        ),
+        MaterialPageRoute(builder: (context) => const NavigationMenu()),
         (Route<dynamic> route) => false,
       );
     } else {
@@ -83,29 +81,23 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
   }
 
   Future<void> _keyword({required String sinopsis}) async {
-    
     Uri url = Uri.parse(GetData().getKlasifikasiUrl);
     try {
       final result = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'sinopsis': sinopsis,
-        }),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(<String, String>{'sinopsis': sinopsis}),
       );
-
 
       final response = jsonDecode(result.body);
 
       if (result.statusCode == 200) {
-      
         setState(() {
-          _noClassController.text = response['deweyNoClass'] ??
+          _noClassController.text =
+              response['deweyNoClass'] ??
               'Dewey Decimal Classification tidak ada di database';
           _keywordController.text =
-              response['subjek'] ?? 'Subjek tidak ada di database';
+              response['subject'] ?? 'Subjek tidak ada di database';
         });
       } else {
         print('Error: Received non-200 status code');
@@ -162,10 +154,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        'assets/logo_oto.PNG',
-                        height: 40,
-                      ),
+                      child: Image.asset('assets/logo_oto.PNG', height: 40),
                     ),
                   ),
                 ),
@@ -202,7 +191,8 @@ class _AddKeywordPagesState extends State<AddKeywordPages> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                      'Keyword harus diisi sebelum menyimpan!'),
+                                    'Keyword harus diisi sebelum menyimpan!',
+                                  ),
                                   backgroundColor: Colors.blueAccent,
                                 ),
                               );

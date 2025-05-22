@@ -21,8 +21,9 @@ class _BookdetailPageState extends State<BookdetailPage> {
   String? rpaResponse;
 
   Future<String> fetchCoverPath(int masterBukuId) async {
-    final response =
-        await http.get(Uri.parse('${GetData().getCoverUrl}/$masterBukuId'));
+    final response = await http.get(
+      Uri.parse('${GetData().getCoverUrl}/$masterBukuId'),
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -68,19 +69,19 @@ class _BookdetailPageState extends State<BookdetailPage> {
                     children: [
                       coverUrl.isNotEmpty
                           ? Image.network(
-                              coverUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/placeholder.jpg',
-                                  fit: BoxFit.cover,
-                                );
-                              },
-                            )
+                            coverUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/placeholder.jpg',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
                           : Image.asset(
-                              'assets/placeholder.jpg',
-                              fit: BoxFit.cover,
-                            ),
+                            'assets/placeholder.jpg',
+                            fit: BoxFit.cover,
+                          ),
                       const DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -164,6 +165,13 @@ class _BookdetailPageState extends State<BookdetailPage> {
                             ),
                             Text(
                               'Ilustrator: ${book.ilustrator}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              'Katagory: ${book.kategori}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.black54,
@@ -276,8 +284,8 @@ class _BookdetailPageState extends State<BookdetailPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                SinopsisScanner(id: widget.bookId),
+                            builder:
+                                (context) => SinopsisScanner(id: widget.bookId),
                           ),
                         ).then((result) {
                           if (result == true) {
@@ -289,7 +297,9 @@ class _BookdetailPageState extends State<BookdetailPage> {
                       label: const Text('Add Sinopsis'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                         backgroundColor: const Color.fromARGB(255, 37, 198, 1),
                         textStyle: const TextStyle(fontSize: 16),
                       ),
@@ -300,8 +310,8 @@ class _BookdetailPageState extends State<BookdetailPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                EditbookPage(id: widget.bookId),
+                            builder:
+                                (context) => EditbookPage(id: widget.bookId),
                           ),
                         ).then((result) {
                           if (result == true) {
@@ -310,11 +320,15 @@ class _BookdetailPageState extends State<BookdetailPage> {
                         });
                       },
                       icon: const Icon(Icons.edit, color: Colors.white),
-                      label: const Text('Edit Book',
-                          style: TextStyle(color: Colors.white)),
+                      label: const Text(
+                        'Edit Book',
+                        style: TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                         backgroundColor: Colors.blueAccent,
                         textStyle: const TextStyle(fontSize: 16),
                       ),
@@ -327,8 +341,9 @@ class _BookdetailPageState extends State<BookdetailPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  IpSettingsPage(bookId: widget.bookId),
+                              builder:
+                                  (context) =>
+                                      IpSettingsPage(bookId: widget.bookId),
                             ),
                           ).then((result) {
                             if (result != null) {
@@ -337,18 +352,26 @@ class _BookdetailPageState extends State<BookdetailPage> {
                               });
                               SharedPreferences.getInstance().then((prefs) {
                                 prefs.setString(
-                                    'rpa_response_${widget.bookId}', result);
+                                  'rpa_response_${widget.bookId}',
+                                  result,
+                                );
                               });
                             }
                           });
                         },
-                        icon: const Icon(Icons.arrow_forward_sharp,
-                            color: Colors.white),
-                        label: const Text('Add RPA',
-                            style: TextStyle(color: Colors.white)),
+                        icon: const Icon(
+                          Icons.arrow_forward_sharp,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Add RPA',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
                           backgroundColor: Colors.blueAccent,
                           textStyle: const TextStyle(fontSize: 16),
                         ),
