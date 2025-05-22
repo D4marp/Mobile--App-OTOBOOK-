@@ -28,11 +28,12 @@ dependencies:
   retry: ^3.1.2
   shared_preferences: ^2.2.3
   image: ^4.2.0
-  path_provider: ^2.1.4
+  path_provider: ^2.1.5
   cunning_document_scanner: ^1.2.3
   csv: ^6.0.0
   google_mlkit_barcode_scanning: ^0.12.1
-  camera: ^0.11.0+2
+  camera: ^0.11.1
+  open_file: ^3.5.10
 
 dev_dependencies:
   flutter_test:

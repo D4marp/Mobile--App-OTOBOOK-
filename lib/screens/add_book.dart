@@ -27,6 +27,8 @@ class _AddBookScreenState extends State<AddBookScreen> {
   late TextEditingController _tahunController;
   late TextEditingController _editorController;
   late TextEditingController _ilustratorController;
+  String? selectedValue; // Pilihan awal
+  List<String> items = ['Diolah', 'Disumbangkan'];
 
   @override
   void initState() {
@@ -81,6 +83,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
         'tahun': _tahunController.text,
         'editor': _editorController.text,
         'ilustrator': _ilustratorController.text,
+        'kategori': selectedValue ?? '',
       }),
     );
     final responseBody = jsonDecode(response.body);
@@ -194,6 +197,28 @@ class _AddBookScreenState extends State<AddBookScreen> {
                     _buildTextArea(_editorController, 'Editor'),
                     const SizedBox(height: 16.0),
                     _buildTextArea(_ilustratorController, 'Ilustrator'),
+                    const SizedBox(height: 16.0),
+                    DropdownButtonFormField<String>(
+                      items: items
+                          .map((item) => DropdownMenuItem(
+                                value: item,
+                                child: Text(item),
+                              ))
+                          .toList(),
+                      value: selectedValue,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedValue = newValue;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'kategori',
+                        border: OutlineInputBorder(),
+                        labelStyle: const TextStyle(fontSize: 18),
+                      ),
+                      // Optional: style for dropdown text
+                      style: const TextStyle(fontSize: 18, color: Colors.black),
+                    ),
                     const SizedBox(height: 16.0),
                     Align(
                       alignment: Alignment.centerRight,

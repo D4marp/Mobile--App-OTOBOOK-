@@ -26,6 +26,8 @@ class _EditbookPageState extends State<EditbookPage> {
   late TextEditingController _sinopsisController;
   late TextEditingController _keywordController;
   late TextEditingController _noClassController;
+  late String? selectedValue; // Pilihan awal
+  List<String> items = ['Diolah', 'Disumbangkan'];
 
   bool _isLoading = false;
 
@@ -68,6 +70,7 @@ class _EditbookPageState extends State<EditbookPage> {
         _tahunController.text = book.tahun;
         _editorController.text = book.editor;
         _ilustratorController.text = book.ilustrator ?? '';
+        selectedValue = book.kategori ?? 'Diolah';
         _sinopsisController.text = book.sinopsis ?? '';
         _keywordController.text = book.keyword ?? '';
         _noClassController.text = book.noClass ?? '';
@@ -102,13 +105,14 @@ class _EditbookPageState extends State<EditbookPage> {
       'tahun_terbit': _tahunController.text,
       'editor': _editorController.text,
       'ilustrator': _ilustratorController.text,
+      'kategori': selectedValue,
       'sinopsis': _sinopsisController.text,
       'keyword': _keywordController.text,
       'no_class': _noClassController.text,
     };
 
     try {
-      print(updatedBook);
+      // print(updatedBook);
       final response = await http.put(
         Uri.parse('${GetData().editBookSinopsisUrl}/${widget.id}'),
         headers: {'Content-Type': 'application/json'},
@@ -126,7 +130,7 @@ class _EditbookPageState extends State<EditbookPage> {
         );
       }
       if (response.statusCode != 200) {
-        print('Error: ${response.body}');
+        // print('Error: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${response.body}')),
         );
@@ -201,6 +205,26 @@ class _EditbookPageState extends State<EditbookPage> {
                             const SizedBox(height: 16),
                             _buildTextField(
                                 _ilustratorController, 'Ilustrator'),
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<String>(
+                              value: selectedValue,
+                              items: items
+                                  .map((item) => DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedValue = value;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Kategori',
+                                border: OutlineInputBorder(),
+                                labelStyle: const TextStyle(fontSize: 18),
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             _buildTextArea(_sinopsisController, 'Sinopsis'),
                             const SizedBox(height: 16),

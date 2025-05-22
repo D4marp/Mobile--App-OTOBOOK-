@@ -8,6 +8,7 @@ class masterBook {
   final String kota;
   final String tahun;
   final String editor;
+  final String? kategori;
   final String? ilustrator;
   final String? sinopsis;
   final String? keyword;
@@ -23,6 +24,7 @@ class masterBook {
     required this.kota,
     required this.tahun,
     required this.editor,
+    this.kategori,
     this.ilustrator,
     this.sinopsis,
     this.keyword,
@@ -41,6 +43,7 @@ class masterBook {
       tahun: json['tahun'] ?? 'Unknown Year',
       editor: json['editor'] ?? 'Unknown Editor',
       ilustrator: json['ilustrator'] ?? 'Unknown Illustrator',
+      kategori: json['kategori'] ?? 'Unknown Category',
       sinopsis: json['sinopsis'] ?? 'No synopsis available',
       keyword: json['keyword'] ?? 'No keyword available',
       noClass: json['no_class'] ?? 'Unknown Classification Number',
@@ -59,6 +62,7 @@ class masterBook {
       'tahun': tahun,
       'editor': editor,
       'ilustrator': ilustrator,
+      'kategori': kategori,
       'sinopsis': sinopsis,
       'keyword': keyword,
       'no_class': noClass,

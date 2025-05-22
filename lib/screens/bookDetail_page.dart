@@ -170,6 +170,13 @@ class _BookdetailPageState extends State<BookdetailPage> {
                                 color: Colors.black54,
                               ),
                             ),
+                            Text(
+                              'Katagory: ${book.kategori}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             const Text(
                               'Deskripsi:',
