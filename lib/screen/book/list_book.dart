@@ -184,7 +184,7 @@ class _GetBooksPageState extends State<GetBooksPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            const Text('Book List'),
+            const Text('Daftar Buku'),
             const SizedBox(width: 8),
             PopupMenuButton<BookFilter>(
               initialValue: _selectedFilter,

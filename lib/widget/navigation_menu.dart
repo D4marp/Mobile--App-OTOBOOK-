@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:otobook/screen/book/list_book.dart';
@@ -49,7 +48,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)), // Sudut melengkung lebih besar
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30),
+          ), // Sudut melengkung lebih besar
           child: BottomNavigationBar(
             backgroundColor: Colors.transparent, // Latar belakang transparan
             items: <BottomNavigationBarItem>[
@@ -58,64 +59,89 @@ class _NavigationMenuState extends State<NavigationMenu> {
                   duration: Duration(milliseconds: 300),
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _selectedIndex == 0 ? Color(0xFF005CBE).withOpacity(0.1) : Colors.transparent,
+                    color:
+                        _selectedIndex == 0
+                            ? Color(0xFF005CBE).withOpacity(0.1)
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     FontAwesomeIcons.house, // Ikon Font Awesome untuk Home
                     size: 24,
-                    color: _selectedIndex == 0 ? Color(0xFF005CBE) : Colors.grey.shade600,
+                    color:
+                        _selectedIndex == 0
+                            ? Color(0xFF005CBE)
+                            : Colors.grey.shade600,
                   ),
                 ),
-                label: 'Home',
+                label: 'Beranda',
               ),
               BottomNavigationBarItem(
                 icon: AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _selectedIndex == 1 ? Color(0xFF005CBE).withOpacity(0.1) : Colors.transparent,
+                    color:
+                        _selectedIndex == 1
+                            ? Color(0xFF005CBE).withOpacity(0.1)
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    FontAwesomeIcons.magnifyingGlass, // Ikon Font Awesome untuk Search
+                    FontAwesomeIcons
+                        .magnifyingGlass, // Ikon Font Awesome untuk Search
                     size: 24,
-                    color: _selectedIndex == 1 ? Color(0xFF005CBE) : Colors.grey.shade600,
+                    color:
+                        _selectedIndex == 1
+                            ? Color(0xFF005CBE)
+                            : Colors.grey.shade600,
                   ),
                 ),
-                label: 'Search',
+                label: 'Cari Buku',
               ),
               BottomNavigationBarItem(
                 icon: AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _selectedIndex == 2 ? Color(0xFF005CBE).withOpacity(0.1) : Colors.transparent,
+                    color:
+                        _selectedIndex == 2
+                            ? Color(0xFF005CBE).withOpacity(0.1)
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     FontAwesomeIcons.bookOpen, // Ikon Font Awesome untuk List
                     size: 24,
-                    color: _selectedIndex == 2 ? Color(0xFF005CBE) : Colors.grey.shade600,
+                    color:
+                        _selectedIndex == 2
+                            ? Color(0xFF005CBE)
+                            : Colors.grey.shade600,
                   ),
                 ),
-                label: 'List',
+                label: 'Daftar Buku',
               ),
               BottomNavigationBarItem(
                 icon: AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _selectedIndex == 3 ? Color(0xFF005CBE).withOpacity(0.1) : Colors.transparent,
+                    color:
+                        _selectedIndex == 3
+                            ? Color(0xFF005CBE).withOpacity(0.1)
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     FontAwesomeIcons.user, // Ikon Font Awesome untuk Profile
                     size: 24,
-                    color: _selectedIndex == 3 ? Color(0xFF005CBE) : Colors.grey.shade600,
+                    color:
+                        _selectedIndex == 3
+                            ? Color(0xFF005CBE)
+                            : Colors.grey.shade600,
                   ),
                 ),
-                label: 'Profile',
+                label: 'Profil',
               ),
             ],
             currentIndex: _selectedIndex,

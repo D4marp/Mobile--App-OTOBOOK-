@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:otobook/services/ocr_service.dart';
@@ -33,18 +32,22 @@ class _SinopsisScannerState extends State<SinopsisScanner> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                title: const Text('Kamera'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.camera),
+                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Gallery'),
+                title: const Text('Galeri'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.gallery),
+                  );
                 },
               ),
             ],
@@ -53,6 +56,7 @@ class _SinopsisScannerState extends State<SinopsisScanner> {
       },
     );
   }
+
   Future<void> _scanAndExtract() async {
     setState(() {
       _isLoading = true;
@@ -61,8 +65,9 @@ class _SinopsisScannerState extends State<SinopsisScanner> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String extractedText =
-            await OCRService.extractTextFromImage(pickedFile.path);
+        String extractedText = await OCRService.extractTextFromImage(
+          pickedFile.path,
+        );
 
         if (extractedText.isNotEmpty) {
           // Hilangkan baris baru (enter)
@@ -73,16 +78,16 @@ class _SinopsisScannerState extends State<SinopsisScanner> {
           });
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No image selected.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No image selected.')));
       }
     } catch (e) {
       print('Error scanning and extracting: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content:
-                Text('Failed to scan and extract text. Please try again.')),
+          content: Text('Failed to scan and extract text. Please try again.'),
+        ),
       );
     } finally {
       setState(() {
@@ -100,19 +105,22 @@ class _SinopsisScannerState extends State<SinopsisScanner> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            AddKeywordPages(sinopsisBookData: sinopsisbookData),
+        builder:
+            (context) => AddKeywordPages(sinopsisBookData: sinopsisbookData),
       ),
     );
   }
-Widget _buildExtractedTextWidget() {
+
+  Widget _buildExtractedTextWidget() {
     return SelectableText(
       _extractedText,
       style: const TextStyle(fontSize: 16.0),
       onSelectionChanged: (selection, cause) {
         // Get selected text
-        final selectedText =
-            _extractedText.substring(selection.start, selection.end);
+        final selectedText = _extractedText.substring(
+          selection.start,
+          selection.end,
+        );
         if (selectedText.isNotEmpty) {
           setState(() {
             sinopsis = selectedText;
@@ -121,7 +129,8 @@ Widget _buildExtractedTextWidget() {
       },
     );
   }
-Widget _buildField(String label, String value) {
+
+  Widget _buildField(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -136,9 +145,7 @@ Widget _buildField(String label, String value) {
   Widget _buildFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildField('Sinopsis', sinopsis),
-      ],
+      children: [_buildField('Sinopsis', sinopsis)],
     );
   }
 
@@ -149,32 +156,33 @@ Widget _buildField(String label, String value) {
         title: const Text('Scan Book'),
         backgroundColor: const Color(0xFF95A2FF),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: _scanAndExtract,
-                    child: const Text('Scan and Extract Text'),
-                  ),
-                  const SizedBox(height: 20),
-                  if (_extractedText.isNotEmpty) ...[
-                    const Text('Extracted Text:'),
-                    const SizedBox(height: 10),
-                    _buildExtractedTextWidget(),
-                    const SizedBox(height: 20),
-                    _buildFields(),
-                    const SizedBox(height: 20),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
                     ElevatedButton(
-                      onPressed: _navigateToAddPage,
-                      child: const Text('Save and Edit Book'),
+                      onPressed: _scanAndExtract,
+                      child: const Text('Scan and Extract Text'),
                     ),
+                    const SizedBox(height: 20),
+                    if (_extractedText.isNotEmpty) ...[
+                      const Text('Extracted Text:'),
+                      const SizedBox(height: 10),
+                      _buildExtractedTextWidget(),
+                      const SizedBox(height: 20),
+                      _buildFields(),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _navigateToAddPage,
+                        child: const Text('Save and Edit Book'),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
     );
   }
 }

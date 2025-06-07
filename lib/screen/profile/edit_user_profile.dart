@@ -42,13 +42,16 @@ class _EditUserPageState extends State<EditUserPage> {
   Future<void> _fetchUserDetails() async {
     setState(() => _isLoading = true);
     try {
-      final response = await http.get(Uri.parse('${GetData().getUserIdUrl}/${widget.id}'));
+      final response = await http.get(
+        Uri.parse('${GetData().getUserIdUrl}/${widget.id}'),
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
           _usernameController.text = data['username'] ?? '';
           _emailController.text = data['email'] ?? '';
-          _profileImageUrl = data['path'] != null ? '${GetData().Url}${data['path']}' : null;
+          _profileImageUrl =
+              data['path'] != null ? '${GetData().Url}${data['path']}' : null;
         });
       } else {
         throw Exception('Failed to load user data');
@@ -62,7 +65,12 @@ class _EditUserPageState extends State<EditUserPage> {
 
   Future<void> _pickProfileImage() async {
     try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 800, maxHeight: 800, imageQuality: 85);
+      final pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
       if (pickedFile != null) {
         setState(() => _profileImageFile = File(pickedFile.path));
       }
@@ -75,11 +83,17 @@ class _EditUserPageState extends State<EditUserPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      final request = http.MultipartRequest('PUT', Uri.parse('${GetData().editUserByIdUrl}/${widget.id}'))
-        ..fields['username'] = _usernameController.text.trim()
-        ..fields['email'] = _emailController.text.trim();
+      final request =
+          http.MultipartRequest(
+              'PUT',
+              Uri.parse('${GetData().editUserByIdUrl}/${widget.id}'),
+            )
+            ..fields['username'] = _usernameController.text.trim()
+            ..fields['email'] = _emailController.text.trim();
       if (_profileImageFile != null) {
-        request.files.add(await http.MultipartFile.fromPath('file', _profileImageFile!.path));
+        request.files.add(
+          await http.MultipartFile.fromPath('file', _profileImageFile!.path),
+        );
       }
       final response = await request.send();
       if (response.statusCode == 200) {
@@ -97,7 +111,11 @@ class _EditUserPageState extends State<EditUserPage> {
 
   void _showSnackbar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color, behavior: SnackBarBehavior.floating),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -105,7 +123,7 @@ class _EditUserPageState extends State<EditUserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('Edit Profil'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -114,25 +132,35 @@ class _EditUserPageState extends State<EditUserPage> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    _buildProfileImageSection(),
-                    const SizedBox(height: 32),
-                    _buildTextField(_usernameController, 'Username', FeatherIcons.user),
-                    const SizedBox(height: 20),
-                    _buildTextField(_emailController, 'Email', FeatherIcons.mail, isEmail: true),
-                    const SizedBox(height: 40),
-                    _buildUpdateButton(),
-                  ],
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildProfileImageSection(),
+                      const SizedBox(height: 32),
+                      _buildTextField(
+                        _usernameController,
+                        'Username',
+                        FeatherIcons.user,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildTextField(
+                        _emailController,
+                        'Email',
+                        FeatherIcons.mail,
+                        isEmail: true,
+                      ),
+                      const SizedBox(height: 40),
+                      _buildUpdateButton(),
+                    ],
+                  ),
                 ),
               ),
-            ),
     );
   }
 
@@ -144,35 +172,55 @@ class _EditUserPageState extends State<EditUserPage> {
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundImage: _profileImageFile != null
-                  ? FileImage(_profileImageFile!)
-                  : _profileImageUrl != null
+              backgroundImage:
+                  _profileImageFile != null
+                      ? FileImage(_profileImageFile!)
+                      : _profileImageUrl != null
                       ? NetworkImage(_profileImageUrl!) as ImageProvider
                       : null,
-              child: _profileImageFile == null && _profileImageUrl == null
-                  ? const Icon(FeatherIcons.user, size: 50, color: Colors.grey)
-                  : null,
+              child:
+                  _profileImageFile == null && _profileImageUrl == null
+                      ? const Icon(
+                        FeatherIcons.user,
+                        size: 50,
+                        color: Colors.grey,
+                      )
+                      : null,
             ),
             IconButton(
-              icon: const Icon(FeatherIcons.camera, size: 18, color: Colors.white),
+              icon: const Icon(
+                FeatherIcons.camera,
+                size: 18,
+                color: Colors.white,
+              ),
               onPressed: _pickProfileImage,
             ),
           ],
         ),
         const SizedBox(height: 10),
-        TextButton(onPressed: _pickProfileImage, child: const Text('Change Photo')),
+        TextButton(
+          onPressed: _pickProfileImage,
+          child: const Text('Ganti Foto Profil'),
+        ),
       ],
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isEmail = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool isEmail = false,
+  }) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
       keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
       validator: (value) {
         if (value == null || value.isEmpty) return 'Please enter $label';
-        if (isEmail && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}\$').hasMatch(value)) return 'Invalid email format';
+        if (isEmail &&
+            !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}\$').hasMatch(value))
+          return 'Invalid email format';
         return null;
       },
     );
@@ -181,7 +229,10 @@ class _EditUserPageState extends State<EditUserPage> {
   Widget _buildUpdateButton() {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(onPressed: _isLoading ? null : _updateUser, child: const Text('SAVE CHANGES')),
+      child: ElevatedButton(
+        onPressed: _isLoading ? null : _updateUser,
+        child: const Text('Perbarui Profil'),
+      ),
     );
   }
 }

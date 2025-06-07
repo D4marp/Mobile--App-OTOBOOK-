@@ -29,12 +29,8 @@ class _KlasifikasibukuState extends State<Klasifikasibuku> {
       Uri url = Uri.parse(GetData().searchKlasifikasiUrl);
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(<String, String>{
-          'keyword': keyword,
-        }),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(<String, String>{'keyword': keyword}),
       );
       if (response.statusCode == 200) {
         final body = response.body;
@@ -72,7 +68,7 @@ class _KlasifikasibukuState extends State<Klasifikasibuku> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Klasifikasi Buku'),
+        title: const Text('Cari Klasifikasi Buku'),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
@@ -98,45 +94,49 @@ class _KlasifikasibukuState extends State<Klasifikasibuku> {
             _isLoading
                 ? const CircularProgressIndicator.adaptive()
                 : _errorMessage.isNotEmpty
-                    ? Text(_errorMessage,
-                        style: const TextStyle(color: Colors.red))
-                    : _books.isEmpty
-                        ? const Text('Tidak ada buku ditemukan.',
-                            style: TextStyle(fontSize: 16))
-                        : Expanded(
-                            child: ListView.builder(
-                              itemCount: _books.length,
-                              itemBuilder: (context, index) {
-                                final book = _books[index]; // Objek Klasifikasi
-                                return Card(
-                                  child: ListTile(
-                                    title: Text(
-                                        'Dewey No: ${book.deweyNoClass}'), // Menampilkan deweyNoClass
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                            'Uraian Klasifikasi: ${book.narasiKlasifikasi}'), // Menampilkan narasi_klasifikasi
-                                        Text(
-                                            'Subject: ${book.subject ?? 'Tidak ada subject'}'), // Menampilkan subject atau pesan default
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => Editklasifikasibuku(
-                                              klasifikasiId: book
-                                                  .id), // Halaman untuk mengedit klasifikasi
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                          )
+                ? Text(_errorMessage, style: const TextStyle(color: Colors.red))
+                : _books.isEmpty
+                ? const Text(
+                  'Tidak ada buku ditemukan.',
+                  style: TextStyle(fontSize: 16),
+                )
+                : Expanded(
+                  child: ListView.builder(
+                    itemCount: _books.length,
+                    itemBuilder: (context, index) {
+                      final book = _books[index]; // Objek Klasifikasi
+                      return Card(
+                        child: ListTile(
+                          title: Text(
+                            'Dewey No: ${book.deweyNoClass}',
+                          ), // Menampilkan deweyNoClass
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Uraian Klasifikasi: ${book.narasiKlasifikasi}',
+                              ), // Menampilkan narasi_klasifikasi
+                              Text(
+                                'Subject: ${book.subject ?? 'Tidak ada subject'}',
+                              ), // Menampilkan subject atau pesan default
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => Editklasifikasibuku(
+                                      klasifikasiId: book.id,
+                                    ), // Halaman untuk mengedit klasifikasi
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
           ],
         ),
       ),
@@ -146,8 +146,9 @@ class _KlasifikasibukuState extends State<Klasifikasibuku> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  TajukSubject(), // Halaman untuk menambah tajuk subjek
+              builder:
+                  (context) =>
+                      TajukSubject(), // Halaman untuk menambah tajuk subjek
             ),
           );
         },

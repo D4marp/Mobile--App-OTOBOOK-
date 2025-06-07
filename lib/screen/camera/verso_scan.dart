@@ -6,15 +6,14 @@ import 'package:otobook/services/ocr_service.dart';
 
 class VersoScanner extends StatefulWidget {
   const VersoScanner({super.key, this.autoPress = false});
- final bool autoPress;
+  final bool autoPress;
 
-  
   @override
   State<VersoScanner> createState() => _VersoScannerState();
 }
 
 class _VersoScannerState extends State<VersoScanner> {
-    void initState() {
+  void initState() {
     super.initState();
     if (widget.autoPress) {
       Future.delayed(Duration(milliseconds: 500), () {
@@ -22,6 +21,7 @@ class _VersoScannerState extends State<VersoScanner> {
       });
     }
   }
+
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
   String _extractedText = '';
@@ -73,18 +73,22 @@ class _VersoScannerState extends State<VersoScanner> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                title: const Text('Kamera'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.camera),
+                  );
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Gallery'),
+                title: const Text('Galeri'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.gallery),
+                  );
                 },
               ),
             ],
@@ -102,8 +106,9 @@ class _VersoScannerState extends State<VersoScanner> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String extractedText =
-            await OCRService.extractTextFromImage(pickedFile.path);
+        String extractedText = await OCRService.extractTextFromImage(
+          pickedFile.path,
+        );
 
         if (extractedText.isNotEmpty) {
           setState(() {
@@ -111,16 +116,16 @@ class _VersoScannerState extends State<VersoScanner> {
           });
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No image selected.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No image selected.')));
       }
     } catch (e) {
       print('Error scanning and extracting: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content:
-                Text('Failed to scan and extract text. Please try again.')),
+          content: Text('Failed to scan and extract text. Please try again.'),
+        ),
       );
     } finally {
       setState(() {
@@ -146,9 +151,10 @@ class _VersoScannerState extends State<VersoScanner> {
                       String formattedText = formatAsTitle(selectedText);
 
                       // Gabungkan teks yang sudah ada dengan yang baru
-                      _judulController.text = _judulController.text.isEmpty
-                          ? formattedText
-                          : '${_judulController.text}, $formattedText';
+                      _judulController.text =
+                          _judulController.text.isEmpty
+                              ? formattedText
+                              : '${_judulController.text}, $formattedText';
 
                       FocusScope.of(context).requestFocus(_judulFocusNode);
                     });
@@ -203,9 +209,10 @@ class _VersoScannerState extends State<VersoScanner> {
                           .replaceAll(RegExp(r'ISBN\s*:?'), '')
                           .replaceAll(RegExp(r'[^0-9-]'), '');
 
-                      _isbnController.text = _isbnController.text.isEmpty
-                          ? formattedText
-                          : '${_isbnController.text}, $formattedText';
+                      _isbnController.text =
+                          _isbnController.text.isEmpty
+                              ? formattedText
+                              : '${_isbnController.text}, $formattedText';
                       FocusScope.of(context).requestFocus(_isbnFocusNode);
                     });
                     Navigator.pop(context);
@@ -216,8 +223,9 @@ class _VersoScannerState extends State<VersoScanner> {
                   onTap: () {
                     setState(() {
                       // Regex untuk mendeteksi pola nama kota (kata dengan huruf kapital di awal)
-                      final cityPattern =
-                          RegExp(r'\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b');
+                      final cityPattern = RegExp(
+                        r'\b[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\b',
+                      );
 
                       // Cari kecocokan pertama yang dianggap sebagai kota
                       final match = cityPattern.firstMatch(selectedText);
@@ -249,20 +257,23 @@ class _VersoScannerState extends State<VersoScanner> {
                   onTap: () {
                     setState(() {
                       // Regex untuk mendeteksi nama (dua kata dengan huruf kapital di awal)
-                      final namePattern =
-                          RegExp(r'\b[A-Z][a-z]+\s[A-Z][a-z]+\b');
+                      final namePattern = RegExp(
+                        r'\b[A-Z][a-z]+\s[A-Z][a-z]+\b',
+                      );
 
                       // Ambil semua nama yang cocok dalam teks
                       final matches = namePattern.allMatches(selectedText);
 
                       // Gabungkan semua nama menjadi satu string, dipisahkan oleh koma
-                      final extractedNames =
-                          matches.map((m) => m.group(0)).join(', ');
+                      final extractedNames = matches
+                          .map((m) => m.group(0))
+                          .join(', ');
 
                       // Tambahkan ke dalam field editor, gabungkan jika sudah ada teks
-                      _editorController.text = _editorController.text.isEmpty
-                          ? extractedNames
-                          : '${_editorController.text}, $extractedNames';
+                      _editorController.text =
+                          _editorController.text.isEmpty
+                              ? extractedNames
+                              : '${_editorController.text}, $extractedNames';
 
                       FocusScope.of(context).requestFocus(_editorFocusNode);
                     });
@@ -290,23 +301,25 @@ class _VersoScannerState extends State<VersoScanner> {
   Widget _buildExtractedTextWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: _extractedText.split('\n').map((line) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: GestureDetector(
-            onTap: () {
-              _showFieldSelectionDialog(line);
-            },
-            child: Text(
-              line,
-              style: const TextStyle(
-                  decoration:
-                      TextDecoration.underline // Optionally change text color
+      children:
+          _extractedText.split('\n').map((line) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: GestureDetector(
+                onTap: () {
+                  _showFieldSelectionDialog(line);
+                },
+                child: Text(
+                  line,
+                  style: const TextStyle(
+                    decoration:
+                        TextDecoration
+                            .underline, // Optionally change text color
                   ),
-            ),
-          ),
-        );
-      }).toList(),
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 
@@ -332,7 +345,10 @@ class _VersoScannerState extends State<VersoScanner> {
   }
 
   Widget _buildField(
-      String label, TextEditingController controller, FocusNode focusNode) {
+    String label,
+    TextEditingController controller,
+    FocusNode focusNode,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: TextFormField(
@@ -347,7 +363,10 @@ class _VersoScannerState extends State<VersoScanner> {
   }
 
   Widget _buildTextArea(
-      String labelText, TextEditingController controller, FocusNode focusNode) {
+    String labelText,
+    TextEditingController controller,
+    FocusNode focusNode,
+  ) {
     return TextField(
       controller: controller,
       focusNode: focusNode,
@@ -370,7 +389,10 @@ class _VersoScannerState extends State<VersoScanner> {
         _buildTextArea('Pengarang', _pengarangController, _pengarangFocusNode),
         const SizedBox(height: 10),
         _buildTextArea(
-            'Penerbitan', _penerbitanController, _penerbitanFocusNode),
+          'Penerbitan',
+          _penerbitanController,
+          _penerbitanFocusNode,
+        ),
         const SizedBox(height: 10),
         _buildTextArea('Deskripsi', _deskripsiController, _deskripsiFocusNode),
         const SizedBox(height: 10),
@@ -383,7 +405,10 @@ class _VersoScannerState extends State<VersoScanner> {
         _buildTextArea('Editor', _editorController, _editorFocusNode),
         const SizedBox(height: 10),
         _buildTextArea(
-            'Ilustrator', _ilustratorController, _ilustratorFocusNode),
+          'Ilustrator',
+          _ilustratorController,
+          _ilustratorFocusNode,
+        ),
       ],
     );
   }
@@ -395,34 +420,35 @@ class _VersoScannerState extends State<VersoScanner> {
         title: const Text('Scan Book'),
         backgroundColor: const Color(0xFF95A2FF),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
                     ElevatedButton(
-                    onPressed: () async {
-                      await _scanAndExtract();
-                    },
-                    child: const Text('Scan and Extract Text'),
+                      onPressed: () async {
+                        await _scanAndExtract();
+                      },
+                      child: const Text('Scan dan Ekstrak Teks'),
                     ),
-                  const SizedBox(height: 20),
-                  if (_extractedText.isNotEmpty) ...[
-                    const Text('Extracted Text:'),
-                    const SizedBox(height: 10),
-                    _buildExtractedTextWidget(),
                     const SizedBox(height: 20),
-                    _buildFields(),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _navigateToAddPage,
-                      child: const Text('Save and Edit Book'),
-                    ),
+                    if (_extractedText.isNotEmpty) ...[
+                      const Text('Extracted Text:'),
+                      const SizedBox(height: 10),
+                      _buildExtractedTextWidget(),
+                      const SizedBox(height: 20),
+                      _buildFields(),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _navigateToAddPage,
+                        child: const Text('Save and Edit Book'),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
     );
   }
 }

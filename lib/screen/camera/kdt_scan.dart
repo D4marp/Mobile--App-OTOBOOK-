@@ -20,23 +20,28 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
       });
     }
   }
- 
+
   final ImagePicker _picker = ImagePicker();
-  
+
   // Field controllers
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _editorController = TextEditingController();
   final TextEditingController _publisherController = TextEditingController();
-  final TextEditingController _publicationYearController = TextEditingController();
+  final TextEditingController _publicationYearController =
+      TextEditingController();
   final TextEditingController _isbnController = TextEditingController();
   final TextEditingController _editionController = TextEditingController();
-  final TextEditingController _physicalDescriptionController = TextEditingController();
+  final TextEditingController _physicalDescriptionController =
+      TextEditingController();
   final TextEditingController _seriesController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  final TextEditingController _subjectHeadingIController = TextEditingController();
-  final TextEditingController _subjectHeadingIIController = TextEditingController();
-  final TextEditingController _bibliographyPageController = TextEditingController();
+  final TextEditingController _subjectHeadingIController =
+      TextEditingController();
+  final TextEditingController _subjectHeadingIIController =
+      TextEditingController();
+  final TextEditingController _bibliographyPageController =
+      TextEditingController();
 
   bool _isLoading = false;
   String _extractedText = '';
@@ -49,7 +54,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
     try {
       final pickedFile = await _showImageSourceSelector();
       if (pickedFile != null) {
-        String extractedText = await OCRService.extractTextFromImage(pickedFile.path);
+        String extractedText = await OCRService.extractTextFromImage(
+          pickedFile.path,
+        );
 
         if (extractedText.isNotEmpty) {
           setState(() {
@@ -58,15 +65,16 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
           });
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('No image selected.')));
       }
     } catch (e) {
       print('Error scanning and extracting: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Failed to scan and extract text. Please try again.')),
+          content: Text('Failed to scan and extract text. Please try again.'),
+        ),
       );
     } finally {
       setState(() {
@@ -85,18 +93,22 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
+                title: Text('Kamera'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.camera));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.camera),
+                  );
                 },
               ),
               ListTile(
                 leading: Icon(Icons.photo_library),
-                title: Text('Gallery'),
+                title: Text('Galeri'),
                 onTap: () async {
-                  Navigator.pop(context,
-                      await _picker.pickImage(source: ImageSource.gallery));
+                  Navigator.pop(
+                    context,
+                    await _picker.pickImage(source: ImageSource.gallery),
+                  );
                 },
               ),
             ],
@@ -108,7 +120,15 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
 
   void _parseKDTText(String text) {
     final lines = text.split('\n');
-    String? title, author, editor, publisher, isbn, edition, physicalDescription, series, notes;
+    String? title,
+        author,
+        editor,
+        publisher,
+        isbn,
+        edition,
+        physicalDescription,
+        series,
+        notes;
     String? subjectHeadingI, subjectHeadingII;
     String? bibliographyPage;
     int? publicationYear;
@@ -128,7 +148,9 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
           title = parts[2].trim();
         }
       } else if (RegExp(r'\d{4}').hasMatch(line)) {
-        publicationYear = int.tryParse(RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '');
+        publicationYear = int.tryParse(
+          RegExp(r'\d{4}').firstMatch(line)?.group(0) ?? '',
+        );
       } else if (line.startsWith('Edisi')) {
         edition = line.replaceFirst('Edisi', '').trim();
       } else if (line.startsWith('Deskripsi Fisik')) {
@@ -142,7 +164,8 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
       } else if (line.startsWith('I.')) {
         subjectHeadingI = line.replaceFirst('I.', '').trim(); // Tajuk judul
       } else if (line.startsWith('II.')) {
-        subjectHeadingII = line.replaceFirst('II.', '').trim(); // Tajuk pengarang
+        subjectHeadingII =
+            line.replaceFirst('II.', '').trim(); // Tajuk pengarang
       }
     }
 
@@ -169,32 +192,33 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
         title: Text('KDT Scan'),
         backgroundColor: Color(0xFF95A2FF),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: _scanAndExtract,
-                    child: Text('Scan and Extract KDT'),
-                  ),
-                  SizedBox(height: 20),
-                  if (_extractedText.isNotEmpty) ...[
-                    Text('Extracted Text:'),
-                    SizedBox(height: 10),
-                    _buildBookFields(),
-                    SizedBox(height: 20),
+      body:
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
                     ElevatedButton(
-                      onPressed: () {
-                        // Handle save or further action
-                      },
-                      child: Text('Save and Edit Book'),
+                      onPressed: _scanAndExtract,
+                      child: Text('Scan dan Ekstrak KDT'),
                     ),
+                    SizedBox(height: 20),
+                    if (_extractedText.isNotEmpty) ...[
+                      Text('Extracted Text:'),
+                      SizedBox(height: 10),
+                      _buildBookFields(),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Handle save or further action
+                        },
+                        child: Text('Save and Edit Book'),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
     );
   }
 
@@ -213,8 +237,14 @@ class _KDTScannerScreenState extends State<KDTScannerScreen> {
         _buildField('Series', _seriesController),
         _buildField('Notes', _notesController),
         _buildField('Bibliography Page', _bibliographyPageController),
-        _buildField('Subject Heading I (Tajuk Judul)', _subjectHeadingIController),
-        _buildField('Subject Heading II (Tajuk Pengarang)', _subjectHeadingIIController),
+        _buildField(
+          'Subject Heading I (Tajuk Judul)',
+          _subjectHeadingIController,
+        ),
+        _buildField(
+          'Subject Heading II (Tajuk Pengarang)',
+          _subjectHeadingIIController,
+        ),
       ],
     );
   }

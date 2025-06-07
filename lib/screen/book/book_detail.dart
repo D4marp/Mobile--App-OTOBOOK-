@@ -171,7 +171,7 @@ class _BookdetailPageState extends State<BookdetailPage> {
                               ),
                             ),
                             Text(
-                              'Katagory: ${book.kategori}',
+                              'Kategori: ${book.kategori}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.black54,
@@ -333,8 +333,9 @@ class _BookdetailPageState extends State<BookdetailPage> {
                         textStyle: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    if (rpaResponse == null ||
-                        rpaResponse!.contains('Error')) ...[
+                    if ((book.kategori == "Diolah") &&
+                        (rpaResponse == null ||
+                            rpaResponse!.contains('Error'))) ...[
                       // Tombol Add RPA hanya ditampilkan jika rpaResponse null
                       ElevatedButton.icon(
                         onPressed: () {

@@ -70,9 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (id != null) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => EditUserPage(id: id),
-        ),
+        MaterialPageRoute(builder: (context) => EditUserPage(id: id)),
       ).then((result) {
         if (result == true) {
           setState(() => userData = getUserData());
@@ -85,7 +83,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: const Text(
+          'Profil',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
         centerTitle: true,
@@ -106,8 +107,10 @@ class _ProfilePageState extends State<ProfilePage> {
               return _buildShimmerEffect(); // Tampilkan shimmer saat loading
             } else if (snapshot.hasError || !snapshot.hasData) {
               return const Center(
-                child: Text('Failed to load user data',
-                    style: TextStyle(fontSize: 18, color: Colors.redAccent)),
+                child: Text(
+                  'Failed to load user data',
+                  style: TextStyle(fontSize: 18, color: Colors.redAccent),
+                ),
               );
             }
 
@@ -121,12 +124,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   radius: 60,
                   backgroundColor: Colors.grey.shade300,
                   backgroundImage: NetworkImage(coverUrl),
-                  onBackgroundImageError: (_, __) => const AssetImage('assets/profile_placeholder.jpg'),
+                  onBackgroundImageError:
+                      (_, __) =>
+                          const AssetImage('assets/profile_placeholder.jpg'),
                 ),
                 const SizedBox(height: 20.0),
                 Text(
                   data['username'],
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
                 ),
                 const SizedBox(height: 10.0),
                 Text(
@@ -145,20 +154,38 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: const Icon(Icons.person, color: Colors.blueAccent),
-                          title: const Text('Username', style: TextStyle(fontSize: 16, color: Colors.grey)),
+                          leading: const Icon(
+                            Icons.person,
+                            color: Colors.blueAccent,
+                          ),
+                          title: const Text(
+                            'Username',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
                           subtitle: Text(
                             data['username'],
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const Divider(),
                         ListTile(
-                          leading: const Icon(Icons.email, color: Colors.blueAccent),
-                          title: const Text('Email', style: TextStyle(fontSize: 16, color: Colors.grey)),
+                          leading: const Icon(
+                            Icons.email,
+                            color: Colors.blueAccent,
+                          ),
+                          title: const Text(
+                            'Email',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
                           subtitle: Text(
                             data['email'],
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -179,7 +206,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       elevation: 5,
                       shadowColor: Colors.redAccent.withOpacity(0.3),
                     ),
-                    child: const Text('Logout', style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: const Text(
+                      'Logout',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -199,7 +229,8 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundColor: Colors.grey.shade300, // Placeholder untuk CircleAvatar
+            backgroundColor:
+                Colors.grey.shade300, // Placeholder untuk CircleAvatar
           ),
           const SizedBox(height: 20.0),
           Container(
