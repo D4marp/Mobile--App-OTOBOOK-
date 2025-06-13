@@ -76,8 +76,11 @@ Future<void> _fetchUserData() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        // Latar belakang putih bersih
         child: Column(
+          
           children: <Widget>[
             _buildHeader(),
             ImageWidget(),
@@ -93,55 +96,112 @@ Future<void> _fetchUserData() async {
 
 Widget _buildHeader() {
   return Container(
-    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32), // Padding lebih besar
+    width: double.infinity,
+    padding: EdgeInsets.fromLTRB(
+      20,
+      MediaQuery.of(context).padding.top > 0 ? 8 : 16,
+      20,
+      16,
+    ),
     decoration: BoxDecoration(
-      color: Colors.white, // Latar belakang putih bersih
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white,
+          Colors.grey[50]!,
+        ],
+      ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05), // Shadow sangat halus
-          blurRadius: 10,
-          spreadRadius: 5,
-          offset: Offset(0, 5),
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 16,
+          spreadRadius: 2,
+          offset: const Offset(0, 6),
+        ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.04),
+          blurRadius: 8,
+          spreadRadius: 1,
+          offset: const Offset(0, 2),
         ),
       ],
     ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Hi, $_userName',
-              style: TextStyle(
-                color: Colors.black, // Warna teks hitam untuk kontras
-                fontSize: 24, // Ukuran font lebih besar
-                fontWeight: FontWeight.bold,
+    child: SafeArea(
+      bottom: false,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 360;
+          return Row(
+              children: [
+              // User greeting section
+              Expanded(
+                flex: 3,
+                child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                  children: [
+                    Text(
+                    'Hi, ',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: isSmallScreen ? 16 : 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    ),
+                    Flexible(
+                    child: Text(
+                      _userName,
+                      style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: isSmallScreen ? 18 : 20,
+                      fontWeight: FontWeight.w700,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                    '👋',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 16 : 18,
+                    ),
+                    ),
+                  ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                  'Temukan buku favoritmu',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: isSmallScreen ? 12 : 13,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  ),
+                ],
+                ),
               ),
-            ),
-          ],
-        ),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => StartScreen()),
-            );
-          },
-          
-            child: Hero(
-              tag: 'otobook-logo',
-              child: Image.asset(
+              const SizedBox(width: 12),
+              // Logo section
+              Hero(
+                tag: 'otobook-logo',
+                child: Image.asset(
                 'assets/logo_oto.PNG',
-                height: 40, // Ukuran logo lebih kecil
+                height: isSmallScreen ? 40 : 45,
+                width: isSmallScreen ? 40 : 45,
+                fit: BoxFit.contain,
+                ),
               ),
-            ),
-          ),
-      
-      ],
+            ],
+          );
+        },
+      ),
     ),
   );
 }
+
   Widget _buildCarousel() {
     return Column(
       children: [

@@ -43,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } else {
       // Tangani error, misalnya tampilkan pesan error
-      print('Login gagal: ${response.body}');
+      print('Pendaftaran gagal: ${response.body}');
       setState(() {
         _errorMessage = json.decode(response.body)['message'];
       });
@@ -90,7 +90,9 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: Colors.white,
       appBar: AppBar(
+          backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 176, 176, 176)),
@@ -99,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
           },
         ),
         title: const Text(
-          'Sign Up',
+          'Daftar',
           style: TextStyle(
             color: Color(0xFF3C83F5),
             fontSize: 20,
@@ -121,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Opacity(
                   opacity: 0.50,
                   child: Text(
-                    'Sign up now and enjoy OTOBOOK privileges never existed before.',
+                    'Daftar sekarang dan nikmati keistimewaan OTOBOOK yang belum pernah ada sebelumnya.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Color(0xFF111827),
@@ -145,10 +147,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     _buildTextFormField(
                       controller: usernameController,
-                      label: 'Username',
+                      label: 'Nama Pengguna',
                       keyboardType: TextInputType.text,
                       validator: (value) => value == null || value.isEmpty
-                          ? 'Please enter your username'
+                          ? 'Silakan masukkan nama pengguna Anda'
                           : null,
                     ),
                     const SizedBox(height: 16.0),
@@ -157,13 +159,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       label: 'Email',
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) => value == null || value.isEmpty
-                          ? 'Please enter your email'
+                          ? 'Silakan masukkan email Anda'
                           : null,
                     ),
                     const SizedBox(height: 16.0),
                     _buildTextFormField(
                       controller: passwordController,
-                      label: 'Password',
+                      label: 'Kata Sandi',
                       obscureText: _obscureText,
                       suffixIcon: IconButton(
                         icon: Icon(_obscureText
@@ -176,7 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       validator: (value) => value == null || value.isEmpty
-                          ? 'Please enter a password'
+                          ? 'Silakan masukkan kata sandi'
                           : null,
                     ),
                     const SizedBox(height: 30),
@@ -184,7 +186,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: () {
                         register();
                       },
-                      child: Text('Sign Up',
+                      child: Text('Daftar',
                           style: const TextStyle(
                             color: Colors.white,
                           )),
@@ -199,7 +201,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'Already have an account? Sign In ',
+                          'Sudah punya akun? Masuk ',
                           style: TextStyle(
                             color: Color(0xFF111827),
                             fontSize: 12,
@@ -210,7 +212,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextButton(
                           onPressed: widget.ontap,
                           child: const Text(
-                            'Sign In',
+                            'Masuk',
                             style: TextStyle(
                               color: Color(0xFF3C83F5),
                               fontSize: 12,
@@ -231,17 +233,3 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-
-
-
-// Fungsi login():
-//     Mengirim permintaan POST dengan email dan password
-//     Jika berhasil (status 200):
-//         Simpan data token
-//         Navigasi ke halaman utama
-//     Jika gagal:
-//         Tampilkan pesan error
-// Fungsi register():
-// Mengirim permintaan POST untuk mendaftarkan pengguna
-// Jika berhasil (201), navigasi ke halaman login
-// Jika gagal, tampilkan pesan error
