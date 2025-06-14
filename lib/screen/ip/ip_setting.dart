@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -81,7 +79,7 @@ class _IpSettingsPageState extends State<IpSettingsPage>
     super.dispose();
   }
 
-void _runAutomation() async {
+ void _runAutomation() async {
   setState(() {
     _isLoading = true;
   });
@@ -105,230 +103,66 @@ void _runAutomation() async {
       headers: {
         'Content-Type': 'application/json',
       },
-    ).timeout(const Duration(seconds: 60)); // Tambah timeout untuk RPA
+    );
 
-    // Decode JSON response
+    // ✅ PERBAIKAN: Decode JSON hanya sekali
     final responseData = json.decode(response.body);
     print('Response Status: ${response.statusCode}');
     print('Response Data: $responseData');
 
-    // ✅ PERBAIKAN: Cek content response untuk mendeteksi error
-    bool isActualSuccess = _isResponseSuccess(responseData, response.statusCode);
-    
-    if (isActualSuccess) {
-      // ✅ BENAR-BENAR SUKSES
+    if (response.statusCode == 200) {
+      // ✅ PERBAIKAN: Gunakan responseData yang sudah di-decode
       final message = responseData['message'] ?? 'RPA berhasil dijalankan';
-      print('✅ TRUE SUCCESS: $message');
+      print('Success Message: $message');
 
       // Simpan pesan ke SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('rpa_response_${widget.bookId}', message);
 
-      _showSuccessSnackBar(message);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.green[600], // ✅ Tambah indikator sukses
+        ),
+      );
       Navigator.pop(context, message);
       
     } else {
-      // ✅ ADA ERROR (meskipun status 200)
-      String errorMessage = _extractErrorMessage(responseData, response.statusCode);
-      print('❌ ACTUAL ERROR: $errorMessage');
+      // ✅ PERBAIKAN: Error handling yang lebih spesifik
+      String errorMessage = responseData['stdout'] ??
+          responseData['error'] ??
+          responseData['message'] ??
+          "Terjadi kesalahan dalam eksekusi RPA (Status: ${response.statusCode})";
 
-      _showErrorSnackBar(errorMessage);
+      print('Error Message: $errorMessage');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $errorMessage'),
+          backgroundColor: Colors.red[600], // ✅ Tambah indikator error
+        ),
+      );
       Navigator.pop(context, 'Error: $errorMessage');
     }
-    
-  } on TimeoutException {
-    final errorMessage = 'RPA timeout - proses memakan waktu terlalu lama';
-    print('⏱️ TIMEOUT: $errorMessage');
-    _showErrorSnackBar(errorMessage);
-    Navigator.pop(context, errorMessage);
-    
-  } on SocketException {
-    final errorMessage = 'Tidak dapat terhubung ke server RPA';
-    print('🌐 CONNECTION ERROR: $errorMessage');
-    _showErrorSnackBar(errorMessage);
-    Navigator.pop(context, errorMessage);
-    
   } catch (error) {
-    final errorMessage = 'RPA Error: ${error.toString()}';
-    print('💥 EXCEPTION: $errorMessage');
-    _showErrorSnackBar(errorMessage);
-    Navigator.pop(context, errorMessage);
+    // ✅ PERBAIKAN: Error handling yang lebih informatif
+    print('Exception occurred: $error');
+    final errorMessage = 'Failed to connect to the server: ${error.toString()}';
     
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red[600],
+      ),
+    );
+    Navigator.pop(context, errorMessage);
   } finally {
     setState(() {
       _isLoading = false;
     });
   }
 }
-
-// ✅ FUNGSI BARU: Deteksi apakah response benar-benar sukses
-bool _isResponseSuccess(Map<String, dynamic> responseData, int statusCode) {
-  // Jika status code bukan 2xx, pasti error
-  if (statusCode < 200 || statusCode >= 300) {
-    return false;
-  }
-  
-  // Cek indikator error dalam response body
-  List<String> errorIndicators = [
-    'error',
-    'stderr', 
-    'stdout',
-    'exception',
-    'failed',
-    'gagal',
-    'fail'
-  ];
-  
-  // Jika ada field error yang tidak kosong, berarti ada error
-  for (String indicator in errorIndicators) {
-    if (responseData.containsKey(indicator)) {
-      final errorValue = responseData[indicator];
-      if (errorValue != null && 
-          errorValue.toString().trim().isNotEmpty && 
-          errorValue.toString().toLowerCase() != 'null') {
-        print('🚨 Error detected in field "$indicator": $errorValue');
-        return false;
-      }
-    }
-  }
-  
-  // Cek dalam message apakah ada kata-kata error
-  final message = responseData['message']?.toString().toLowerCase() ?? '';
-  List<String> errorWords = [
-    'error',
-    'gagal', 
-    'failed',
-    'timeout',
-    'connection',
-    'refused',
-    'not found',
-    'invalid'
-  ];
-  
-  for (String errorWord in errorWords) {
-    if (message.contains(errorWord)) {
-      print('🚨 Error detected in message: $message');
-      return false;
-    }
-  }
-  
-  // Jika status berhasil dan ada pesan sukses
-  List<String> successWords = [
-    'berhasil',
-    'success',
-    'completed',
-    'done',
-    'finished'
-  ];
-  
-  for (String successWord in successWords) {
-    if (message.contains(successWord)) {
-      print('✅ Success confirmed in message: $message');
-      return true;
-    }
-  }
-  
-  // Default: jika status 200 dan tidak ada indikator error yang jelas
-  return statusCode == 200;
-}
-
-// ✅ FUNGSI BARU: Extract error message dengan prioritas
-String _extractErrorMessage(Map<String, dynamic> responseData, int statusCode) {
-  // Prioritas 1: stderr (biasanya error output dari RPA)
-  if (responseData['stderr'] != null && 
-      responseData['stderr'].toString().trim().isNotEmpty) {
-    return 'RPA Error: ${responseData['stderr']}';
-  }
-  
-  // Prioritas 2: stdout (output dari RPA yang mungkin mengandung error)
-  if (responseData['stdout'] != null && 
-      responseData['stdout'].toString().trim().isNotEmpty) {
-    return 'RPA Output: ${responseData['stdout']}';
-  }
-  
-  // Prioritas 3: error field
-  if (responseData['error'] != null && 
-      responseData['error'].toString().trim().isNotEmpty) {
-    return responseData['error'].toString();
-  }
-  
-  // Prioritas 4: message field (jika mengandung indikator error)
-  if (responseData['message'] != null) {
-    final message = responseData['message'].toString();
-    if (message.toLowerCase().contains('error') || 
-        message.toLowerCase().contains('gagal') ||
-        message.toLowerCase().contains('failed')) {
-      return message;
-    }
-  }
-  
-  // Default error message
-  return "RPA gagal dieksekusi (Status: $statusCode)";
-}
-
-// ✅ FUNGSI BARU: Show success snackbar dengan icon
-void _showSuccessSnackBar(String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Row(
-        children: [
-          const Icon(Icons.check_circle, color: Colors.white, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'RPA Berhasil!',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(message, style: const TextStyle(fontSize: 12)),
-              ],
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.green[600],
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 4),
-    ),
-  );
-}
-
-// ✅ FUNGSI BARU: Show error snackbar dengan icon
-void _showErrorSnackBar(String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Row(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.white, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'RPA Gagal!',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(message, style: const TextStyle(fontSize: 12)),
-              ],
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.red[600],
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 5),
-    ),
-  );
-}@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
