@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:otobook/services/api.dart';
@@ -20,6 +21,7 @@ class _CoverScannerState extends State<CoverScanner>
   bool _isLoading = false;
   bool _isUploading = false;
   File? _scannedFile;
+  final ImagePicker _picker = ImagePicker();
   
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -99,6 +101,164 @@ class _CoverScannerState extends State<CoverScanner>
     }
   }
 
+  Future<void> _pickFromGallery() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      HapticFeedback.lightImpact();
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 90,
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+
+      if (pickedFile != null) {
+        _scannedFile = File(pickedFile.path);
+        setState(() {});
+        
+        HapticFeedback.mediumImpact();
+        _showSnackBar(
+          'Gambar berhasil dipilih dari galeri!',
+          Colors.green[600]!,
+          Icons.check_circle,
+        );
+      } else {
+        _showSnackBar(
+          'Tidak ada gambar yang dipilih',
+          Colors.orange[600]!,
+          Icons.warning,
+        );
+      }
+    } catch (e) {
+      print('Error picking image from gallery: $e');
+      HapticFeedback.heavyImpact();
+      _showSnackBar(
+        'Gagal memilih gambar dari galeri. Silakan coba lagi.',
+        Colors.red[600]!,
+        Icons.error_outline,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Pilih Sumber Gambar',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Scanner Option
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4A90E2).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.document_scanner,
+                        color: Color(0xFF4A90E2),
+                        size: 24,
+                      ),
+                    ),
+                    title: const Text(
+                      'Pindai dengan Kamera',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Gunakan scanner dokumen untuk hasil terbaik',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _scanCoverImage();
+                    },
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  
+                  // Gallery Option
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.purple.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.photo_library,
+                        color: Colors.purple,
+                        size: 24,
+                      ),
+                    ),
+                    title: const Text(
+                      'Pilih dari Galeri',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Pilih gambar cover yang sudah ada di galeri',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _pickFromGallery();
+                    },
+                  ),
+                  
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _uploadCoverImage(File scannedFile) async {
     setState(() {
       _isUploading = true;
@@ -175,7 +335,7 @@ class _CoverScannerState extends State<CoverScanner>
     setState(() {
       _scannedFile = null;
     });
-    _scanCoverImage();
+    _showImageSourceDialog();
   }
 
   void _removePhoto() {
@@ -228,7 +388,7 @@ class _CoverScannerState extends State<CoverScanner>
           const SizedBox(height: 24),
           
           if (_scannedFile == null) 
-            _buildScanSection()
+            _buildSelectionSection()
           else 
             _buildPreviewSection(),
         ],
@@ -262,7 +422,7 @@ class _CoverScannerState extends State<CoverScanner>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _isUploading ? 'Mengupload cover...' : 'Memindai cover...',
+                  _isUploading ? 'Mengupload cover...' : 'Memproses gambar...',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[700],
@@ -301,7 +461,7 @@ class _CoverScannerState extends State<CoverScanner>
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
-              Icons.document_scanner,
+              Icons.auto_stories,
               color: Colors.white,
               size: 24,
             ),
@@ -312,7 +472,7 @@ class _CoverScannerState extends State<CoverScanner>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Scanner Cover Buku',
+                  'Cover Buku Scanner',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -336,7 +496,7 @@ class _CoverScannerState extends State<CoverScanner>
     );
   }
 
-  Widget _buildScanSection() {
+  Widget _buildSelectionSection() {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -352,7 +512,7 @@ class _CoverScannerState extends State<CoverScanner>
       ),
       child: Column(
         children: [
-          // Scanner Icon
+          // Icon
           Container(
             width: 120,
             height: 120,
@@ -361,7 +521,7 @@ class _CoverScannerState extends State<CoverScanner>
               borderRadius: BorderRadius.circular(60),
             ),
             child: const Icon(
-              Icons.document_scanner_outlined,
+              Icons.add_photo_alternate_outlined,
               size: 60,
               color: Color(0xFF4A90E2),
             ),
@@ -370,7 +530,7 @@ class _CoverScannerState extends State<CoverScanner>
           const SizedBox(height: 24),
           
           const Text(
-            'Pindai Cover Buku',
+            'Tambah Cover Buku',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -381,7 +541,7 @@ class _CoverScannerState extends State<CoverScanner>
           const SizedBox(height: 8),
           
           Text(
-            'Arahkan kamera ke cover buku untuk memindai\ndan mendapatkan gambar berkualitas tinggi',
+            'Pilih cover buku dari scanner kamera\natau dari galeri yang sudah ada',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -392,27 +552,87 @@ class _CoverScannerState extends State<CoverScanner>
           
           const SizedBox(height: 32),
           
-          // Scan Button
+          // Action Buttons
+          Row(
+            children: [
+              // Scanner Button
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: _scanCoverImage,
+                    icon: const Icon(Icons.document_scanner, size: 20),
+                    label: const Text(
+                      'Scanner',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4A90E2),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(width: 12),
+              
+              // Gallery Button
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: _pickFromGallery,
+                    icon: const Icon(Icons.photo_library, size: 20),
+                    label: const Text(
+                      'Galeri',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Combined Button Alternative
           SizedBox(
             width: double.infinity,
-            height: 56,
-            child: ElevatedButton.icon(
-              onPressed: _scanCoverImage,
-              icon: const Icon(Icons.document_scanner, size: 20),
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: _showImageSourceDialog,
+              icon: const Icon(Icons.add_a_photo, size: 18),
               label: const Text(
-                'Mulai Pindai Cover',
+                'Pilih Sumber Gambar',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4A90E2),
-                foregroundColor: Colors.white,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF4A90E2),
+                side: const BorderSide(color: Color(0xFF4A90E2), width: 1.5),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                elevation: 0,
               ),
             ),
           ),
@@ -449,7 +669,7 @@ class _CoverScannerState extends State<CoverScanner>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '• Pastikan pencahayaan cukup\n• Letakkan buku di permukaan datar\n• Hindari bayangan pada cover',
+                        '• Scanner: Pastikan pencahayaan cukup dan cover rata\n• Galeri: Pilih gambar dengan resolusi tinggi\n• Hindari gambar yang buram atau terpotong',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.blue[600],
@@ -548,7 +768,7 @@ class _CoverScannerState extends State<CoverScanner>
                   onPressed: _retakePhoto,
                   icon: const Icon(Icons.refresh, size: 18),
                   label: const Text(
-                    'Pindai Ulang',
+                    'Ganti Gambar',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   style: OutlinedButton.styleFrom(

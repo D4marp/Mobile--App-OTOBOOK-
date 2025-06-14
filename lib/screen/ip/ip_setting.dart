@@ -21,8 +21,6 @@ class _IpSettingsPageState extends State<IpSettingsPage>
     with SingleTickerProviderStateMixin {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  
   bool _isLoading = false;
   bool _isPasswordVisible = false;
   List<String> _ipAddressList = [];
@@ -40,7 +38,6 @@ class _IpSettingsPageState extends State<IpSettingsPage>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -53,78 +50,27 @@ class _IpSettingsPageState extends State<IpSettingsPage>
       '10.0.0.2 (ip random)'
     ];
     _initializeAnimations();
-    _loadSavedCredentials();
   }
 
   void _initializeAnimations() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController, 
-        curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.5),
+      begin: const Offset(0.0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: const Interval(0.2, 0.8, curve: Curves.easeOutCubic),
+      curve: Curves.easeOutCubic,
     ));
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.4, 1.0, curve: Curves.elasticOut),
-      ),
-    );
-
     _animationController.forward();
-  }
-
-  // Load saved credentials from SharedPreferences
-  Future<void> _loadSavedCredentials() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final savedUsername = prefs.getString('rpa_username');
-      final savedRegion = prefs.getString('rpa_region');
-      final savedIp = prefs.getString('rpa_ip');
-      
-      if (savedUsername != null) {
-        _usernameController.text = savedUsername;
-      }
-      if (savedRegion != null && _kodeWilayahList.any((item) => item.split(' - ')[0] == savedRegion)) {
-        _selectedKodeWilayah = savedRegion;
-      }
-      if (savedIp != null && _ipAddressList.contains(savedIp)) {
-        _selectedIp = savedIp;
-      }
-      
-      if (mounted) setState(() {});
-    } catch (e) {
-      print('Error loading saved credentials: $e');
-    }
-  }
-
-  // Save credentials to SharedPreferences
-  Future<void> _saveCredentials() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('rpa_username', _usernameController.text.trim());
-      if (_selectedKodeWilayah != null) {
-        await prefs.setString('rpa_region', _selectedKodeWilayah!);
-      }
-      if (_selectedIp != null) {
-        await prefs.setString('rpa_ip', _selectedIp!);
-      }
-    } catch (e) {
-      print('Error saving credentials: $e');
-    }
   }
 
   @override
@@ -135,381 +81,254 @@ class _IpSettingsPageState extends State<IpSettingsPage>
     super.dispose();
   }
 
-  // Form validation
-  String? _validateUsername(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Username harus diisi';
-    }
-    if (value.trim().length < 3) {
-      return 'Username minimal 3 karakter';
-    }
-    return null;
-  }
+void _runAutomation() async {
+  setState(() {
+    _isLoading = true;
+  });
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Password harus diisi';
-    }
-    if (value.length < 4) {
-      return 'Password minimal 4 karakter';
-    }
-    return null;
-  }
+  try {
+    final username = _usernameController.text;
+    final password = _passwordController.text;
+    final ipMatch = RegExp(r'(\d+\.\d+\.\d+\.\d+(?::\d+)?)')
+        .firstMatch(_selectedIp ?? '');
+    final extractedIp = ipMatch?.group(0) ?? '';
+    Uri url = Uri.parse('${GetData().runAutomationUrl}/${widget.bookId}');
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'bookId': widget.bookId,
+        'kodeWilayah': _selectedKodeWilayah,
+        'ipAddress': extractedIp,
+        'username': username,
+        'password': password,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    ).timeout(const Duration(seconds: 60)); // Tambah timeout untuk RPA
 
-  bool _validateForm() {
-    if (!_formKey.currentState!.validate()) {
-      _showErrorSnackBar('Mohon lengkapi form dengan benar');
-      return false;
-    }
-    if (_selectedKodeWilayah == null) {
-      _showErrorSnackBar('Pilih wilayah tujuan');
-      return false;
-    }
-    if (_selectedIp == null) {
-      _showErrorSnackBar('Pilih IP Address');
-      return false;
-    }
-    return true;
-  }
+    // Decode JSON response
+    final responseData = json.decode(response.body);
+    print('Response Status: ${response.statusCode}');
+    print('Response Data: $responseData');
 
-  void _runAutomation() async {
-    if (!_validateForm()) return;
+    // ✅ PERBAIKAN: Cek content response untuk mendeteksi error
+    bool isActualSuccess = _isResponseSuccess(responseData, response.statusCode);
+    
+    if (isActualSuccess) {
+      // ✅ BENAR-BENAR SUKSES
+      final message = responseData['message'] ?? 'RPA berhasil dijalankan';
+      print('✅ TRUE SUCCESS: $message');
 
+      // Simpan pesan ke SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('rpa_response_${widget.bookId}', message);
+
+      _showSuccessSnackBar(message);
+      Navigator.pop(context, message);
+      
+    } else {
+      // ✅ ADA ERROR (meskipun status 200)
+      String errorMessage = _extractErrorMessage(responseData, response.statusCode);
+      print('❌ ACTUAL ERROR: $errorMessage');
+
+      _showErrorSnackBar(errorMessage);
+      Navigator.pop(context, 'Error: $errorMessage');
+    }
+    
+  } on TimeoutException {
+    final errorMessage = 'RPA timeout - proses memakan waktu terlalu lama';
+    print('⏱️ TIMEOUT: $errorMessage');
+    _showErrorSnackBar(errorMessage);
+    Navigator.pop(context, errorMessage);
+    
+  } on SocketException {
+    final errorMessage = 'Tidak dapat terhubung ke server RPA';
+    print('🌐 CONNECTION ERROR: $errorMessage');
+    _showErrorSnackBar(errorMessage);
+    Navigator.pop(context, errorMessage);
+    
+  } catch (error) {
+    final errorMessage = 'RPA Error: ${error.toString()}';
+    print('💥 EXCEPTION: $errorMessage');
+    _showErrorSnackBar(errorMessage);
+    Navigator.pop(context, errorMessage);
+    
+  } finally {
     setState(() {
-      _isLoading = true;
+      _isLoading = false;
     });
-
-    HapticFeedback.lightImpact();
-    await _saveCredentials(); // Save credentials before running
-
-    try {
-      final username = _usernameController.text.trim();
-      final password = _passwordController.text.trim();
-      final ipMatch = RegExp(r'(\d+\.\d+\.\d+\.\d+(?::\d+)?)')
-          .firstMatch(_selectedIp ?? '');
-      final extractedIp = ipMatch?.group(0) ?? '';
-      
-      print('🚀 Starting RPA automation...');
-      print('📍 Target IP: $extractedIp');
-      print('🏢 Region: $_selectedKodeWilayah');
-      print('📚 Book ID: ${widget.bookId}');
-      
-      Uri url = Uri.parse('${GetData().runAutomationUrl}/${widget.bookId}');
-      final response = await http.post(
-        url,
-        body: json.encode({
-          'bookId': widget.bookId,
-          'kodeWilayah': _selectedKodeWilayah,
-          'ipAddress': extractedIp,
-          'username': username,
-          'password': password,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      ).timeout(const Duration(seconds: 90)); // Extended timeout for RPA
-
-      // Decode JSON response
-      final responseData = json.decode(response.body);
-      print('📊 Response Status: ${response.statusCode}');
-      print('📄 Response Data: $responseData');
-
-      // Check if response is actually successful
-      bool isActualSuccess = _isResponseSuccess(responseData, response.statusCode);
-      
-      if (isActualSuccess) {
-        // ✅ TRUE SUCCESS
-        final message = responseData['message'] ?? 'RPA berhasil dijalankan';
-        print('✅ TRUE SUCCESS: $message');
-
-        // Save response to SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('rpa_response_${widget.bookId}', message);
-
-        HapticFeedback.mediumImpact();
-        _showSuccessSnackBar(message);
-        
-        // Delay before navigation for better UX
-        await Future.delayed(const Duration(milliseconds: 1500));
-        if (mounted) {
-          Navigator.pop(context, message);
-        }
-        
-      } else {
-        // ✅ ERROR DETECTED
-        String errorMessage = _extractErrorMessage(responseData, response.statusCode);
-        print('❌ ACTUAL ERROR: $errorMessage');
-
-        HapticFeedback.heavyImpact();
-        _showErrorSnackBar(errorMessage);
-        Navigator.pop(context, 'Error: $errorMessage');
-      }
-      
-    } on TimeoutException {
-      final errorMessage = 'RPA timeout - proses memakan waktu terlalu lama (>90 detik)';
-      print('⏱️ TIMEOUT: $errorMessage');
-      HapticFeedback.heavyImpact();
-      _showErrorSnackBar(errorMessage);
-      Navigator.pop(context, errorMessage);
-      
-    } on SocketException {
-      final errorMessage = 'Tidak dapat terhubung ke server RPA';
-      print('🌐 CONNECTION ERROR: $errorMessage');
-      HapticFeedback.heavyImpact();
-      _showErrorSnackBar(errorMessage);
-      Navigator.pop(context, errorMessage);
-      
-    } on FormatException {
-      final errorMessage = 'Server mengembalikan response yang tidak valid';
-      print('📄 FORMAT ERROR: $errorMessage');
-      HapticFeedback.heavyImpact();
-      _showErrorSnackBar(errorMessage);
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context, errorMessage);
-      
-    } catch (error) {
-      final errorMessage = 'RPA Error: ${error.toString()}';
-      HapticFeedback.heavyImpact();
-      _showErrorSnackBar(errorMessage);
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context, errorMessage);
-      
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
   }
+}
 
-  // Enhanced success detection with more comprehensive checks
-  bool _isResponseSuccess(Map<String, dynamic> responseData, int statusCode) {
-    // Non-2xx status codes are definitely errors
-    if (statusCode < 200 || statusCode >= 300) {
-      return false;
-    }
-    
-    // Check for explicit error indicators
-    List<String> errorIndicators = [
-      'error', 'stderr', 'stdout', 'exception', 'failed', 'gagal', 'fail'
-    ];
-    
-    for (String indicator in errorIndicators) {
-      if (responseData.containsKey(indicator)) {
-        final errorValue = responseData[indicator];
-        if (errorValue != null && 
-            errorValue.toString().trim().isNotEmpty && 
-            errorValue.toString().toLowerCase() != 'null' &&
-            errorValue.toString().toLowerCase() != 'false') {
-          print('🚨 Error detected in field "$indicator": $errorValue');
-          return false;
-        }
-      }
-    }
-    
-    // Check message content for error keywords
-    final message = responseData['message']?.toString().toLowerCase() ?? '';
-    List<String> errorWords = [
-      'error', 'gagal', 'failed', 'timeout', 'connection', 'refused', 
-      'not found', 'invalid', 'unauthorized', 'forbidden', 'bad request'
-    ];
-    
-    for (String errorWord in errorWords) {
-      if (message.contains(errorWord)) {
-        print('🚨 Error detected in message: $message');
+// ✅ FUNGSI BARU: Deteksi apakah response benar-benar sukses
+bool _isResponseSuccess(Map<String, dynamic> responseData, int statusCode) {
+  // Jika status code bukan 2xx, pasti error
+  if (statusCode < 200 || statusCode >= 300) {
+    return false;
+  }
+  
+  // Cek indikator error dalam response body
+  List<String> errorIndicators = [
+    'error',
+    'stderr', 
+    'stdout',
+    'exception',
+    'failed',
+    'gagal',
+    'fail'
+  ];
+  
+  // Jika ada field error yang tidak kosong, berarti ada error
+  for (String indicator in errorIndicators) {
+    if (responseData.containsKey(indicator)) {
+      final errorValue = responseData[indicator];
+      if (errorValue != null && 
+          errorValue.toString().trim().isNotEmpty && 
+          errorValue.toString().toLowerCase() != 'null') {
+        print('🚨 Error detected in field "$indicator": $errorValue');
         return false;
       }
     }
-    
-    // Check for success indicators
-    List<String> successWords = [
-      'berhasil', 'success', 'completed', 'done', 'finished', 'ok', 'successful'
-    ];
-    
-    for (String successWord in successWords) {
-      if (message.contains(successWord)) {
-        print('✅ Success confirmed in message: $message');
-        return true;
-      }
-    }
-    
-    // If no clear indicators, trust the status code
-    return statusCode == 200;
   }
-
-  // Enhanced error message extraction
-  String _extractErrorMessage(Map<String, dynamic> responseData, int statusCode) {
-    // Priority 1: stderr (RPA process errors)
-    if (responseData['stderr'] != null && 
-        responseData['stderr'].toString().trim().isNotEmpty &&
-        responseData['stderr'].toString().toLowerCase() != 'null') {
-      return 'RPA Process Error: ${responseData['stderr']}';
-    }
-    
-    // Priority 2: stdout (RPA output that might contain errors)
-    if (responseData['stdout'] != null && 
-        responseData['stdout'].toString().trim().isNotEmpty &&
-        responseData['stdout'].toString().toLowerCase() != 'null') {
-      final stdout = responseData['stdout'].toString();
-      if (stdout.toLowerCase().contains('error') || 
-          stdout.toLowerCase().contains('failed') ||
-          stdout.toLowerCase().contains('exception')) {
-        return 'RPA Output: $stdout';
-      }
-    }
-    
-    // Priority 3: explicit error field
-    if (responseData['error'] != null && 
-        responseData['error'].toString().trim().isNotEmpty &&
-        responseData['error'].toString().toLowerCase() != 'null') {
-      return responseData['error'].toString();
-    }
-    
-    // Priority 4: message field (if contains error indicators)
-    if (responseData['message'] != null) {
-      final message = responseData['message'].toString();
-      final lowerMessage = message.toLowerCase();
-      if (lowerMessage.contains('error') || 
-          lowerMessage.contains('gagal') ||
-          lowerMessage.contains('failed') ||
-          lowerMessage.contains('timeout')) {
-        return message;
-      }
-    }
-    
-    // Priority 5: HTTP status-based message
-    switch (statusCode) {
-      case 400:
-        return "Bad Request - Data yang dikirim tidak valid";
-      case 401:
-        return "Unauthorized - Kredensial tidak valid";
-      case 403:
-        return "Forbidden - Akses ditolak";
-      case 404:
-        return "Not Found - Endpoint RPA tidak ditemukan";
-      case 500:
-        return "Internal Server Error - Kesalahan server RPA";
-      case 502:
-        return "Bad Gateway - Server RPA tidak dapat diakses";
-      case 503:
-        return "Service Unavailable - Layanan RPA sedang tidak tersedia";
-      default:
-        return "RPA gagal dieksekusi (HTTP $statusCode)";
+  
+  // Cek dalam message apakah ada kata-kata error
+  final message = responseData['message']?.toString().toLowerCase() ?? '';
+  List<String> errorWords = [
+    'error',
+    'gagal', 
+    'failed',
+    'timeout',
+    'connection',
+    'refused',
+    'not found',
+    'invalid'
+  ];
+  
+  for (String errorWord in errorWords) {
+    if (message.contains(errorWord)) {
+      print('🚨 Error detected in message: $message');
+      return false;
     }
   }
+  
+  // Jika status berhasil dan ada pesan sukses
+  List<String> successWords = [
+    'berhasil',
+    'success',
+    'completed',
+    'done',
+    'finished'
+  ];
+  
+  for (String successWord in successWords) {
+    if (message.contains(successWord)) {
+      print('✅ Success confirmed in message: $message');
+      return true;
+    }
+  }
+  
+  // Default: jika status 200 dan tidak ada indikator error yang jelas
+  return statusCode == 200;
+}
 
-  // Enhanced success notification
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(Icons.check_circle, color: Colors.white, size: 20),
+// ✅ FUNGSI BARU: Extract error message dengan prioritas
+String _extractErrorMessage(Map<String, dynamic> responseData, int statusCode) {
+  // Prioritas 1: stderr (biasanya error output dari RPA)
+  if (responseData['stderr'] != null && 
+      responseData['stderr'].toString().trim().isNotEmpty) {
+    return 'RPA Error: ${responseData['stderr']}';
+  }
+  
+  // Prioritas 2: stdout (output dari RPA yang mungkin mengandung error)
+  if (responseData['stdout'] != null && 
+      responseData['stdout'].toString().trim().isNotEmpty) {
+    return 'RPA Output: ${responseData['stdout']}';
+  }
+  
+  // Prioritas 3: error field
+  if (responseData['error'] != null && 
+      responseData['error'].toString().trim().isNotEmpty) {
+    return responseData['error'].toString();
+  }
+  
+  // Prioritas 4: message field (jika mengandung indikator error)
+  if (responseData['message'] != null) {
+    final message = responseData['message'].toString();
+    if (message.toLowerCase().contains('error') || 
+        message.toLowerCase().contains('gagal') ||
+        message.toLowerCase().contains('failed')) {
+      return message;
+    }
+  }
+  
+  // Default error message
+  return "RPA gagal dieksekusi (Status: $statusCode)";
+}
+
+// ✅ FUNGSI BARU: Show success snackbar dengan icon
+void _showSuccessSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.check_circle, color: Colors.white, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'RPA Berhasil!',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(message, style: const TextStyle(fontSize: 12)),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'RPA Berhasil Dijalankan! 🎉',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    message,
-                    style: const TextStyle(fontSize: 12, color: Colors.white70),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.green[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 5),
-        action: SnackBarAction(
-          label: 'OK',
-          textColor: Colors.white,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
+          ),
+        ],
       ),
-    );
-  }
+      backgroundColor: Colors.green[600],
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 4),
+    ),
+  );
+}
 
-  // Enhanced error notification
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(Icons.error_outline, color: Colors.white, size: 20),
+// ✅ FUNGSI BARU: Show error snackbar dengan icon
+void _showErrorSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.white, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'RPA Gagal!',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(message, style: const TextStyle(fontSize: 12)),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'RPA Gagal Dijalankan ❌',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    message,
-                    style: const TextStyle(fontSize: 12, color: Colors.white70),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.red[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 6),
-        action: SnackBarAction(
-          label: 'Tutup',
-          textColor: Colors.white,
-          onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          },
-        ),
+          ),
+        ],
       ),
-    );
-  }
-
-  @override
+      backgroundColor: Colors.red[600],
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 5),
+    ),
+  );
+}@override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -529,45 +348,30 @@ class _IpSettingsPageState extends State<IpSettingsPage>
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         shadowColor: Colors.black.withOpacity(0.1),
         surfaceTintColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () => _showInfoDialog(),
-            tooltip: 'Informasi RPA',
-          ),
-        ],
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SlideTransition(
           position: _slideAnimation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _buildHeaderCard(),
-                    const SizedBox(height: 24),
-                    _buildCredentialsSection(),
-                    const SizedBox(height: 24),
-                    _buildRegionSection(),
-                    const SizedBox(height: 24),
-                    _buildIpAddressSection(),
-                    const SizedBox(height: 32),
-                    _buildActionButton(),
-                    if (_isLoading) ...[
-                      const SizedBox(height: 24),
-                      _buildLoadingIndicator(),
-                    ],
-                    const SizedBox(height: 20),
-                    _buildInfoCard(),
-                  ],
-                ),
-              ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _buildHeaderCard(),
+                const SizedBox(height: 24),
+                _buildCredentialsSection(),
+                const SizedBox(height: 24),
+                _buildRegionSection(),
+                const SizedBox(height: 24),
+                _buildIpAddressSection(),
+                const SizedBox(height: 32),
+                _buildActionButton(),
+                if (_isLoading) ...[
+                  const SizedBox(height: 24),
+                  _buildLoadingIndicator(),
+                ],
+              ],
             ),
           ),
         ),
@@ -583,19 +387,12 @@ class _IpSettingsPageState extends State<IpSettingsPage>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF2196F3).withOpacity(0.15),
+            const Color(0xFF2196F3).withOpacity(0.1),
             const Color(0xFF2196F3).withOpacity(0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2196F3).withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF2196F3).withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: const Color(0xFF2196F3).withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -604,13 +401,6 @@ class _IpSettingsPageState extends State<IpSettingsPage>
             decoration: BoxDecoration(
               color: const Color(0xFF2196F3),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF2196F3).withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
             ),
             child: const Icon(
               Icons.auto_awesome,
@@ -632,48 +422,12 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                   ),
                 ),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.book,
-                      size: 16,
-                      color: Colors.grey[600],
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Book ID: ${widget.bookId}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.green[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.bolt,
-                  size: 16,
-                  color: Colors.green[600],
-                ),
-                const SizedBox(width: 4),
                 Text(
-                  'AI',
+                  'Book ID: ${widget.bookId}',
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[600],
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -716,20 +470,13 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Kredensial Akses',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
-                  ),
+              const Text(
+                'Kredensial Akses',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1A1A1A),
                 ),
-              ),
-              Icon(
-                Icons.verified_user,
-                color: Colors.green[600],
-                size: 20,
               ),
             ],
           ),
@@ -748,11 +495,10 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                 ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _usernameController,
-                validator: _validateUsername,
+              TextField(
+                controller: _usernameController, // Keep original controller
                 decoration: InputDecoration(
-                  hintText: 'Masukkan username RPA Anda',
+                  hintText: 'Masukkan username Anda',
                   prefixIcon: Container(
                     margin: const EdgeInsets.all(12),
                     padding: const EdgeInsets.all(8),
@@ -773,14 +519,6 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red, width: 1),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -809,12 +547,11 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                 ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _passwordController,
-                validator: _validatePassword,
-                obscureText: !_isPasswordVisible,
+              TextField(
+                controller: _passwordController, // Keep original controller
+                obscureText: !_isPasswordVisible, // Keep original obscureText logic
                 decoration: InputDecoration(
-                  hintText: 'Masukkan password RPA Anda',
+                  hintText: 'Masukkan password Anda',
                   prefixIcon: Container(
                     margin: const EdgeInsets.all(12),
                     padding: const EdgeInsets.all(8),
@@ -842,14 +579,6 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red, width: 1),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -899,38 +628,20 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Wilayah Tujuan',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
-                  ),
+              const Text(
+                'Wilayah Tujuan',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1A1A1A),
                 ),
               ),
-              if (_selectedKodeWilayah != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Terpilih',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange[600],
-                    ),
-                  ),
-                ),
             ],
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedKodeWilayah,
-            hint: const Text('Pilih Kode Wilayah Target'),
+            value: _selectedKodeWilayah, // Keep original value
+            hint: const Text('Pilih Kode Wilayah'), // Keep original hint
             isExpanded: true,
             decoration: InputDecoration(
               prefixIcon: Container(
@@ -962,38 +673,19 @@ class _IpSettingsPageState extends State<IpSettingsPage>
               fillColor: Colors.grey[50],
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             ),
+            // Keep original items mapping logic EXACTLY the same
             items: _kodeWilayahList.map((kode) {
-              final kodeWilayah = kode.split(' - ')[0];
-              final namaWilayah = kode.split(' - ')[1];
+              final kodeWilayah = kode.split(' - ')[0]; // Ambil hanya kode
               return DropdownMenuItem(
-                value: kodeWilayah,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      kodeWilayah,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      namaWilayah,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+                value: kodeWilayah, // Simpan kode saja sebagai value
+                child: Text(kode), // Tampilkan kode + deskripsi
               );
             }).toList(),
+            // Keep original onChanged logic EXACTLY the same
             onChanged: (value) {
               setState(() {
                 _selectedKodeWilayah = value;
               });
-              HapticFeedback.selectionClick();
             },
           ),
         ],
@@ -1033,37 +725,21 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Server IP Address',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.purple[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${_ipAddressList.length} Server',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple[600],
-                  ),
+              const Text(
+                'Pilih IP Address',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1A1A1A),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
           
+          // IP Address List - Keep original logic EXACTLY the same
           Container(
-            height: 220,
+            height: 200,
             child: _ipAddressList.isNotEmpty
                 ? Container(
                     decoration: BoxDecoration(
@@ -1071,14 +747,10 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ListView.builder(
-                      itemCount: _ipAddressList.length,
+                      itemCount: _ipAddressList.length, // Keep original itemCount
                       itemBuilder: (context, index) {
-                        final ip = _ipAddressList[index];
+                        final ip = _ipAddressList[index]; // Keep original ip variable
                         final isSelected = _selectedIp == ip;
-                        final ipParts = ip.split(' ');
-                        final ipAddress = ipParts[0];
-                        final description = ipParts.length > 1 ? ipParts.sublist(1).join(' ') : '';
-                        
                         return Container(
                           decoration: BoxDecoration(
                             color: isSelected ? const Color(0xFF9C27B0).withOpacity(0.1) : Colors.transparent,
@@ -1087,56 +759,24 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                                 : null,
                           ),
                           child: RadioListTile<String>(
-                            title: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        ipAddress,
-                                        style: TextStyle(
-                                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                                          fontSize: 14,
-                                          color: isSelected ? const Color(0xFF9C27B0) : const Color(0xFF1A1A1A),
-                                        ),
-                                      ),
-                                      if (description.isNotEmpty)
-                                        Text(
-                                          description,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: isSelected ? const Color(0xFF9C27B0).withOpacity(0.7) : Colors.grey[600],
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                if (isSelected)
-                                  Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF9C27B0),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                  ),
-                              ],
+                            title: Text(
+                              ip, // Keep original ip display
+                              style: TextStyle(
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                fontSize: 14,
+                                color: isSelected ? const Color(0xFF9C27B0) : const Color(0xFF1A1A1A),
+                              ),
                             ),
-                            value: ip,
-                            groupValue: _selectedIp,
+                            value: ip, // Keep original value
+                            groupValue: _selectedIp, // Keep original groupValue
                             activeColor: const Color(0xFF9C27B0),
+                            // Keep original onChanged logic EXACTLY the same
                             onChanged: (value) {
                               setState(() {
                                 _selectedIp = value;
                               });
-                              HapticFeedback.selectionClick();
                             },
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           ),
                         );
                       },
@@ -1153,19 +793,10 @@ class _IpSettingsPageState extends State<IpSettingsPage>
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Belum ada IP Address yang tersedia',
+                          'Belum ada IP Address yang ditambahkan.', // Keep original text
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Hubungi administrator untuk menambahkan server',
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -1178,16 +809,16 @@ class _IpSettingsPageState extends State<IpSettingsPage>
   }
 
   Widget _buildActionButton() {
-    final isFormValid = _selectedIp != null && 
-                       _selectedKodeWilayah != null &&
-                       _usernameController.text.trim().isNotEmpty &&
-                       _passwordController.text.trim().isNotEmpty;
-
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: (_isLoading || !isFormValid) ? null : _runAutomation,
+        // Keep original onPressed logic EXACTLY the same
+        onPressed: (_isLoading ||
+                _selectedIp == null ||
+                _selectedKodeWilayah == null)
+            ? null
+            : _runAutomation, // Keep original _runAutomation function
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2196F3),
           foregroundColor: Colors.white,
@@ -1198,45 +829,24 @@ class _IpSettingsPageState extends State<IpSettingsPage>
           disabledBackgroundColor: Colors.grey[300],
           disabledForegroundColor: Colors.grey[600],
         ),
-        child: _isLoading
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Memproses RPA...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.rocket_launch, size: 20),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      'Jalankan RPA untuk Book ID: ${widget.bookId}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.play_arrow, size: 20),
+            const SizedBox(width: 8),
+            Flexible(
+              // Keep original text EXACTLY the same
+              child: Text(
+                'Alih Data Elektronis untuk Book ID: ${widget.bookId}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1244,10 +854,10 @@ class _IpSettingsPageState extends State<IpSettingsPage>
   Widget _buildLoadingIndicator() {
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -1256,164 +866,23 @@ class _IpSettingsPageState extends State<IpSettingsPage>
             ),
           ],
         ),
-        child: Column(
+        child: const Column(
           children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
-                    strokeWidth: 4,
-                  ),
-                ),
-                const Icon(
-                  Icons.auto_awesome,
-                  color: Color(0xFF2196F3),
-                  size: 24,
-                ),
-              ],
+            CircularProgressIndicator( // Keep original CircularProgressIndicator
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
+              strokeWidth: 3,
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Menjalankan Automasi RPA',
+            SizedBox(height: 16),
+            Text(
+              'Memproses automasi RPA...',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
                 color: Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Proses mungkin memakan waktu hingga 90 detik',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            LinearProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2196F3)),
-              backgroundColor: Colors.grey[200],
-            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue[200]!),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.info_outline,
-            color: Colors.blue[600],
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Informasi RPA',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.blue[700],
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'RPA akan mengotomatisasi proses alih data elektronik ke sistem target berdasarkan kredensial dan server yang dipilih.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue[600],
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showInfoDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              Icon(Icons.info, color: Colors.blue[600]),
-              const SizedBox(width: 8),
-              const Text('Informasi RPA'),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildInfoItem('🤖', 'Robotic Process Automation', 'Sistem otomatis untuk alih data elektronik'),
-              _buildInfoItem('⏱️', 'Waktu Proses', 'Maksimal 90 detik per eksekusi'),
-              _buildInfoItem('🔐', 'Keamanan', 'Kredensial disimpan lokal dan tidak dikirim ke server eksternal'),
-              _buildInfoItem('📊', 'Status', 'Realtime monitoring dengan notifikasi hasil'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Tutup'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildInfoItem(String emoji, String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
