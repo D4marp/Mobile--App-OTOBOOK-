@@ -97,8 +97,7 @@ class GetData {
   static const String bookDisumbangkan =
       'http://118.97.240.83:5042/api/BukuDisumbangkan';
   // get all books sinopsis
-  static const String sinopsisUrl =
-      'http://118.97.240.83:5042/api/getSinopsis';
+  static const String sinopsisUrl = 'http://118.97.240.83:5042/api/getSinopsis';
   // mendapatkan access tokenbaru
   Future<String?> refreshAccessToken() async {
     final response = await http.post(
