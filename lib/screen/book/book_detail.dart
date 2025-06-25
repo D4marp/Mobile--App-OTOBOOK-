@@ -804,7 +804,7 @@ ${_currentBook!.deskripsi}
       return _buildSecondaryButton(
         onPressed: () => _navigateToRpaSettings(),
         icon: Icons.auto_awesome,
-        label: 'Tambah RPA',
+        label: 'Kirim Ke INLISLITE',
       );
     }
   }
