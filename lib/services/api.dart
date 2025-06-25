@@ -4,13 +4,13 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetData {
-  final String _apiUrl = 'http://103.106.72.182:8770/api/';
+  final String _apiUrl = 'http://118.97.240.83:5042/api/';
   Future<String?> _userId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
   }
 
-  String get Url => 'http://103.106.72.182:8770';
+  String get Url => 'http://118.97.240.83:5042';
 
   Future<String?> _token() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -90,15 +90,15 @@ class GetData {
   String get deleteKlasifikasiUrl => '${_apiUrl}deleteKlasifikasi';
 
   // get all books
-  static const String baseUrl = 'http://103.106.72.182:8770/api/getBuku';
+  static const String baseUrl = 'http://118.97.240.83:5042/api/getBuku';
   // get all books diproses
-  static const String bookProses = 'http://103.106.72.182:8770/api/BukuDiolah';
+  static const String bookProses = 'http://118.97.240.83:5042/api/BukuDiolah';
   // get all books diproses
   static const String bookDisumbangkan =
-      'http://103.106.72.182:8770/api/BukuDisumbangkan';
+      'http://118.97.240.83:5042/api/BukuDisumbangkan';
   // get all books sinopsis
   static const String sinopsisUrl =
-      'http://103.106.72.182:8770/api/getSinopsis';
+      'http://118.97.240.83:5042/api/getSinopsis';
   // mendapatkan access tokenbaru
   Future<String?> refreshAccessToken() async {
     final response = await http.post(
