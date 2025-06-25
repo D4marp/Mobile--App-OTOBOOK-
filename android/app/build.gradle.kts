@@ -31,7 +31,7 @@ android {
         applicationId = "com.otobook.perpustakaan"
         minSdk = 21
         targetSdk = 34
-        versionCode = flutter.versionCode
+        versionCode = 2
         versionName = flutter.versionName
         multiDexEnabled = true
         

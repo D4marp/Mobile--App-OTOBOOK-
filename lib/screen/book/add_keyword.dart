@@ -81,7 +81,7 @@ class _AddKeywordPagesState extends State<AddKeywordPages>
     if (value == null || value.trim().isEmpty) {
       return '$fieldName harus diisi';
     }
-    if (value.trim().length < 3) {
+    if (value.trim().isEmpty) {
       return '$fieldName minimal 3 karakter';
     }
     return null;
