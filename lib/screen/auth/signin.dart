@@ -18,43 +18,126 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
+  bool _isLoading = false;
   String? _errorMessage;
 
+  // Email validation
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
+  }
+
   Future<void> login() async {
-    final response = await http.post(
-      Uri.parse(GetData().loginUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': emailController.text,
-        'password': passwordController.text,
-      }),
-    );
+    // Clear previous error message
+    setState(() {
+      _errorMessage = null;
+    });
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      String token = data['access_token'];
-      String refresh_token = data['refresh_token'];
-      String id = data['id'].toString();
+    // Validate form
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      // Simpan token menggunakan SharedPreferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
-      await prefs.setString('id', id);
-      await prefs.setString('refresh_token', refresh_token);
-
-      // Arahkan ke halaman home atau yang sesuai
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const NavigationMenu(),
-        ),
-      );
-    } else {
-      // Tangani error, misalnya tampilkan pesan error
-      print('Login gagal: ${response.body}');
+    // Validate inputs
+    if (emailController.text.trim().isEmpty) {
       setState(() {
-        _errorMessage = json.decode(response.body)['message'];
+        _errorMessage = 'Please enter your email';
       });
+      return;
+    }
+
+    if (!_isValidEmail(emailController.text.trim())) {
+      setState(() {
+        _errorMessage = 'Please enter a valid email address';
+      });
+      return;
+    }
+
+    if (passwordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter your password';
+      });
+      return;
+    }
+
+    if (passwordController.text.length < 6) {
+      setState(() {
+        _errorMessage = 'Password must be at least 6 characters';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(GetData().loginUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': emailController.text.trim(),
+          'password': passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        // Validate response data
+        if (data['access_token'] == null || data['refresh_token'] == null || data['id'] == null) {
+          setState(() {
+            _errorMessage = 'Invalid response from server';
+          });
+          return;
+        }
+
+        String token = data['access_token'];
+        String refreshToken = data['refresh_token'];
+        String id = data['id'].toString();
+
+        // Simpan token menggunakan SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+        await prefs.setString('id', id);
+        await prefs.setString('refresh_token', refreshToken);
+
+        // Arahkan ke halaman home atau yang sesuai
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const NavigationMenu(),
+            ),
+          );
+        }
+      } else {
+        // Tangani error dari server
+        String errorMessage = 'Login failed';
+        try {
+          final errorData = json.decode(response.body);
+          errorMessage = errorData['message'] ?? 'Login failed';
+        } catch (e) {
+          errorMessage = 'Login failed with status code: ${response.statusCode}';
+        }
+        
+        setState(() {
+          _errorMessage = errorMessage;
+        });
+      }
+    } catch (e) {
+      // Tangani error jaringan atau lainnya
+      setState(() {
+        _errorMessage = 'Network error. Please check your connection and try again.';
+      });
+      // Debug print - should be removed in production
+      debugPrint('Login error: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -107,20 +190,42 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
             if (_errorMessage != null)
-              Text(
-                _errorMessage!,
-                style: const TextStyle(color: Colors.red),
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red[200]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red[600], size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyle(color: Colors.red[600], fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             Form(
+              key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildTextField(
                     controller: emailController,
                     label: 'Email',
+                    keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return 'Please enter your email';
+                      }
+                      if (!_isValidEmail(value.trim())) {
+                        return 'Please enter a valid email address';
                       }
                       return null;
                     },
@@ -132,6 +237,9 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
                       }
                       return null;
                     },
@@ -152,15 +260,25 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    child: const Text(
-                      'Sign In',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    onPressed: _isLoading ? null : login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3C83F5),
                       minimumSize: const Size(double.infinity, 50),
+                      disabledBackgroundColor: Colors.grey[300],
                     ),
-                    onPressed: login,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            'Sign In',
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -202,6 +320,7 @@ class _LoginPageState extends State<LoginPage> {
     required TextEditingController controller,
     required String label,
     bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
     Widget? suffixIcon,
   }) {
@@ -213,7 +332,7 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -222,6 +341,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
           border: InputBorder.none,
