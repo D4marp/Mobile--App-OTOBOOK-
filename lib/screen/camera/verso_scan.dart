@@ -1,3 +1,5 @@
+// All Indonesian text changed to English
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,62 +54,61 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
     'editor': FocusNode(),
     'ilustrator': FocusNode(),
   };
-
   // Field Information
   final Map<String, Map<String, dynamic>> _fieldInfo = {
     'judul': {
-      'label': 'Judul Buku',
+      'label': 'Book Title',
       'icon': Icons.title,
       'color': const Color(0xFF4A90E2),
-      'hint': 'Masukkan judul buku',
+      'hint': 'Enter book title',
     },
     'pengarang': {
-      'label': 'Pengarang',
+      'label': 'Author',
       'icon': Icons.person,
       'color': const Color(0xFF26C6DA),
-      'hint': 'Masukkan nama pengarang',
+      'hint': 'Enter author name',
     },
     'penerbitan': {
-      'label': 'Penerbit',
+      'label': 'Publisher',
       'icon': Icons.business,
       'color': const Color(0xFF66BB6A),
-      'hint': 'Masukkan nama penerbit',
+      'hint': 'Enter publisher name',
     },
     'deskripsi': {
-      'label': 'Deskripsi',
+      'label': 'Description',
       'icon': Icons.description,
       'color': const Color(0xFFFF7043),
-      'hint': 'Masukkan deskripsi buku',
+      'hint': 'Enter book description',
     },
     'isbn': {
       'label': 'ISBN',
       'icon': Icons.tag,
       'color': const Color(0xFF9C27B0),
-      'hint': 'Masukkan nomor ISBN',
+      'hint': 'Enter ISBN number',
     },
     'kota': {
-      'label': 'Kota',
+      'label': 'City',
       'icon': Icons.location_city,
       'color': const Color(0xFFFF5722),
-      'hint': 'Masukkan kota penerbitan',
+      'hint': 'Enter publication city',
     },
     'tahun': {
-      'label': 'Tahun Terbit',
+      'label': 'Year Published',
       'icon': Icons.calendar_today,
       'color': const Color(0xFF795548),
-      'hint': 'Masukkan tahun terbit',
+      'hint': 'Enter year published',
     },
     'editor': {
       'label': 'Editor',
       'icon': Icons.edit,
       'color': const Color(0xFF607D8B),
-      'hint': 'Masukkan nama editor',
+      'hint': 'Enter editor name',
     },
     'ilustrator': {
-      'label': 'Ilustrator',
+      'label': 'Illustrator',
       'icon': Icons.brush,
       'color': const Color(0xFFE91E63),
-      'hint': 'Masukkan nama ilustrator',
+      'hint': 'Enter illustrator name',
     },
   };
 
@@ -237,7 +238,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
               ),
               const SizedBox(height: 20),
               const Text(
-                'Pilih Sumber Gambar',
+                'Choose Image Source',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -249,7 +250,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
                   Expanded(
                     child: _buildSourceOption(
                       icon: Icons.camera_alt,
-                      label: 'Kamera',
+                      label: 'Camera',
                       onTap: () async {
                         Navigator.pop(context);
                         final image = await _picker.pickImage(
@@ -268,7 +269,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
                   Expanded(
                     child: _buildSourceOption(
                       icon: Icons.photo_library,
-                      label: 'Galeri',
+                      label: 'Gallery',
                       onTap: () async {
                         Navigator.pop(context);
                         final image = await _picker.pickImage(
@@ -349,16 +350,16 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
         });
         
         HapticFeedback.lightImpact();
-        _showSnackBar('Teks berhasil diekstrak! Ketuk teks untuk mengisi field.', Colors.green[600]!);
+        _showSnackBar('Text extracted successfully! Tap text to fill field.', Colors.green[600]!);
         
         // Auto-fill based on common patterns
         await _autoFillFields(extractedText);
       } else {
-        _showSnackBar('Tidak ada teks yang dapat diekstrak dari gambar.', Colors.orange[600]!);
+        _showSnackBar('No text could be extracted from the image.', Colors.orange[600]!);
       }
     } catch (e) {
       HapticFeedback.heavyImpact();
-      _showSnackBar('Gagal memproses gambar: ${e.toString()}', Colors.red[600]!);
+      _showSnackBar('Failed to process image: ${e.toString()}', Colors.red[600]!);
     } finally {
       setState(() {
         _isLoading = false;
@@ -401,7 +402,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
             children: [
               Icon(Icons.edit_note, color: const Color(0xFF4A90E2)),
               const SizedBox(width: 12),
-              const Text('Pilih Field'),
+              const Text('Select Field'),
             ],
           ),
           content: Container(
@@ -444,7 +445,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -489,7 +490,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
     });
     
     HapticFeedback.lightImpact();
-    _showSnackBar('Teks ditambahkan ke ${_fieldInfo[fieldKey]!['label']}', Colors.blue[600]!);
+    _showSnackBar('Text added to ${_fieldInfo[fieldKey]!['label']}', Colors.blue[600]!);
   }
 
   void _showSnackBar(String message, Color color) {
@@ -518,7 +519,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
 
   void _navigateToAddPage() {
     if (_controllers.values.every((controller) => controller.text.trim().isEmpty)) {
-      _showSnackBar('Mohon isi minimal satu field sebelum melanjutkan', Colors.orange[600]!);
+      _showSnackBar('Please fill at least one field before continuing', Colors.orange[600]!);
       return;
     }
 
@@ -561,7 +562,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
   PreferredSizeWidget _buildModernAppBar() {
     return AppBar(
       title: const Text(
-        'Scan Buku',
+        'Scan Book',
         style: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 20,
@@ -618,7 +619,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
           ),
           const SizedBox(height: 16),
           Text(
-            _isProcessing ? 'Memproses gambar...' : 'Memuat...',
+            _isProcessing ? 'Processing image...' : 'Loading...',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -653,7 +654,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
           ),
           const SizedBox(height: 16),
           const Text(
-            'Scan Halaman Buku',
+            'Scan Book Page',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -662,7 +663,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
           ),
           const SizedBox(height: 8),
           Text(
-            'Ambil foto halaman copyright atau verso buku untuk mengekstrak informasi otomatis',
+            'Take a photo of the copyright or verso page to automatically extract information',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -677,7 +678,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
               onPressed: _scanAndExtract,
               icon: const Icon(Icons.camera_alt, size: 20),
               label: const Text(
-                'Mulai Scan',
+                'Start Scan',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -716,7 +717,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Gambar yang Dipilih',
+            'Selected Image',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -760,7 +761,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
               Icon(Icons.text_fields, color: const Color(0xFF4A90E2)),
               const SizedBox(width: 8),
               const Text(
-                'Teks Hasil Ekstraksi',
+                'Extracted Text',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -771,7 +772,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
           ),
           const SizedBox(height: 8),
           Text(
-            'Ketuk teks di bawah untuk mengisi field yang sesuai',
+            'Tap the text below to fill the appropriate field',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],
@@ -846,7 +847,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
               Icon(Icons.edit_note, color: const Color(0xFF4A90E2)),
               const SizedBox(width: 8),
               const Text(
-                'Informasi Buku',
+                'Book Information',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -943,7 +944,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
             onPressed: hasData ? _navigateToAddPage : null,
             icon: const Icon(Icons.save, size: 20),
             label: const Text(
-              'Lanjut ke Form Lengkap',
+              'Continue to Full Form',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -976,7 +977,7 @@ class _VersoScannerState extends State<VersoScanner> with SingleTickerProviderSt
             },
             icon: const Icon(Icons.refresh, size: 20),
             label: const Text(
-              'Mulai Ulang',
+              'Restart',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

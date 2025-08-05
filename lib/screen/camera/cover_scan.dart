@@ -75,13 +75,13 @@ class _CoverScannerState extends State<CoverScanner>
         
         HapticFeedback.mediumImpact();
         _showSnackBar(
-          'Cover berhasil dipindai!',
+          'Cover scanned successfully!',
           Colors.green[600]!,
           Icons.check_circle,
         );
       } else {
         _showSnackBar(
-          'Tidak ada dokumen yang dipindai',
+          'No document scanned',
           Colors.orange[600]!,
           Icons.warning,
         );
@@ -90,7 +90,7 @@ class _CoverScannerState extends State<CoverScanner>
       print('Error scanning document: $e');
       HapticFeedback.heavyImpact();
       _showSnackBar(
-        'Gagal memindai dokumen. Silakan coba lagi.',
+        'Failed to scan document. Please try again.',
         Colors.red[600]!,
         Icons.error_outline,
       );
@@ -121,13 +121,13 @@ class _CoverScannerState extends State<CoverScanner>
         
         HapticFeedback.mediumImpact();
         _showSnackBar(
-          'Gambar berhasil dipilih dari galeri!',
+          'Image selected from gallery!',
           Colors.green[600]!,
           Icons.check_circle,
         );
       } else {
         _showSnackBar(
-          'Tidak ada gambar yang dipilih',
+          'No image selected',
           Colors.orange[600]!,
           Icons.warning,
         );
@@ -136,7 +136,7 @@ class _CoverScannerState extends State<CoverScanner>
       print('Error picking image from gallery: $e');
       HapticFeedback.heavyImpact();
       _showSnackBar(
-        'Gagal memilih gambar dari galeri. Silakan coba lagi.',
+        'Failed to select image from gallery. Please try again.',
         Colors.red[600]!,
         Icons.error_outline,
       );
@@ -176,7 +176,7 @@ class _CoverScannerState extends State<CoverScanner>
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Pilih Sumber Gambar',
+                    'Choose Image Source',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -200,14 +200,14 @@ class _CoverScannerState extends State<CoverScanner>
                       ),
                     ),
                     title: const Text(
-                      'Pindai dengan Kamera',
+                      'Scan with Camera',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     subtitle: const Text(
-                      'Gunakan scanner dokumen untuk hasil terbaik',
+                      'Use document scanner for best results',
                       style: TextStyle(fontSize: 12),
                     ),
                     onTap: () {
@@ -233,14 +233,14 @@ class _CoverScannerState extends State<CoverScanner>
                       ),
                     ),
                     title: const Text(
-                      'Pilih dari Galeri',
+                      'Select from Gallery',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     subtitle: const Text(
-                      'Pilih gambar cover yang sudah ada di galeri',
+                      'Choose a cover image from your gallery',
                       style: TextStyle(fontSize: 12),
                     ),
                     onTap: () {
@@ -279,12 +279,12 @@ class _CoverScannerState extends State<CoverScanner>
       if (response.statusCode == 201) {
         HapticFeedback.mediumImpact();
         _showSnackBar(
-          'Cover berhasil diupload!',
+          'Cover uploaded successfully!',
           Colors.green[600]!,
           Icons.cloud_done,
         );
         
-        // Delay sebelum kembali ke halaman sebelumnya
+        // Delay before returning to previous page
         await Future.delayed(const Duration(milliseconds: 1500));
         if (mounted) {
           Navigator.pop(context, true);
@@ -292,7 +292,7 @@ class _CoverScannerState extends State<CoverScanner>
       } else {
         HapticFeedback.heavyImpact();
         _showSnackBar(
-          'Gagal mengupload cover. Kode: ${response.statusCode}',
+          'Failed to upload cover. Code: ${response.statusCode}',
           Colors.red[600]!,
           Icons.cloud_off,
         );
@@ -301,7 +301,7 @@ class _CoverScannerState extends State<CoverScanner>
       print('Error uploading cover image: $e');
       HapticFeedback.heavyImpact();
       _showSnackBar(
-        'Gagal mengupload cover. Periksa koneksi internet.',
+        'Failed to upload cover. Check your internet connection.',
         Colors.red[600]!,
         Icons.wifi_off,
       );
@@ -351,7 +351,7 @@ class _CoverScannerState extends State<CoverScanner>
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          'Scan Cover Buku',
+          'Scan Book Cover',
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 20,
@@ -422,7 +422,7 @@ class _CoverScannerState extends State<CoverScanner>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _isUploading ? 'Mengupload cover...' : 'Memproses gambar...',
+                  _isUploading ? 'Uploading cover...' : 'Processing image...',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[700],
@@ -472,7 +472,7 @@ class _CoverScannerState extends State<CoverScanner>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Cover Buku Scanner',
+                  'Book Cover Scanner',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -530,7 +530,7 @@ class _CoverScannerState extends State<CoverScanner>
           const SizedBox(height: 24),
           
           const Text(
-            'Tambah Cover Buku',
+            'Add Book Cover',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -541,7 +541,7 @@ class _CoverScannerState extends State<CoverScanner>
           const SizedBox(height: 8),
           
           Text(
-            'Pilih cover buku dari scanner kamera\natau dari galeri yang sudah ada',
+            'Choose book cover from camera scanner\nor from your gallery',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -591,7 +591,7 @@ class _CoverScannerState extends State<CoverScanner>
                     onPressed: _pickFromGallery,
                     icon: const Icon(Icons.photo_library, size: 20),
                     label: const Text(
-                      'Galeri',
+                      'Gallery',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -621,7 +621,7 @@ class _CoverScannerState extends State<CoverScanner>
               onPressed: _showImageSourceDialog,
               icon: const Icon(Icons.add_a_photo, size: 18),
               label: const Text(
-                'Pilih Sumber Gambar',
+                'Choose Image Source',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -660,7 +660,7 @@ class _CoverScannerState extends State<CoverScanner>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Tips untuk hasil terbaik:',
+                        'Tips for best results:',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -669,7 +669,7 @@ class _CoverScannerState extends State<CoverScanner>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '• Scanner: Pastikan pencahayaan cukup dan cover rata\n• Galeri: Pilih gambar dengan resolusi tinggi\n• Hindari gambar yang buram atau terpotong',
+                        '• Scanner: Ensure good lighting and flat cover\n• Gallery: Choose high resolution images\n• Avoid blurry or cropped images',
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.blue[600],
@@ -723,7 +723,7 @@ class _CoverScannerState extends State<CoverScanner>
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'Preview Cover',
+                    'Cover Preview',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -768,7 +768,7 @@ class _CoverScannerState extends State<CoverScanner>
                   onPressed: _retakePhoto,
                   icon: const Icon(Icons.refresh, size: 18),
                   label: const Text(
-                    'Ganti Gambar',
+                    'Change Image',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   style: OutlinedButton.styleFrom(
@@ -792,7 +792,7 @@ class _CoverScannerState extends State<CoverScanner>
                   onPressed: _removePhoto,
                   icon: const Icon(Icons.delete_outline, size: 18),
                   label: const Text(
-                    'Hapus',
+                    'Delete',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   style: OutlinedButton.styleFrom(
@@ -827,7 +827,7 @@ class _CoverScannerState extends State<CoverScanner>
                   )
                 : const Icon(Icons.cloud_upload, size: 20),
             label: Text(
-              _isUploading ? 'Mengupload...' : 'Upload Cover',
+              _isUploading ? 'Uploading...' : 'Upload Cover',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
