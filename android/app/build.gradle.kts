@@ -31,13 +31,19 @@ android {
         applicationId = "com.otobook.perpustakaan"
         minSdk = 21
         targetSdk = 35
-        versionCode = 3
+        versionCode = 6
         versionName = flutter.versionName
         multiDexEnabled = true
+        
+        // Android 15 (API 35) optimizations
+        vectorDrawables.useSupportLibrary = true
         
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
+        
+        // Proguard configuration for Android 15
+        proguardFiles.add(file("proguard-rules.pro"))
     }
 
     signingConfigs {
